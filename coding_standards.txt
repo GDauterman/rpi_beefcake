@@ -1,0 +1,43 @@
+1) Globals
+  * Attempt to not use globals at all in our code, unless it is properly confined within a black box module
+  * if a global is used, include a note in the PR
+2) Header formatting (top of files) 
+  * Module Name
+  * Date of module creation
+  * Creator of module
+  * Basic synopsis of functionality
+  * Global variable declarations
+3) Variable naming convention
+  * Local variables should have lower starting camel case (varForUse)
+  * Global variables should be upper starting camel (GlobalVar)
+  * Constants should be all caps (CONSTANTVAR)
+  * Classes should be upper starting camel
+  * Methods should be lower starting camel
+  * Avoid numbers and underscores
+  * Always be descriptive
+  * Avoid 20+ character names
+4) Indentation
+  * 4 space tabs
+  * Space after any comma
+  * At least one newline between each method/class
+  * brackets should start on the same line as if/while/else:
+      while(true) {
+      ...
+      }
+  * if else chains should start on the new line, not right after previous bracket
+      if(true){
+      ...
+      }
+      else{
+      ...
+      }
+  * Avoid inline blocks wherever possible
+5) Error returns/handling
+  * 0 will be success, anything else will be an error/error code
+  * The higher the error no. the more important it is
+  * Enum for errors
+  * Negative values for blocking/crashing errors, positive for catchable
+6) Documentation
+  * Fully document each class and class method with standard practice (param, return, description, etc.)
+  * Attempt to  explain complex pieces of code
+  * Split code blocks with full line comments with title
