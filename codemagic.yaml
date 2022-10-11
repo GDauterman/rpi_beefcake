@@ -1,0 +1,9 @@
+workflows:
+  hello-world:
+    name: Hello world workflow
+    scripts:
+      - echo "Hello World!"
+      - name: Build for iOS
+        script: echo "iOS built"
+      - name: Build for Android
+        script: echo "Android built"
