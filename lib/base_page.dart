@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/fitness_page.dart';
 import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/home_page.dart';
-import 'package:rpi_beefcake/tab_navigator.dart';
+import 'package:rpi_beefcake/page_enum.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
 class BasePage extends StatefulWidget {
