@@ -37,6 +37,7 @@ class MainApp extends StatelessWidget {
         }
         return Center(
           child: Column (
+            mainAxisSize: MainAxisSize.min,
             children: [
               const Text('Loading',
                 textDirection: TextDirection.ltr,
