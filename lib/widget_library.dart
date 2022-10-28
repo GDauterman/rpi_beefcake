@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
 
 class FieldOptions {
-  String validationRegex;
+  late RegExp validationRegex;
   String hint;
   String invalidText;
   TextInputType keyboard;
-  FieldOptions({this.hint = '', this.invalidText = '', this.validationRegex = r'.*', this.keyboard = TextInputType.none});
+  FieldOptions(this.hint, this.invalidText, this.keyboard, String regString) {
+    validationRegex = RegExp(regString);
+  }
 }
 
 class FieldWithEnter extends StatefulWidget {
@@ -24,75 +26,101 @@ class FieldWithEnter extends StatefulWidget {
 }
 
 class _FieldWithEnter extends State<FieldWithEnter> {
-  List<TextEditingController> controllers = List<TextEditingController>.empty(growable: true);
+  List<TextEditingController> controllers = List<TextEditingController>.empty(
+      growable: true);
+
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> fieldList = List<Widget>.empty(growable: true);
-    for(int i = 0; i < widget.fieldOptions.length; i++) {
+    List<TextInputRow> fieldList = List<TextInputRow>.empty(growable: true);
+    for (int i = 0; i < widget.fieldOptions.length; i++) {
       controllers.add(TextEditingController());
-      fieldList.add(buildTextInputRow(controllers[i], widget.fieldOptions[i]));
+      fieldList.add(TextInputRow(textEditingController: controllers[i], options: widget.fieldOptions[i]));
     }
     return Container(
       padding: const EdgeInsets.all(30.0),
       color: Colors.white,
       child: Center(
-        child: Column(children: [
-        const Padding(padding: EdgeInsets.only(top: 140.0)),
-        Text(
-          widget.titleText,
-          style: const TextStyle(
-            color: Color.fromARGB(255, 242, 160, 61), fontSize: 25.0),
-        ),
-        const Padding(padding: EdgeInsets.only(top: 20.0)),
-        Column(
-          children: fieldList,
-        ),
-        Form(
-          child: ElevatedButton(
-            onPressed: /*(_formKey.currentState == null) ? null :*/ () {
-              List<dynamic> enteredData = List<dynamic>.empty(growable: true);
-              for(int i = 0; i < widget.fieldOptions.length; i++) {
-                print('accessing controllers');
-                if(RegExp(widget.fieldOptions[i].validationRegex).hasMatch(controllers[i].text.toString())) {
-                  enteredData.add(controllers[i].text);
-                  controllers[i].clear();
-                } else{
-                  print('{$i} doesn\'t match');
-                  return;
-                }
-              }
-              widget.dataEntry(enteredData);
-            },
-            child: const Text('Submit')
-          ),
-        ),
-      ])),
+          child: Column(children: [
+            const Padding(padding: EdgeInsets.only(top: 140.0)),
+            Text(
+              widget.titleText,
+              style: const TextStyle(
+                  color: Color.fromARGB(255, 242, 160, 61), fontSize: 25.0),
+            ),
+            const Padding(padding: EdgeInsets.only(top: 20.0)),
+            Column(
+              children: fieldList,
+            ),
+            Form(
+              child: ElevatedButton(
+                  onPressed: /*(_formKey.currentState == null) ? null :*/ () {
+                    List<dynamic> enteredData = List<dynamic>.empty(
+                        growable: true);
+                    for (int i = 0; i < widget.fieldOptions.length; i++) {
+                      print('accessing controllers');
+                      String contText = controllers[i].text;
+                      if (widget.fieldOptions[i].validationRegex.hasMatch(contText)) {
+                        enteredData.add(contText);
+                      } else {
+                        print('{$i} doesn\'t match');
+                        return;
+                      }
+                    }
+                    for (int i = 0; i < widget.fieldOptions.length; i++) {
+                      controllers[i].clear();
+                    }
+                    widget.dataEntry(enteredData);
+                  },
+                  child: const Text('Submit')
+              ),
+            ),
+          ])),
     );
   }
+}
 
-  Widget buildTextInputRow(TextEditingController textEditingController, FieldOptions options) {
+class TextInputRow extends StatefulWidget {
+  final TextEditingController textEditingController;
+  final FieldOptions options;
+
+  const TextInputRow(
+      {Key? key, required this.textEditingController, required this.options})
+      : super(key: key);
+
+  @override
+  _TextInputRow createState() {
+    return _TextInputRow();
+  }
+}
+
+class _TextInputRow extends State<TextInputRow> {
+
+  bool _isValid = true;
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     // return Text('baller');
     return Container(
       padding: const EdgeInsets.only(left: 5.0, right: 5.0),
       child: TextField(
-        controller: textEditingController,
+        controller: widget.textEditingController,
         decoration: InputDecoration(
-          hintText: options.hint,
+          hintText: widget.options.hint,
           errorText: (() {
-            final text = textEditingController.value.text;
-            RegExp matchReg = RegExp(options.validationRegex);
-            if (matchReg.hasMatch(text)) {
-              return null;
-            }
-            return options.invalidText;
+            return _isValid ? null : widget.options.invalidText;
           } ()),
         ),
-        keyboardType: options.keyboard,
+        keyboardType: widget.options.keyboard,
         onChanged: (String str) {
-          (() {
-
+          setState(() {
+            _isValid = widget.options.validationRegex.hasMatch(str);
           });
+          print("changed isvalid to " + _isValid.toString());
         }
       )
     );

@@ -10,25 +10,23 @@ class HealthPage extends StatelessWidget {
   @override
   Widget build(BuildContext context){
     List<FieldOptions> sleepOptions = [
-      // TODO: replace regexp expressions with working ones
-      // normal number regexp's don't work (specific ruleset?)
       FieldOptions(
-        hint: 'Hours Slept',
-        invalidText: 'Enter a number',
-        validationRegex: r'(.*?)',
-        keyboard: TextInputType.number
+        'Hours Slept',
+        'Enter a number',
+        TextInputType.number,
+        r'^0*\d{1,2}(\.\d+)?$',
       ),
       FieldOptions(
-        hint: 'Sleep Quality (0-100)',
-        invalidText: 'Enter an integer from 0 to 100',
-        validationRegex: r'(.*?)',
-        keyboard: TextInputType.number
+        'Sleep Quality (0-100)',
+        'Enter an integer from 0 to 100',
+        TextInputType.number,
+        r'^0*(\d{1,2}|100)$',
       ),
       FieldOptions(
-        hint: 'Notes',
-        invalidText: '',
-        validationRegex: r'(.*?)',
-        keyboard: TextInputType.text
+        'Notes',
+        '',
+        TextInputType.text,
+        r'.*?',
       )
     ];
     return MaterialApp(
