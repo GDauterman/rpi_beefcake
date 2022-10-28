@@ -26,7 +26,7 @@ extension PageExtension on PageItems {
   Color get getColor {
     switch (this) {
       case PageItems.home:
-        return Colors.white;
+        return Colors.black54;
       case PageItems.fitness:
         return Colors.blue;
       case PageItems.health:
