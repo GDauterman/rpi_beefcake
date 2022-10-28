@@ -24,7 +24,7 @@ class FirebaseService {
       "hours": data[0],
       "time_logged": Timestamp.now(),
       "sleep_quality": data[1],
-      "notes":data[3]
+      "notes":data[2]
     };
     await sleepCol!.add(newEntry).then((documentSnapshot) => print("Added Sleep Data with ID: ${documentSnapshot.id}"));
   }

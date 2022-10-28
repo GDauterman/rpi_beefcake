@@ -9,6 +9,28 @@ class HealthPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
+    List<FieldOptions> sleepOptions = [
+      // TODO: replace regexp expressions with working ones
+      // normal number regexp's don't work (specific ruleset?)
+      FieldOptions(
+        hint: 'Hours Slept',
+        invalidText: 'Enter a number',
+        validationRegex: r'(.*?)',
+        keyboard: TextInputType.number
+      ),
+      FieldOptions(
+        hint: 'Sleep Quality (0-100)',
+        invalidText: 'Enter an integer from 0 to 100',
+        validationRegex: r'(.*?)',
+        keyboard: TextInputType.number
+      ),
+      FieldOptions(
+        hint: 'Notes',
+        invalidText: '',
+        validationRegex: r'(.*?)',
+        keyboard: TextInputType.text
+      )
+    ];
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: "Welcome to Flutter",
@@ -17,7 +39,7 @@ class HealthPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FieldWithEnter(db: db, titleText: 'Sleep', fieldsCount: 3, boxText: const ['Hours of Sleep', 'Sleep Quality', 'Notes'], regex: const [r'/^\d*\.?\d*$/', r'/^\d*\.?\d*$/', r'.*'], dataEntry: db.addSleep),
+              FieldWithEnter(db: db, titleText: 'Sleep', fieldOptions: sleepOptions, dataEntry: db.addSleep),
             ]
           ),
         ),

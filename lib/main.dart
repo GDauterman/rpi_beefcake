@@ -35,7 +35,7 @@ class MainApp extends StatelessWidget {
             ),
           );
         }
-        return const Text('Loading');
+        return const Text('Loading', textDirection: TextDirection.ltr);
       },
     );
   }

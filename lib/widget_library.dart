@@ -2,14 +2,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
 
+class FieldOptions {
+  String validationRegex;
+  String hint;
+  String invalidText;
+  TextInputType keyboard;
+  FieldOptions({this.hint = '', this.invalidText = '', this.validationRegex = r'.*', this.keyboard = TextInputType.none});
+}
+
 class FieldWithEnter extends StatefulWidget {
   final FirebaseService db;
   final String titleText;
-  final int fieldsCount;
-  final List<String> boxText;
-  final List<String> regex;
+  final List<FieldOptions> fieldOptions;
   final void Function(List<dynamic>) dataEntry;
-  const FieldWithEnter({Key? key, required this.db, required this.titleText, required this.fieldsCount, required this.boxText, required this.regex, required this.dataEntry }) : super(key: key);
+  const FieldWithEnter({Key? key, required this.db, required this.titleText, required this.fieldOptions, required this.dataEntry }) : super(key: key);
 
   @override
   _FieldWithEnter createState() {
@@ -23,10 +29,9 @@ class _FieldWithEnter extends State<FieldWithEnter> {
   @override
   Widget build(BuildContext context) {
     List<Widget> fieldList = List<Widget>.empty(growable: true);
-    for(int i = 0; i < widget.fieldsCount; i++) {
+    for(int i = 0; i < widget.fieldOptions.length; i++) {
       controllers.add(TextEditingController());
-      print('accessing first controllers');
-      fieldList.add(buildTextInputRow(controllers[i], hintText: widget.boxText[i]));
+      fieldList.add(buildTextInputRow(controllers[i], widget.fieldOptions[i]));
     }
     return Container(
       padding: const EdgeInsets.all(30.0),
@@ -47,12 +52,13 @@ class _FieldWithEnter extends State<FieldWithEnter> {
           child: ElevatedButton(
             onPressed: /*(_formKey.currentState == null) ? null :*/ () {
               List<dynamic> enteredData = List<dynamic>.empty(growable: true);
-              for(int i = 0; i < widget.fieldsCount; i++) {
+              for(int i = 0; i < widget.fieldOptions.length; i++) {
                 print('accessing controllers');
-                if(controllers[i].text.toString().contains(widget.regex[i])) {
+                if(RegExp(widget.fieldOptions[i].validationRegex).hasMatch(controllers[i].text.toString())) {
                   enteredData.add(controllers[i].text);
+                  controllers[i].clear();
                 } else{
-                  print('{$i} doesnt match');
+                  print('{$i} doesn\'t match');
                   return;
                 }
               }
@@ -65,28 +71,30 @@ class _FieldWithEnter extends State<FieldWithEnter> {
     );
   }
 
-  Widget buildTextInputRow(TextEditingController textEditingController, {String hintText = ''}) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.only(left: 5.0, right: 5.0),
-        child: TextField(
-          controller: textEditingController,
-          decoration: InputDecoration(
-            hintText: hintText,
-            errorText: (() {
-              final text = textEditingController.value.text;
-              // ToDo: allow passing in validators
+  Widget buildTextInputRow(TextEditingController textEditingController, FieldOptions options) {
+    // return Text('baller');
+    return Container(
+      padding: const EdgeInsets.only(left: 5.0, right: 5.0),
+      child: TextField(
+        controller: textEditingController,
+        decoration: InputDecoration(
+          hintText: options.hint,
+          errorText: (() {
+            final text = textEditingController.value.text;
+            RegExp matchReg = RegExp(options.validationRegex);
+            if (matchReg.hasMatch(text)) {
               return null;
-            } ()),
-          ),
-          keyboardType: TextInputType.number,
-          onChanged: (String str) {
-            (() {
+            }
+            return options.invalidText;
+          } ()),
+        ),
+        keyboardType: options.keyboard,
+        onChanged: (String str) {
+          (() {
 
-            });
-          }
-        )
-      ),
+          });
+        }
+      )
     );
   }
 }
