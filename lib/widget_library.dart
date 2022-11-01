@@ -7,17 +7,17 @@ class FieldOptions {
   String hint;
   String invalidText;
   TextInputType keyboard;
-  FieldOptions(this.hint, this.invalidText, this.keyboard, String regString) {
+  bool obscureText;
+  FieldOptions({this.hint = '', this.invalidText = '', this.keyboard = TextInputType.text, String regString = '.*', this.obscureText = false}) {
     validationRegex = RegExp(regString);
   }
 }
 
 class FieldWithEnter extends StatefulWidget {
-  final FirebaseService db;
-  final String titleText;
   final List<FieldOptions> fieldOptions;
   final void Function(List<dynamic>) dataEntry;
-  const FieldWithEnter({Key? key, required this.db, required this.titleText, required this.fieldOptions, required this.dataEntry }) : super(key: key);
+  final String submitText;
+  const FieldWithEnter({Key? key, required this.fieldOptions, required this.dataEntry, this.submitText = 'Submit' }) : super(key: key);
 
   @override
   _FieldWithEnter createState() {
@@ -28,7 +28,6 @@ class FieldWithEnter extends StatefulWidget {
 class _FieldWithEnter extends State<FieldWithEnter> {
   List<TextEditingController> controllers = List<TextEditingController>.empty(
       growable: true);
-
 
   @override
   Widget build(BuildContext context) {
@@ -42,13 +41,6 @@ class _FieldWithEnter extends State<FieldWithEnter> {
       color: Colors.white,
       child: Center(
           child: Column(children: [
-            const Padding(padding: EdgeInsets.only(top: 140.0)),
-            Text(
-              widget.titleText,
-              style: const TextStyle(
-                  color: Color.fromARGB(255, 242, 160, 61), fontSize: 25.0),
-            ),
-            const Padding(padding: EdgeInsets.only(top: 20.0)),
             Column(
               children: fieldList,
             ),
@@ -72,7 +64,7 @@ class _FieldWithEnter extends State<FieldWithEnter> {
                     }
                     widget.dataEntry(enteredData);
                   },
-                  child: const Text('Submit')
+                  child: Text(widget.submitText)
               ),
             ),
           ])),
@@ -116,6 +108,7 @@ class _TextInputRow extends State<TextInputRow> {
           } ()),
         ),
         keyboardType: widget.options.keyboard,
+        obscureText: widget.options.obscureText,
         onChanged: (String str) {
           setState(() {
             _isValid = widget.options.validationRegex.hasMatch(str);
