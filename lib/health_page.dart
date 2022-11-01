@@ -11,22 +11,19 @@ class HealthPage extends StatelessWidget {
   Widget build(BuildContext context){
     List<FieldOptions> sleepOptions = [
       FieldOptions(
-        'Hours Slept',
-        'Enter a number',
-        TextInputType.number,
-        r'^0*\d{1,2}(\.\d+)?$',
+        hint: 'Hours Slept',
+        invalidText: 'Enter a number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d{1,2}(\.\d+)?$',
       ),
       FieldOptions(
-        'Sleep Quality (0-100)',
-        'Enter an integer from 0 to 100',
-        TextInputType.number,
-        r'^0*(\d{1,2}|100)$',
+        hint: 'Sleep Quality (0-100)',
+        invalidText: 'Enter an integer from 0 to 100',
+        keyboard: TextInputType.number,
+        regString: r'^0*(\d{1,2}|100)$',
       ),
       FieldOptions(
-        'Notes',
-        '',
-        TextInputType.text,
-        r'.*?',
+        hint: 'Notes',
       )
     ];
     return MaterialApp(
@@ -37,7 +34,8 @@ class HealthPage extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              FieldWithEnter(db: db, titleText: 'Sleep', fieldOptions: sleepOptions, dataEntry: db.addSleep),
+              Text('Sleep Entry'),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: db.addSleep),
             ]
           ),
         ),
