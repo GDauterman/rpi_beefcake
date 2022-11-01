@@ -1,8 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/widget_library.dart';
-import 'package:rpi_beefcake/fireauth.dart';
 
 final emailRegex = RegExp(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)');
 final existsRegex = RegExp(r'.+');
@@ -10,6 +8,8 @@ final properPasswordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
 final nameRegex = RegExp(r'[A-Z]\w* [A-Z]\w*');
 
 class AllLogins extends StatefulWidget {
+  const AllLogins({super.key});
+
   @override
   State<AllLogins> createState() => _AllLogins();
 }
@@ -84,7 +84,7 @@ class _LoginPage extends State<LoginPage> {
                         fontSize: 38,
                       ))),
               Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 15),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -122,7 +122,7 @@ class _LoginPage extends State<LoginPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 15),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.white,
@@ -311,7 +311,7 @@ class _RegisterPage extends State<RegisterPage> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 15),
+                padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
                 child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -381,7 +381,7 @@ class _RegisterPage extends State<RegisterPage> {
               ElevatedButton(
                 onPressed: widget.changePage,
                 child: const Text(
-                    'Register with Email/Password',
+                    'Login with Email/Password',
                     textDirection: TextDirection.ltr
                 ))
             ],
