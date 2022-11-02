@@ -8,7 +8,8 @@ import 'package:rpi_beefcake/trends_page.dart';
 
 class BasePage extends StatefulWidget {
   final FirebaseService db;
-  const BasePage({Key? key, required this.db}) : super(key: key);
+  final GlobalKey<NavigatorState> nk;
+  const BasePage({Key? key, required this.db, required this.nk}) : super(key: key);
 
   @override
   State<BasePage> createState() => _BasePage();
@@ -33,55 +34,49 @@ class _BasePage extends State<BasePage> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Welcome to BeefCake',
-      theme: ThemeData(
-          primarySwatch: Colors.pink
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(pageItem.getTitle),
+        backgroundColor: pageItem.getColor,
       ),
-      home: Scaffold(
-        appBar: AppBar(
-          title: Text(pageItem.getTitle),
-          backgroundColor: pageItem.getColor,
-        ),
-        body: (() {
-          if(pageItem == PageItems.home) {
-            return const HomePage();}
-          if(pageItem == PageItems.fitness) {
-            return const FitnessPage();}
-          if(pageItem == PageItems.health) {
-            return HealthPage(db: widget.db);}
-          if(pageItem == PageItems.trends) {
-            return const TrendsPage();}
-        } ()),
-        // ToDo: make navbar use page enum colors
-        //  (needs to be const) currently hardcoded
-        bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-              backgroundColor: Colors.white,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.sports_gymnastics),
-              label: 'Fitness',
-              backgroundColor: Colors.blue,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.heart_broken),
-              label: 'Health',
-              backgroundColor: Colors.green,
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.auto_graph),
-              label: 'Trends',
-              backgroundColor: Colors.teal,
-            ),
-          ],
-          currentIndex: pageItem.getIndex,
-          selectedItemColor: Colors.grey,
-          onTap: _onItemTapped,
-        ),
+      body: (() {
+        if(pageItem == PageItems.home) {
+          return const HomePage();}
+        if(pageItem == PageItems.fitness) {
+          return const FitnessPage();}
+        if(pageItem == PageItems.health) {
+          return HealthPage(widget.db);}
+        if(pageItem == PageItems.trends) {
+          return const TrendsPage();}
+      } ()),
+      // ToDo: make navbar use page enum colors
+      //  (needs to be const) currently hardcoded
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+            backgroundColor: Colors.white,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.sports_gymnastics),
+            label: 'Fitness',
+            backgroundColor: Colors.blue,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.heart_broken),
+            label: 'Health',
+            backgroundColor: Colors.green,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_graph),
+            label: 'Trends',
+            backgroundColor: Colors.teal,
+          ),
+        ],
+        currentIndex: pageItem.getIndex,
+        selectedItemColor: Colors.grey,
+        onTap: _onItemTapped,
       ),
     );
   }

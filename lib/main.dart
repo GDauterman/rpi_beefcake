@@ -9,28 +9,22 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/login_page.dart';
 import 'firebase_options.dart';
 import 'firestore.dart';
+import 'loading_page.dart';
 
 void main() {
   runApp(MainApp());
 }
 
-class MainApp extends StatefulWidget {
-  const MainApp({Key? key}) : super(key: key);
-
-  @override
-  State<MainApp> createState() => _MainApp();
-}
-
-class _MainApp extends State<MainApp> {
+class MainApp extends StatelessWidget {
   late final Future fbFuture = Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  FirebaseService? db;
-  FirebaseAuth? auth;
+  final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
+  late final FirebaseService db;
 
-  bool loggedIn = false;
+  MainApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-
 
     return FutureBuilder(
       future: fbFuture,
@@ -39,44 +33,34 @@ class _MainApp extends State<MainApp> {
           return const Text('uh oh');
         }
         else if(snapshot.connectionState == ConnectionState.done) {
-          if(auth == null) {
-            auth = FirebaseAuth.instance;
-            auth!.authStateChanges().listen((User? user) {
-              if (user == null) {
-                setState(() {
-                  loggedIn = false;
-                  db = null;
-                });
-              } else {
-                setState(() {
-                  loggedIn = true;
-                });
+          db = FirebaseService();
+          FirebaseAuth.instance.authStateChanges().listen((User? user) {
+            if (user == null) {
+              db.clearService();
+              if (mainNavKey.currentState != null) {
+                mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
               }
-            });
-          }
-          if(loggedIn) {
-            db ??= FirebaseService(FirebaseAuth.instance.currentUser!.uid);
-            return BasePage(db: db!);
-          } else {
-            return AllLogins();
-          }
+            } else {
+              db.initService();
+              if (mainNavKey.currentState != null) {
+                mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
+              }
+            }
+          });
+          return MaterialApp(
+            title: 'Main App',
+            navigatorKey: mainNavKey,
+            initialRoute: '/login',
+            routes: {
+              '/':          (context) => BasePage(db: db, nk: homeNavKey),
+              '/login':     (context) => const LoginPage(),
+              '/register':  (context) => const RegisterPage(),
+              '/loading':   (context) => LoadingPage(),
+            },
+
+          );
         }
-        return Center(
-          child: Column (
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text('Loading',
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Courier New',
-                  fontFamilyFallback: <String>['Comic Sans'],
-                  fontSize: 50,
-                )),
-              Image.asset('images/loading_circle.gif', height:125, width:125),
-            ]
-          ),
-        );
+        return LoadingPage();
       },
     );
   }

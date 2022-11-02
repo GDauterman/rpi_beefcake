@@ -1,25 +1,72 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-final CollectionReference userReference = FirebaseFirestore.instance.collection('users');
-final CollectionReference foodReference = FirebaseFirestore.instance.collection('foods');
 
 class FirebaseService {
-  final String userID;
-  late DocumentReference userDoc;
+  bool readyToWrite = false;
+
+  DocumentReference? userDoc;
   CollectionReference? sleepCol;
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
   CollectionReference? workoutCol;
-  
-  FirebaseService(this.userID) {
-    userReference.where("userid", isEqualTo: userID)
-      .get().then((value) => userDoc = value.docs.first.reference,
-        onError: (e) => print(e.toString()));
+
+  final CollectionReference userReference = FirebaseFirestore.instance.collection('users');
+  final CollectionReference foodReference = FirebaseFirestore.instance.collection('foods');
+
+  void initService() {
+    if(FirebaseAuth.instance.currentUser == null) {
+      print('Attempted to init firebaseservice without being logged in');
+      assert(false);
+    }
+    userReference!.where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid).get().then(
+      (value) {
+        if(value.size == 0) {
+          print('We ball');
+          initUser();
+        } else {
+          userDoc = value.docs.first.reference;
+          sleepCol = userDoc!.collection('sleep');
+          nutritionCol = userDoc!.collection('nutrition');
+          hydrationCol = userDoc!.collection('hydration');
+          workoutCol = userDoc!.collection('workout');
+          readyToWrite = true;
+        }
+      },
+      onError: (e) => print(e.toString())
+    );
+  }
+
+  void clearService() {
+    readyToWrite = false;
+    userDoc = null;
+    sleepCol = null;
+    nutritionCol = null;
+    hydrationCol = null;
+    workoutCol = null;
+  }
+
+  void initUser() {
+    if(FirebaseAuth.instance.currentUser != null) {
+      final newUserEntry = <String, dynamic> {
+        'height': -1,
+        'name': '',
+        'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
+        'email': FirebaseAuth.instance.currentUser!.email,
+        'weight': -1,
+      };
+      userReference.add(newUserEntry).then((newUserDoc) {
+        userDoc = newUserDoc;
+        initService();
+      });
+    }
   }
 
   void addSleep(List<dynamic> data) async {
-    sleepCol ??= userDoc.collection('sleep');
+
+    while(!readyToWrite) { print('trying to write while '); }
+    sleepCol ??= userDoc!.collection('sleep');
     final newEntry = <String, dynamic>{
       "hours": data[0],
       "time_logged": Timestamp.now(),
@@ -28,4 +75,5 @@ class FirebaseService {
     };
     await sleepCol!.add(newEntry).then((documentSnapshot) => print("Added Sleep Data with ID: ${documentSnapshot.id}"));
   }
+
 }
