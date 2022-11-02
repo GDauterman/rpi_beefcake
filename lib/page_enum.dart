@@ -1,10 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-
-// class PageNavigatorRoutes {
-//   static const String base_page = '/';
-//   static const String sub_page = '/sub_page';
-// }
 
 enum PageItems { home, fitness, health, trends }
 extension PageExtension on PageItems {
@@ -19,18 +13,6 @@ extension PageExtension on PageItems {
         return 'Health Logging';
       case PageItems.trends:
         return 'Trends';
-    }
-  }
-  Color get getColor {
-    switch (this) {
-      case PageItems.home:
-        return Colors.black54;
-      case PageItems.fitness:
-        return Colors.blue;
-      case PageItems.health:
-        return Colors.green;
-      case PageItems.trends:
-        return Colors.teal;
     }
   }
   int get getIndex {

@@ -1,6 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:rpi_beefcake/firestore.dart';
+import 'package:rpi_beefcake/style_lib.dart';
 
 class FieldOptions {
   late RegExp validationRegex;
@@ -38,7 +37,7 @@ class _FieldWithEnter extends State<FieldWithEnter> {
     }
     return Container(
       padding: const EdgeInsets.all(30.0),
-      color: Colors.white,
+      color: bc_style().backgroundcolor,
       child: Center(
           child: Column(children: [
             Column(

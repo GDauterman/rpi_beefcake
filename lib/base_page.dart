@@ -4,6 +4,7 @@ import 'package:rpi_beefcake/fitness_page.dart';
 import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/home_page.dart';
 import 'package:rpi_beefcake/page_enum.dart';
+import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
 class BasePage extends StatefulWidget {
@@ -37,7 +38,7 @@ class _BasePage extends State<BasePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(pageItem.getTitle),
-        backgroundColor: pageItem.getColor,
+        backgroundColor: bc_style().accent2color,
       ),
       body: (() {
         if(pageItem == PageItems.home) {
@@ -49,29 +50,27 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
-      // ToDo: make navbar use page enum colors
-      //  (needs to be const) currently hardcoded
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: Colors.white,
+            backgroundColor: bc_style().accent2color,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_gymnastics),
             label: 'Fitness',
-            backgroundColor: Colors.blue,
+            backgroundColor: bc_style().accent2color,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.heart_broken),
             label: 'Health',
-            backgroundColor: Colors.green,
+            backgroundColor: bc_style().accent2color,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_graph),
             label: 'Trends',
-            backgroundColor: Colors.teal,
+            backgroundColor: bc_style().accent2color,
           ),
         ],
         currentIndex: pageItem.getIndex,
