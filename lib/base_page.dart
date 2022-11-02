@@ -44,7 +44,7 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.home) {
           return const HomePage();}
         if(pageItem == PageItems.fitness) {
-          return const FitnessPage();}
+          return FitnessPage(widget.db);}
         if(pageItem == PageItems.health) {
           return HealthPage(widget.db);}
         if(pageItem == PageItems.trends) {
