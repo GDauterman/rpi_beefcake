@@ -5,7 +5,7 @@ import 'package:rpi_beefcake/widget_library.dart';
 
 class HealthPage extends StatelessWidget {
   final FirebaseService db;
-  const HealthPage({Key? key, required this.db}) : super(key: key);
+  const HealthPage(this.db, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -26,18 +26,14 @@ class HealthPage extends StatelessWidget {
         hint: 'Notes',
       )
     ];
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: "Welcome to Flutter",
-      home: Material(
-        // Sleep Container
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              Text('Sleep Entry'),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: db.addSleep),
-            ]
-          ),
+    return Material(
+      // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text('Sleep Entry'),
+            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: db.addSleep),
+          ]
         ),
       ),
     );
