@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rpi_beefcake/style_lib.dart';
 
 final emailRegex = RegExp(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)');
 final existsRegex = RegExp(r'.+');
@@ -44,8 +45,8 @@ class _LoginPage extends State<LoginPage> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(width: 5, color: Colors.lightBlueAccent),
+                  color: bc_style().backgroundcolor,
+                  border: Border.all(width: 5, color: bc_style().accent1color),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -55,10 +56,10 @@ class _LoginPage extends State<LoginPage> {
                         height: 40,
                         child: TextField(
                           controller: usernameController,
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Email',
                             border: InputBorder.none,
-                            prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
+                            prefixIcon: Icon(Icons.email_outlined, color: bc_style().textcolor),
                           ),
                           onChanged: ((String str) {
                             bool valid = emailRegex.hasMatch(str);
@@ -71,7 +72,7 @@ class _LoginPage extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : Colors.red),
+                    Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : bc_style().errorcolor),
                   ],
                 )
               ),
@@ -80,8 +81,8 @@ class _LoginPage extends State<LoginPage> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(width: 5, color: Colors.lightBlueAccent),
+                  color: bc_style().backgroundcolor,
+                  border: Border.all(width: 5, color: bc_style().accent1color),
                   borderRadius: BorderRadius.circular(5),
                 ),
                 child: Row(
@@ -90,10 +91,10 @@ class _LoginPage extends State<LoginPage> {
                       child: SizedBox(
                         height: 40,
                         child: TextField(
-                          decoration: const InputDecoration(
+                          decoration: InputDecoration(
                             hintText: 'Password',
                             border: InputBorder.none,
-                            prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.black),
+                            prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
                           ),
                           controller: passwordController,
                           obscureText: true,
@@ -139,7 +140,7 @@ class _LoginPage extends State<LoginPage> {
               }),
               child: const Text('Log In')
             ),
-            Text(errorText, style: const TextStyle(color: Colors.red)),
+            Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
               onPressed: (() {Navigator.of(context).popAndPushNamed('/register');}),
               child: const Text(
@@ -193,8 +194,8 @@ class _RegisterPage extends State<RegisterPage> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 5, color: Colors.lightBlueAccent),
+                    color: bc_style().backgroundcolor,
+                    border: Border.all(width: 5, color: bc_style().accent1color),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -204,10 +205,10 @@ class _RegisterPage extends State<RegisterPage> {
                           height: 40,
                           child: TextField(
                             controller: usernameController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Email',
                               border: InputBorder.none,
-                              prefixIcon: Icon(Icons.email_outlined, color: Colors.black),
+                              prefixIcon: Icon(Icons.email_outlined, color: bc_style().textcolor),
                             ),
                             onChanged: ((String str) {
                               bool valid = emailRegex.hasMatch(str);
@@ -220,7 +221,7 @@ class _RegisterPage extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                      Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : Colors.red),
+                      Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : bc_style().errorcolor),
                     ],
                   )
               ),
@@ -229,8 +230,8 @@ class _RegisterPage extends State<RegisterPage> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 5, color: Colors.lightBlueAccent),
+                    color: bc_style().backgroundcolor,
+                    border: Border.all(width: 5, color: bc_style().accent1color),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -241,10 +242,10 @@ class _RegisterPage extends State<RegisterPage> {
                           child: TextField(
                             controller: passwordController,
                             obscureText: true,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               hintText: 'Password',
                               border: InputBorder.none,
-                              prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.black),
+                              prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
                             ),
                             onChanged: ((String str) {
                               bool valid = properPasswordRegex.hasMatch(str);
@@ -257,7 +258,7 @@ class _RegisterPage extends State<RegisterPage> {
                           ),
                         ),
                       ),
-                      Icon(passwordCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordCorrect ? Colors.green : Colors.red),
+                      Icon(passwordCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordCorrect ? Colors.green : bc_style().errorcolor),
                     ],
                   )
               ),
@@ -266,8 +267,8 @@ class _RegisterPage extends State<RegisterPage> {
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(width: 5, color: Colors.lightBlueAccent),
+                    color: bc_style().backgroundcolor,
+                    border: Border.all(width: 5, color: bc_style().accent1color),
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: Row(
@@ -276,10 +277,10 @@ class _RegisterPage extends State<RegisterPage> {
                           child: SizedBox(
                               height: 40,
                               child: TextField(
-                                  decoration: const InputDecoration(
+                                  decoration: InputDecoration(
                                     hintText: 'Repeat Password',
                                     border: InputBorder.none,
-                                    prefixIcon: Icon(Icons.lock_outline_rounded, color: Colors.black),
+                                    prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
                                   ),
                                   controller: passwordConfirmController,
                                   obscureText: true,
@@ -294,7 +295,7 @@ class _RegisterPage extends State<RegisterPage> {
                               )
                           )
                       ),
-                      Icon(passwordConfirmCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordConfirmCorrect ? Colors.green : Colors.red),
+                      Icon(passwordConfirmCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordConfirmCorrect ? Colors.green : bc_style().errorcolor),
                     ],
                   )
               ),
@@ -329,7 +330,7 @@ class _RegisterPage extends State<RegisterPage> {
                 }),
                 child: const Text('Register')
             ),
-            Text(errorText, style: const TextStyle(color: Colors.red)),
+            Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
               onPressed: (() {Navigator.of(context).popAndPushNamed('/login');}),
               child: const Text(
