@@ -1,7 +1,10 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/style_lib.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
+
+List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift', 'Glute Spread'];
 
 class FitnessPage extends StatefulWidget {
   FirebaseService db;
@@ -12,7 +15,8 @@ class FitnessPage extends StatefulWidget {
 }
 
 class _FitnessPage extends State<FitnessPage> {
-  String curExercise = 'Bench Press';
+
+  final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
 
   @override
   Widget build(BuildContext context) {
@@ -23,35 +27,7 @@ class _FitnessPage extends State<FitnessPage> {
             children: [
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: bc_style().backgroundcolor,
-                        border: Border.all(width: 5, color: bc_style().accent2color),
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(20, 5, 20, 5),
-                        child: Text(curExercise,
-                          textDirection: TextDirection.ltr,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Proxima Nova',
-                            fontSize: 30,
-                            color: bc_style().textcolor,
-                          ),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      onPressed: (() {
-                        setState(() {curExercise = '';});
-                      }),
-                      icon: Icon(Icons.dangerous_rounded, color: bc_style().errorcolor),
-                    ),
-                  ],
-                ),
+                child: exerciseDropdown,
               ),
             ]
           )
@@ -61,3 +37,4 @@ class _FitnessPage extends State<FitnessPage> {
   }
 
 }
+

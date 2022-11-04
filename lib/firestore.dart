@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+typedef void serviceCallback(List<dynamic> data);
 
 class FirebaseService {
   bool readyToWrite = false;
@@ -74,6 +75,30 @@ class FirebaseService {
       "notes":data[2]
     };
     await sleepCol!.add(newEntry).then((documentSnapshot) => print("Added Sleep Data with ID: ${documentSnapshot.id}"));
+  }
+
+  void addHydration(List<dynamic> data) async {
+    while(!readyToWrite) { print('trying to write while '); }
+    hydrationCol ??= userDoc!.collection('hydration');
+    final newEntry = <String, dynamic>{
+      "amount": data[0],
+      "time_logged": Timestamp.now(),
+    };
+    await hydrationCol!.add(newEntry).then((documentSnapshot) => print("Added Hydration Data with ID: ${documentSnapshot.id}"));
+  }
+
+  void addNutrition(List<dynamic> data) async {
+    while(!readyToWrite) { print('trying to write while '); }
+    nutritionCol ??= userDoc!.collection('nutrition');
+    final newEntry = <String, dynamic>{
+      "food_name": data[0],
+      "time_logged": Timestamp.now(),
+      "total_calories": data[1],
+      "total_carbs":data[2],
+      "total_fats":data[3],
+      "total_protein":data[4]
+    };
+    await nutritionCol!.add(newEntry).then((documentSnapshot) => print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
   }
 
 }
