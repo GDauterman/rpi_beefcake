@@ -17,19 +17,26 @@ class FitnessPage extends StatefulWidget {
 class _FitnessPage extends State<FitnessPage> {
 
   void deleteIndex(int i) {
-    if(rows.isEmpty) return;
-    rows.removeAt(i);
-    for(; i < rows.length; i++) {
-      rows[i].child.decrementIndex();
-    }
+    i -= 1;
+    if(rows.isEmpty || i < 0 || i >= rows.length) return;
+    setState(() {
+      rows.removeAt(i);
+      for (; i < rows.length; i++) {
+        rows[i].child.decrementIndex();
+      }
+    });
   }
   void addRow() {
-    rows.add(FitnessRow(deleteIndex, rows.length+1));
+    setState(() {
+      rows.add(FitnessRow(deleteIndex, rows.length + 1));
+    });
   }
   void clearRows() {
-    for(int i = 0; i < rows.length; i++) {
-      rows[i].child.clear();
-    }
+    setState(() {
+      for (int i = 0; i < rows.length; i++) {
+        rows[i].child.clear();
+      }
+    });
   }
   final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
   List<FitnessRow> rows = [];
@@ -47,12 +54,14 @@ class _FitnessPage extends State<FitnessPage> {
       body: SingleChildScrollView(
         child: Center(
           child: Column(
-            children: [
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               Padding(
                 padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
                 child: exerciseDropdown,
               ),
               Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: rows
               ),
               Padding(
@@ -119,6 +128,7 @@ class _FitnessRow extends State<FitnessRow> {
       regString: r'^0*\d+(\.\d+)?$',
       keyboard: TextInputType.number,
       boxwidth: 100,
+      boxheight: 50,
       showValidSymbol: false,
     );
     weightInput = CustTextInput(options: weightOptions);
@@ -128,6 +138,7 @@ class _FitnessRow extends State<FitnessRow> {
       regString: r'\d{1,3}',
       keyboard: TextInputType.number,
       boxwidth: 50,
+      boxheight: 50,
       showValidSymbol: false,
     );
     repInput = CustTextInput(options: repOptions);
@@ -140,16 +151,22 @@ class _FitnessRow extends State<FitnessRow> {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
             padding: EdgeInsets.only(right: 10),
             child: Text(
               index.toString(),
-
             ),
           ),
-          weightInput,
-          repInput,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 7.5),
+            child: weightInput,
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 7.5),
+            child: repInput,
+          ),
           Padding(
             padding: EdgeInsets.only(left: 10),
             child: IconButton(

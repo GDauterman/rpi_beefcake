@@ -50,7 +50,7 @@ class MainApp extends StatelessWidget {
           return MaterialApp(
             title: 'Main App',
             navigatorKey: mainNavKey,
-            initialRoute: '/login',
+            initialRoute: '/loading',
             routes: {
               '/':          (context) => BasePage(db: db, nk: homeNavKey),
               '/login':     (context) => const LoginPage(),

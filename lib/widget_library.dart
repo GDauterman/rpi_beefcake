@@ -118,6 +118,42 @@ class _CustTextInput extends State<CustTextInput> {
   @override
   Widget build(BuildContext context) {
     // return Text('baller');
+    TextField tf = TextField(
+      controller: controller,
+      obscureText: widget.options.obscureText,
+      keyboardType: widget.options.keyboard,
+      decoration: InputDecoration(
+        hintText: widget.options.hint,
+        errorText: _isValid ? null : widget.options.invalidText,
+        border: InputBorder.none,
+        prefixIcon: widget.options.prefixIcon,
+      ),
+      onChanged: ((String str) {
+        bool valid = widget.options.validationRegex.hasMatch(str);
+        if (_isValid && !valid) {
+          setState(() {_isValid = false;});
+        } else if (!_isValid && valid) {
+          setState(() {_isValid = true;});
+        }
+      }),
+    );
+
+    Container c;
+    if(widget.options.boxheight == null || widget.options.boxwidth == null) {
+      c = Container(
+        child: Expanded(
+          child: tf,
+        ),
+      );
+    } else {
+      c = Container(
+        child: SizedBox(
+          height: widget.options.boxheight,
+          width: widget.options.boxwidth,
+          child: tf,
+        ),
+      );
+    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 7),
       child: Container(
@@ -129,31 +165,7 @@ class _CustTextInput extends State<CustTextInput> {
         padding: const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
         child: Row(
           children: [
-            Expanded(
-              child: SizedBox(
-                height: widget.options.boxheight,
-                width: widget.options.boxwidth,
-                child: TextField(
-                  controller: controller,
-                  obscureText: widget.options.obscureText,
-                  keyboardType: widget.options.keyboard,
-                  decoration: InputDecoration(
-                    hintText: widget.options.hint,
-                    errorText: _isValid ? null : widget.options.invalidText,
-                    border: InputBorder.none,
-                    prefixIcon: widget.options.prefixIcon,
-                  ),
-                  onChanged: ((String str) {
-                    bool valid = widget.options.validationRegex.hasMatch(str);
-                    if (_isValid && !valid) {
-                      setState(() {_isValid = false;});
-                    } else if (!_isValid && valid) {
-                      setState(() {_isValid = true;});
-                    }
-                  }),
-                ),
-              ),
-            ),
+            c,
             widget.options.showValidSymbol ? Icon(_isValid ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: _isValid ? bc_style().correctcolor : bc_style().errorcolor) : SizedBox.shrink(),
           ],
         )
