@@ -7,10 +7,13 @@ class FieldOptions {
   late RegExp validationRegex;
   String? hint;
   String? invalidText;
+  bool showValidSymbol;
   TextInputType keyboard;
   bool obscureText;
   Icon? prefixIcon;
-  FieldOptions({this.hint, this.invalidText, this.keyboard = TextInputType.text, String regString = '.*', IconData? icon, this.obscureText = false}) {
+  double? boxheight;
+  double? boxwidth;
+  FieldOptions({this.boxheight, this.showValidSymbol = true, this.boxwidth, this.hint, this.invalidText, this.keyboard = TextInputType.text, String regString = '.*', IconData? icon, this.obscureText = false}) {
     validationRegex = RegExp(regString);
     if(icon != null) {
       prefixIcon = Icon(icon, color: bc_style().textcolor);
@@ -107,7 +110,7 @@ class _CustTextInput extends State<CustTextInput> {
   void clear() {
     setState(() {controller.clear();});
   }
-
+//TODO: make nullable and return null if not valid (should be on this func)
   String getVal() {
     return controller.text.toString();
   }
@@ -128,7 +131,8 @@ class _CustTextInput extends State<CustTextInput> {
           children: [
             Expanded(
               child: SizedBox(
-                height: 40,
+                height: widget.options.boxheight,
+                width: widget.options.boxwidth,
                 child: TextField(
                   controller: controller,
                   obscureText: widget.options.obscureText,
@@ -150,7 +154,7 @@ class _CustTextInput extends State<CustTextInput> {
                 ),
               ),
             ),
-            Icon(_isValid ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: _isValid ? bc_style().correctcolor : bc_style().errorcolor),
+            widget.options.showValidSymbol ? Icon(_isValid ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: _isValid ? bc_style().correctcolor : bc_style().errorcolor) : SizedBox.shrink(),
           ],
         )
       ),

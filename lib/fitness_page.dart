@@ -16,7 +16,30 @@ class FitnessPage extends StatefulWidget {
 
 class _FitnessPage extends State<FitnessPage> {
 
+  void deleteIndex(int i) {
+    if(rows.isEmpty) return;
+    rows.removeAt(i);
+    for(; i < rows.length; i++) {
+      rows[i].child.decrementIndex();
+    }
+  }
+  void addRow() {
+    rows.add(FitnessRow(deleteIndex, rows.length+1));
+  }
+  void clearRows() {
+    for(int i = 0; i < rows.length; i++) {
+      rows[i].child.clear();
+    }
+  }
   final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
+  List<FitnessRow> rows = [];
+
+  @override
+  initState() {
+    for(int i = 1; i <= 3; i++) {
+      addRow();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +52,23 @@ class _FitnessPage extends State<FitnessPage> {
                 padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
                 child: exerciseDropdown,
               ),
+              Column(
+                children: rows
+              ),
+              Padding(
+                padding: EdgeInsets.zero,
+                child: ElevatedButton(
+                  onPressed: addRow,
+                  child: Text('Add Set')
+                )
+              ),
+              Padding(
+                  padding: EdgeInsets.zero,
+                  child: ElevatedButton(
+                      onPressed: clearRows,
+                      child: Text('Log Set')
+                  )
+              ),
             ]
           )
         )
@@ -38,3 +78,88 @@ class _FitnessPage extends State<FitnessPage> {
 
 }
 
+class FitnessRow extends StatefulWidget {
+  ValueSetter<int> deleteRow;
+  late _FitnessRow child;
+  int initIndex;
+  FitnessRow(this.deleteRow, this.initIndex, {Key? key}) : super(key: key);
+
+  @override
+  State<FitnessRow> createState() {
+    child = _FitnessRow();
+    return child;
+  }
+}
+
+class _FitnessRow extends State<FitnessRow> {
+
+  late CustTextInput weightInput;
+  late CustTextInput repInput;
+  late int index;
+
+  List<dynamic>? getFields() {
+    if(weightInput.child.isValid() && repInput.child.isValid()) {
+      return [weightInput.child.getVal(), repInput.child.getVal()];
+    }
+  }
+
+  void clear() {
+    weightInput.child.clear();
+    repInput.child.clear();
+  }
+
+  void decrementIndex() {
+    setState(() {index--;});
+  }
+
+  @override
+  initState() {
+    FieldOptions weightOptions = FieldOptions(
+      hint: 'Weight (lbs)',
+      regString: r'^0*\d+(\.\d+)?$',
+      keyboard: TextInputType.number,
+      boxwidth: 100,
+      showValidSymbol: false,
+    );
+    weightInput = CustTextInput(options: weightOptions);
+
+    FieldOptions repOptions = FieldOptions(
+      hint: 'Rps',
+      regString: r'\d{1,3}',
+      keyboard: TextInputType.number,
+      boxwidth: 50,
+      showValidSymbol: false,
+    );
+    repInput = CustTextInput(options: repOptions);
+
+    index = widget.initIndex;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          Padding(
+            padding: EdgeInsets.only(right: 10),
+            child: Text(
+              index.toString(),
+
+            ),
+          ),
+          weightInput,
+          repInput,
+          Padding(
+            padding: EdgeInsets.only(left: 10),
+            child: IconButton(
+              icon: Icon(Icons.backspace_outlined),
+              iconSize: 28,
+              onPressed: (() {widget.deleteRow(index);}),
+            )
+          )
+        ]
+      )
+    );
+  }
+}
