@@ -82,70 +82,76 @@ class _HealthPage extends State<HealthPage> {
           )
         );
       case healthSubPages.sleep:
-        return Column(
-          children: [
-            Container(
-              height: 40,
-              alignment: Alignment.topLeft,
-              child: Padding( 
-                padding: EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: backCallback,
-                  child: Text(
-                    'Back',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  )
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 40,
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: backCallback,
+                    child: Text(
+                      'Back',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    )
+                  ),
                 ),
               ),
-            ),
-            SleepPage(widget.db.addSleep)
-          ]
+              SleepPage(widget.db.addSleep)
+            ]
+          ),
         );
       case healthSubPages.hydration:
-        return Column(
-          children: [
-            Container(
-              height: 40,
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: backCallback,
-                  child: Text(
-                    'Back',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  )
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 40,
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: backCallback,
+                    child: Text(
+                      'Back',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    )
+                  ),
                 ),
               ),
-            ),
-            HydrationPage(widget.db.addHydration)
-          ]
+              HydrationPage(widget.db.addHydration)
+            ]
+          )
         );
       case healthSubPages.nutrition:
-        return Column(
-          children: [
-            Container(
-              height: 40,
-              alignment: Alignment.topLeft,
-              child: Padding(
-                padding: EdgeInsets.all(10),
-                child: ElevatedButton(
-                  onPressed: backCallback,
-                  child: Text(
-                    'Back',
-                    style: TextStyle(
-                      fontSize: 15,
-                    ),
-                  )
+        return SingleChildScrollView(
+          child: Column(
+            children: [
+              Container(
+                height: 40,
+                alignment: Alignment.topLeft,
+                child: Padding(
+                  padding: EdgeInsets.all(10),
+                  child: ElevatedButton(
+                    onPressed: backCallback,
+                    child: Text(
+                      'Back',
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
+                    )
+                  ),
                 ),
               ),
-            ),
-            NutritionPage(widget.db.addNutrition)
-          ]
+              NutritionPage(widget.db.addNutrition)
+            ]
+          ),
         );
     }
   }

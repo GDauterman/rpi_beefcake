@@ -110,6 +110,7 @@ class _CustTextInput extends State<CustTextInput> {
   void clear() {
     setState(() {controller.clear();});
   }
+
 //TODO: make nullable and return null if not valid (should be on this func)
   String getVal() {
     return controller.text.toString();
