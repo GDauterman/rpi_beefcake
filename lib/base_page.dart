@@ -18,7 +18,7 @@ class BasePage extends StatefulWidget {
 
 class _BasePage extends State<BasePage> {
 
-  PageItems pageItem = PageItems.home;
+  PageItems pageItem = PageItems.health;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -39,12 +39,17 @@ class _BasePage extends State<BasePage> {
       appBar: AppBar(
         title: Text(pageItem.getTitle),
         backgroundColor: bc_style().accent2color,
+        actions: [
+          IconButton(
+              onPressed: (() {widget.nk.currentState!.pushNamed('/settings');}),
+              icon: Icon(Icons.settings, size: 32,))
+        ],
       ),
       body: (() {
         if(pageItem == PageItems.home) {
-          return const HomePage();}
+          return HomePage(widget.db);}
         if(pageItem == PageItems.fitness) {
-          return const FitnessPage();}
+          return FitnessPage(widget.db);}
         if(pageItem == PageItems.health) {
           return HealthPage(widget.db);}
         if(pageItem == PageItems.trends) {

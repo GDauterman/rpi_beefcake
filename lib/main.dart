@@ -7,6 +7,7 @@ import 'package:rpi_beefcake/base_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/login_page.dart';
+import 'package:rpi_beefcake/settings_page.dart';
 import 'firebase_options.dart';
 import 'firestore.dart';
 import 'loading_page.dart';
@@ -50,12 +51,13 @@ class MainApp extends StatelessWidget {
           return MaterialApp(
             title: 'Main App',
             navigatorKey: mainNavKey,
-            initialRoute: '/login',
+            initialRoute: '/loading',
             routes: {
-              '/':          (context) => BasePage(db: db, nk: homeNavKey),
+              '/':          (context) => BasePage(db: db, nk: mainNavKey),
               '/login':     (context) => const LoginPage(),
               '/register':  (context) => const RegisterPage(),
               '/loading':   (context) => LoadingPage(),
+              '/settings':  (context) => SettingsPage(mainNavKey),
             },
 
           );
