@@ -7,8 +7,7 @@ import 'firestore.dart';
 List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift', 'Glute Spread'];
 
 class FitnessPage extends StatefulWidget {
-  FirebaseService db;
-  FitnessPage(this.db, {Key? key}) : super(key: key);
+  FitnessPage({Key? key}) : super(key: key);
 
   @override
   State<FitnessPage> createState() => _FitnessPage();

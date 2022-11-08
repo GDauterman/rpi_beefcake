@@ -8,9 +8,8 @@ import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
 class BasePage extends StatefulWidget {
-  final FirebaseService db;
   final GlobalKey<NavigatorState> nk;
-  const BasePage({Key? key, required this.db, required this.nk}) : super(key: key);
+  const BasePage(this.nk, {Key? key}) : super(key: key);
 
   @override
   State<BasePage> createState() => _BasePage();
@@ -47,11 +46,11 @@ class _BasePage extends State<BasePage> {
       ),
       body: (() {
         if(pageItem == PageItems.home) {
-          return HomePage(widget.db);}
+          return HomePage();}
         if(pageItem == PageItems.fitness) {
-          return FitnessPage(widget.db);}
+          return FitnessPage();}
         if(pageItem == PageItems.health) {
-          return HealthPage(widget.db);}
+          return HealthPage();}
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
