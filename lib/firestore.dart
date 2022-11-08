@@ -149,6 +149,26 @@ class FirebaseService {
     await nutritionCol!.add(newEntry).then((documentSnapshot) => print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
   }
 
+  void addWorkout(List<dynamic> data) async {
+    if(!connected) {
+      throw Exception('Attempted to add to sleep while not connected');
+    }
+    int set_count = data.length - 2;
+    List<num> reps = [];
+    List<num> weight =[];
+    for(int i = 2; i<data.length;i++){
+      reps[i] = num.parse(data[i][0]);
+      weight[i] = num.parse(data[i][1]);
+    }
+    final newEntry = <String, dynamic>{
+      "Workout_name": data[0],
+      "notes": data[1],
+      "set_count": set_count,
+      "reps": reps,
+      "weight": weight,
+    };
+    await nutritionCol!.add(newEntry).then((documentSnapshot) => print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
+  }
   static num sumAgg(List<num> nums) {
     return nums.sum;
   }
