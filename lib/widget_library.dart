@@ -25,7 +25,7 @@ class FieldOptions {
 
 class FieldWithEnter extends StatefulWidget {
   final List<FieldOptions> fieldOptions;
-  final serviceCallback dataEntry;
+  final ServiceCallback dataEntry;
   final String submitText;
   const FieldWithEnter({Key? key, required this.fieldOptions, required this.dataEntry, this.submitText = 'Submit' }) : super(key: key);
 

@@ -8,19 +8,17 @@ import 'firestore.dart';
 enum ColTypes { Nutrition, Hydration, Sleep }
 
 class HomePage extends StatelessWidget {
-  FirebaseService db;
-  HomePage(this.db, {Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: DailyReport(db),
+      child: DailyReport(),
     );
   }
 }
 
 class DailyReport extends StatelessWidget {
-  FirebaseService db;
-  DailyReport(this.db, {Key? key}) : super(key: key);
+  DailyReport({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,9 +47,9 @@ class DailyReport extends StatelessWidget {
               ),
             )
           ),
-          ProgressMeter(db, 'Hours Slept (hr)', 'hours', ColTypes.Sleep, 10),
-          ProgressMeter(db, 'Calories Today', 'total_calories', ColTypes.Nutrition, 2000),
-          ProgressMeter(db, 'Water Drank (oz)', 'amount', ColTypes.Hydration, 128)
+          ProgressMeter('Hours Slept (hr)', DBFields.durationS, 10),
+          ProgressMeter('Calories Today', DBFields.caloriesN, 2000),
+          ProgressMeter('Water Drank (oz)', DBFields.quantityH, 128)
         ],
       )
     );
@@ -60,12 +58,10 @@ class DailyReport extends StatelessWidget {
 
 class ProgressMeter extends StatefulWidget {
 
-  final FirebaseService db;
   final String title;
-  final String field;
-  final ColTypes col;
+  final DBFields field;
   final num goal;
-  const ProgressMeter(this.db, this.title, this.field, this.col, this.goal, {Key? key}) : super(key: key);
+  const ProgressMeter(this.title, this.field, this.goal, {Key? key}) : super(key: key);
 
   @override
   State<ProgressMeter> createState() => _ProgressMeter();
@@ -87,17 +83,7 @@ class _ProgressMeter extends State<ProgressMeter> {
   initState() {
     currentNum = 0;
     currentProgress = 0;
-    switch(widget.col) {
-      case ColTypes.Hydration:
-        widget.db.getTodayHydration(widget.field, setLatestVal);
-        break;
-      case ColTypes.Nutrition:
-        widget.db.getTodayNutrition(widget.field, setLatestVal);
-        break;
-      case ColTypes.Sleep:
-        widget.db.getTodaySleep(widget.field, setLatestVal);
-        break;
-    }
+    FirebaseService().getFieldAggSince(widget.field, setLatestVal, 2, FirebaseService.sumAgg);
   }
 
   @override
@@ -125,4 +111,3 @@ class _ProgressMeter extends State<ProgressMeter> {
     );
   }
 }
-
