@@ -9,12 +9,11 @@ class FirebaseService {
   bool readyToWrite = false;
 
   DocumentReference? userDoc;
-  CollectionReference? personalCol;
-  CollectionReference? goalCol;
   CollectionReference? sleepCol;
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
   CollectionReference? workoutCol;
+  DocumentSnapshot? userDocSnap;
 
   final CollectionReference userReference = FirebaseFirestore.instance.collection('users');
   final CollectionReference foodReference = FirebaseFirestore.instance.collection('foods');
@@ -31,8 +30,6 @@ class FirebaseService {
           initUser();
         } else {
           userDoc = value.docs.first.reference;
-          personalCol = userDoc!.collection('personal');
-          goalCol = userDoc!.collection('goals');
           sleepCol = userDoc!.collection('sleep');
           nutritionCol = userDoc!.collection('nutrition');
           hydrationCol = userDoc!.collection('hydration');
@@ -47,8 +44,6 @@ class FirebaseService {
   void clearService() {
     readyToWrite = false;
     userDoc = null;
-    personalCol = null;
-    goalCol = null;
     sleepCol = null;
     nutritionCol = null;
     hydrationCol = null;
@@ -59,7 +54,10 @@ class FirebaseService {
     if(FirebaseAuth.instance.currentUser != null) {
       final newUserEntry = <String, dynamic> {
         'height': -1,
+        'hydration': 64,
         'name': '',
+        'nutrition': 2000,
+        'sleep': 8,
         'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
         'email': FirebaseAuth.instance.currentUser!.email,
         'weight': -1,
@@ -71,17 +69,6 @@ class FirebaseService {
     }
   }
 
-  // void updateBio(List<dynamic> data) async{
-  //   while(!readyToWrite) { print('trying to write while '); }
-  //
-  //   final newEntry = <String, dynamic>{
-  //     "height": double.parse(data[0]) as num,
-  //     "weight": double.parse(data[1]) as num,
-  //     "BMI": (double.parse(data[0]) / pow(double.parse(data[1]), 2)) * 703
-  //   };
-  //   await personalCol!.add(newEntry).then((documentSnapshot) => print("Added BMI Data with ID: ${documentSnapshot.id}"));
-  //
-  // }
   void addGoals(List<dynamic> data) async {
 
     while(!readyToWrite) { print('trying to write while '); }
@@ -132,18 +119,15 @@ class FirebaseService {
 
   num get getNutGoal{
     while(!readyToWrite) { print('trying to read while ');}
-    goalCol ??= userDoc!.collection(('goals'));
-    return num.parse(goalCol!.where('nutrition').toString());
+    return (2000);
   }
   num get getHydroGoal{
     while(!readyToWrite) { print('trying to read while ');}
-    goalCol ??= userDoc!.collection(('goals'));
-    return num.parse(goalCol!.where('hydration').toString());
+    return (64);
   }
   num get getSleepGoal{
     while(!readyToWrite) { print('trying to read while ');}
-    goalCol ??= userDoc!.collection(('goals'));
-    return num.parse(goalCol!.where('sleep').toString());
+    return (8);
   }
 
   void getTodayNutrition(String field, ValueSetter<num> whenGet) async {
