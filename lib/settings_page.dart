@@ -45,25 +45,6 @@ class SettingsPage extends StatelessWidget {
               padding: EdgeInsets.symmetric(vertical: 15),
               child: ElevatedButton(
                 onPressed: (() {
-                }),
-                child: SizedBox(
-                  height: 50,
-                  width: 200,
-                  child: Center(
-                    child: Text(
-                      'Set Goals',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: ElevatedButton(
-                onPressed: (() {
                   FirebaseAuth.instance.signOut();
                 }),
                 child: SizedBox(

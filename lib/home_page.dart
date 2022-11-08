@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 
 import 'firestore.dart';
+import 'dart:math';
 
 enum ColTypes { Nutrition, Hydration, Sleep }
 
@@ -49,9 +50,9 @@ class DailyReport extends StatelessWidget {
               ),
             )
           ),
-          ProgressMeter(db, 'Hours Slept (hr)', 'hours', ColTypes.Sleep, 10),
-          ProgressMeter(db, 'Calories Today', 'total_calories', ColTypes.Nutrition, 2000),
-          ProgressMeter(db, 'Water Drank (oz)', 'amount', ColTypes.Hydration, 128)
+          ProgressMeter(db, 'Hours Slept (hr)', 'hours', ColTypes.Sleep, max(1,db.getHydroGoal)),
+          ProgressMeter(db, 'Calories Today', 'total_calories', ColTypes.Nutrition, max(1, db.getNutGoal)),
+          ProgressMeter(db, 'Water Drank (oz)', 'amount', ColTypes.Hydration, max(1,db.getSleepGoal))
         ],
       )
     );
@@ -79,7 +80,7 @@ class _ProgressMeter extends State<ProgressMeter> {
   void setLatestVal(num i) {
     setState(() {
       currentNum = i.toDouble();
-      currentProgress=(i/widget.goal).toDouble();
+      min(1.0, currentProgress=(i/widget.goal).toDouble());
     });
   }
 

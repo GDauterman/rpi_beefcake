@@ -9,6 +9,8 @@ class FirebaseService {
   bool readyToWrite = false;
 
   DocumentReference? userDoc;
+  CollectionReference? personalCol;
+  CollectionReference? goalCol;
   CollectionReference? sleepCol;
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
@@ -29,6 +31,8 @@ class FirebaseService {
           initUser();
         } else {
           userDoc = value.docs.first.reference;
+          personalCol = userDoc!.collection('personal');
+          goalCol = userDoc!.collection('goals');
           sleepCol = userDoc!.collection('sleep');
           nutritionCol = userDoc!.collection('nutrition');
           hydrationCol = userDoc!.collection('hydration');
@@ -43,6 +47,8 @@ class FirebaseService {
   void clearService() {
     readyToWrite = false;
     userDoc = null;
+    personalCol = null;
+    goalCol = null;
     sleepCol = null;
     nutritionCol = null;
     hydrationCol = null;
@@ -63,6 +69,28 @@ class FirebaseService {
         initService();
       });
     }
+  }
+
+  // void updateBio(List<dynamic> data) async{
+  //   while(!readyToWrite) { print('trying to write while '); }
+  //
+  //   final newEntry = <String, dynamic>{
+  //     "height": double.parse(data[0]) as num,
+  //     "weight": double.parse(data[1]) as num,
+  //     "BMI": (double.parse(data[0]) / pow(double.parse(data[1]), 2)) * 703
+  //   };
+  //   await personalCol!.add(newEntry).then((documentSnapshot) => print("Added BMI Data with ID: ${documentSnapshot.id}"));
+  //
+  // }
+  void addGoals(List<dynamic> data) async {
+
+    while(!readyToWrite) { print('trying to write while '); }
+    final newEntry = <String, dynamic>{
+      "nutrition": num.parse(data[0]),
+      "hydration": num.parse(data[1]),
+      "sleep": num.parse(data[2]),
+    };
+    userDoc!.update(newEntry);
   }
 
   void addSleep(List<dynamic> data) async {
@@ -100,6 +128,22 @@ class FirebaseService {
       "total_protein": double.parse(data[4]) as num
     };
     await nutritionCol!.add(newEntry).then((documentSnapshot) => print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
+  }
+
+  num get getNutGoal{
+    while(!readyToWrite) { print('trying to read while ');}
+    goalCol ??= userDoc!.collection(('goals'));
+    return num.parse(goalCol!.where('nutrition').toString());
+  }
+  num get getHydroGoal{
+    while(!readyToWrite) { print('trying to read while ');}
+    goalCol ??= userDoc!.collection(('goals'));
+    return num.parse(goalCol!.where('hydration').toString());
+  }
+  num get getSleepGoal{
+    while(!readyToWrite) { print('trying to read while ');}
+    goalCol ??= userDoc!.collection(('goals'));
+    return num.parse(goalCol!.where('sleep').toString());
   }
 
   void getTodayNutrition(String field, ValueSetter<num> whenGet) async {

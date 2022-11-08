@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
-enum healthSubPages { options, sleep, nutrition, hydration }
+enum healthSubPages { options, sleep, nutrition, hydration, goals }
 
 class HealthPage extends StatefulWidget {
   final FirebaseService db;
@@ -78,6 +78,42 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(vertical: 15),
+              //   child: ElevatedButton(
+              //     onPressed: (() {
+              //       setState(() {widget.curPage = healthSubPages.personal;});
+              //     }),
+              //     child: Padding(
+              //       padding: EdgeInsets.all(5),
+              //       child: Text(
+              //         'Log BMI',
+              //         style: TextStyle(
+              //             fontSize: 30
+              //         ),
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: ElevatedButton(
+                  onPressed: (() {
+                    setState(() {widget.curPage = healthSubPages.goals;});
+                  }),
+                  child: Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      'Change Goals',
+                      style: TextStyle(
+                          fontSize: 30
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
+
             ],
           )
         );
@@ -152,6 +188,54 @@ class _HealthPage extends State<HealthPage> {
               NutritionPage(widget.db.addNutrition)
             ]
           ),
+        );
+      // case healthSubPages.personal:
+      //   return SingleChildScrollView(
+      //     child: Column(
+      //         children: [
+      //           Container(
+      //             height: 40,
+      //             alignment: Alignment.topLeft,
+      //             child: Padding(
+      //               padding: EdgeInsets.all(10),
+      //               child: ElevatedButton(
+      //                   onPressed: backCallback,
+      //                   child: Text(
+      //                     'Back',
+      //                     style: TextStyle(
+      //                       fontSize: 15,
+      //                     ),
+      //                   )
+      //               ),
+      //             ),
+      //           ),
+      //           SleepPage(widget.db.)
+      //         ]
+      //     ),
+      //   );
+      case healthSubPages.goals:
+        return SingleChildScrollView(
+            child: Column(
+                children: [
+                  Container(
+                    height: 40,
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ElevatedButton(
+                          onPressed: backCallback,
+                          child: Text(
+                            'Back',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          )
+                      ),
+                    ),
+                  ),
+                  GoalsPage(widget.db.addGoals)
+                ]
+            )
         );
     }
   }
@@ -292,6 +376,96 @@ class SleepPage extends StatelessWidget {
             ),
             FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
           ]
+        ),
+      ),
+    );
+  }
+}
+
+// class PersonalPage extends StatelessWidget {
+//   serviceCallback logFunc;
+//   PersonalPage(this.logFunc, {Key? key}) : super(key: key);
+//
+//   @override
+//   Widget build(BuildContext context){
+//     List<FieldOptions> sleepOptions = [
+//       FieldOptions(
+//         hint: 'Height (inches)',
+//         invalidText: 'Enter a number',
+//         keyboard: TextInputType.number,
+//         regString: r'^0*\d+(\.\d+)?$',
+//       ),
+//       FieldOptions(
+//         hint: 'Weight (lbs))',
+//         invalidText: 'Enter a number',
+//         keyboard: TextInputType.number,
+//         regString: r'^0*\d{1,2}(\.\d+)?$',
+//       ),
+//     ];
+//     return Material(
+//       // Sleep Container
+//       child: SingleChildScrollView(
+//         child: Column(
+//             children: [
+//               Padding(
+//                 padding: EdgeInsets.only(top:20),
+//                 child: Text(
+//                   'BMI Calculator',
+//                   style: TextStyle(
+//                       fontSize: 35
+//                   ),
+//                 ),
+//               ),
+//               FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+//             ]
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+class GoalsPage extends StatelessWidget {
+  serviceCallback logFunc;
+  GoalsPage(this.logFunc, {Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    List<FieldOptions> sleepOptions = [
+      FieldOptions(
+        hint: 'Nutrition Goal (Calories)',
+        invalidText: 'Enter a number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d+(\.\d+)?$',
+      ),
+      FieldOptions(
+        hint: 'Hydration Goal (fl oz)',
+        invalidText: 'Enter a number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d{1,2}(\.\d+)?$',
+      ),
+      FieldOptions(
+        hint: 'Sleep Goal (hrs)',
+        invalidText: 'Enter a number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d{1,2}(\.\d+)?$',
+      ),
+    ];
+    return Material(
+      // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top:20),
+                child: Text(
+                  'Set Goals',
+                  style: TextStyle(
+                      fontSize: 35
+                  ),
+                ),
+              ),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+            ]
         ),
       ),
     );
