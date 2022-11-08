@@ -100,7 +100,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              SleepPage(FirebaseService().addSleep)
+              SleepPage()
             ]
           ),
         );
@@ -124,7 +124,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              HydrationPage(FirebaseService().addHydration)
+              HydrationPage()
             ]
           )
         );
@@ -148,7 +148,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              NutritionPage(FirebaseService().addNutrition)
+              NutritionPage()
             ]
           ),
         );
@@ -157,8 +157,7 @@ class _HealthPage extends State<HealthPage> {
 }
 
 class HydrationPage extends StatelessWidget {
-  ServiceCallback logFunc;
-  HydrationPage(this.logFunc, {Key? key}) : super(key: key);
+  HydrationPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -184,7 +183,7 @@ class HydrationPage extends StatelessWidget {
                   ),
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
             ]
         ),
       ),
@@ -193,8 +192,7 @@ class HydrationPage extends StatelessWidget {
 }
 
 class NutritionPage extends StatelessWidget {
-  ServiceCallback logFunc;
-  NutritionPage(this.logFunc, {Key? key}) : super(key: key);
+  NutritionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -244,7 +242,7 @@ class NutritionPage extends StatelessWidget {
                   ),
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
             ]
         ),
       ),
@@ -253,8 +251,7 @@ class NutritionPage extends StatelessWidget {
 }
 
 class SleepPage extends StatelessWidget {
-  ServiceCallback logFunc;
-  SleepPage(this.logFunc, {Key? key}) : super(key: key);
+  SleepPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -289,7 +286,7 @@ class SleepPage extends StatelessWidget {
                 ),
               ),
             ),
-            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addSleep),
           ]
         ),
       ),
