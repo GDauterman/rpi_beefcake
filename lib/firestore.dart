@@ -115,9 +115,9 @@ class FirebaseService {
       throw Exception('Attempted to add to sleep while not connected');
     }
     final newEntry = <String, dynamic>{
-      "hours": double.parse(data[0]),
+      "hours": num.parse(data[0]),
       "time_logged": Timestamp.now(),
-      "sleep_quality": double.parse(data[1]),
+      "sleep_quality": num.parse(data[1]),
       "notes":data[2]
     };
     await sleepCol!.add(newEntry).then((documentSnapshot) => print("Added Sleep Data with ID: ${documentSnapshot.id}"));
@@ -128,7 +128,7 @@ class FirebaseService {
       throw Exception('Attempted to add to sleep while not connected');
     }
     final newEntry = <String, dynamic>{
-      "amount": double.parse(data[0]),
+      "amount": num.parse(data[0]),
       "time_logged": Timestamp.now(),
     };
     await hydrationCol!.add(newEntry).then((documentSnapshot) => print("Added Hydration Data with ID: ${documentSnapshot.id}"));
@@ -141,10 +141,10 @@ class FirebaseService {
     final newEntry = <String, dynamic>{
       "food_name": data[0],
       "time_logged": Timestamp.now(),
-      "total_calories": double.parse(data[1]),
-      "total_carbs": double.parse(data[2]),
-      "total_fats": double.parse(data[3]),
-      "total_protein": double.parse(data[4])
+      "total_calories": num.parse(data[1]),
+      "total_carbs": num.parse(data[2]),
+      "total_fats": num.parse(data[3]),
+      "total_protein": num.parse(data[4])
     };
     await nutritionCol!.add(newEntry).then((documentSnapshot) => print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
   }
