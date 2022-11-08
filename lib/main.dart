@@ -20,7 +20,6 @@ class MainApp extends StatelessWidget {
   late final Future fbFuture = Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
-  late final FirebaseService db;
 
   MainApp({super.key});
 
@@ -34,15 +33,14 @@ class MainApp extends StatelessWidget {
           return const Text('uh oh');
         }
         else if(snapshot.connectionState == ConnectionState.done) {
-          db = FirebaseService();
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
             if (user == null) {
-              db.clearService();
+              FirebaseService().clearService();
               if (mainNavKey.currentState != null) {
                 mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
               }
             } else {
-              db.initService();
+              FirebaseService().initService();
               if (mainNavKey.currentState != null) {
                 mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
               }
@@ -53,7 +51,7 @@ class MainApp extends StatelessWidget {
             navigatorKey: mainNavKey,
             initialRoute: '/loading',
             routes: {
-              '/':          (context) => BasePage(db: db, nk: mainNavKey),
+              '/':          (context) => BasePage(mainNavKey),
               '/login':     (context) => const LoginPage(),
               '/register':  (context) => const RegisterPage(),
               '/loading':   (context) => LoadingPage(),

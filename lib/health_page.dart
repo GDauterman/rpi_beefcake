@@ -6,10 +6,9 @@ import 'package:rpi_beefcake/widget_library.dart';
 enum healthSubPages { options, sleep, nutrition, hydration, goals }
 
 class HealthPage extends StatefulWidget {
-  final FirebaseService db;
   healthSubPages curPage = healthSubPages.options;
 
-  HealthPage(this.db, {Key? key}) : super(key: key);
+  HealthPage({Key? key}) : super(key: key);
 
   State<HealthPage> createState() => _HealthPage();
 }
@@ -137,7 +136,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              SleepPage(widget.db.addSleep)
+              SleepPage(FirebaseService().addSleep)
             ]
           ),
         );
@@ -161,7 +160,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              HydrationPage(widget.db.addHydration)
+              HydrationPage(FirebaseService().addHydration)
             ]
           )
         );
@@ -185,7 +184,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              NutritionPage(widget.db.addNutrition)
+              NutritionPage(FirebaseService().addNutrition)
             ]
           ),
         );
@@ -233,7 +232,7 @@ class _HealthPage extends State<HealthPage> {
                       ),
                     ),
                   ),
-                  GoalsPage(widget.db.addGoals)
+                  GoalsPage(FirebaseService().addGoals)
                 ]
             )
         );
@@ -242,7 +241,7 @@ class _HealthPage extends State<HealthPage> {
 }
 
 class HydrationPage extends StatelessWidget {
-  serviceCallback logFunc;
+  ServiceCallback logFunc;
   HydrationPage(this.logFunc, {Key? key}) : super(key: key);
 
   @override
@@ -278,7 +277,7 @@ class HydrationPage extends StatelessWidget {
 }
 
 class NutritionPage extends StatelessWidget {
-  serviceCallback logFunc;
+  ServiceCallback logFunc;
   NutritionPage(this.logFunc, {Key? key}) : super(key: key);
 
   @override
@@ -338,7 +337,7 @@ class NutritionPage extends StatelessWidget {
 }
 
 class SleepPage extends StatelessWidget {
-  serviceCallback logFunc;
+  ServiceCallback logFunc;
   SleepPage(this.logFunc, {Key? key}) : super(key: key);
 
   @override
@@ -425,7 +424,7 @@ class SleepPage extends StatelessWidget {
 // }
 
 class GoalsPage extends StatelessWidget {
-  serviceCallback logFunc;
+  ServiceCallback logFunc;
   GoalsPage(this.logFunc, {Key? key}) : super(key: key);
 
   @override
