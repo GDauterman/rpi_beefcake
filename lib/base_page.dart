@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:rpi_beefcake/firestore.dart';
 import 'package:rpi_beefcake/fitness_page.dart';
 import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/home_page.dart';

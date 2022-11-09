@@ -14,6 +14,7 @@ class FirebaseService {
   bool connected = false;
 
   DocumentReference? userDoc;
+  Map<String, dynamic>? userDocSnapshot;
   CollectionReference? sleepCol;
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
@@ -33,6 +34,15 @@ class FirebaseService {
     DBFields.qualityS: 'sleep_quality',
     DBFields.noteS: 'notes',
     DBFields.quantityH: 'amount',
+  };
+
+  final Map<DBFields, String> dbGoalMap = {
+    DBFields.caloriesN: 'calorie_goal',
+    DBFields.carbsN: 'carb_goal',
+    DBFields.fatN: 'fat_goal',
+    DBFields.proteinN: 'protein_goal',
+    DBFields.durationS: 'sleep_goal',
+    DBFields.quantityH: 'hydration_goal',
   };
 
   Map<DBFields, CollectionReference?> dbColMap = {
@@ -98,13 +108,12 @@ class FirebaseService {
     if(FirebaseAuth.instance.currentUser != null) {
       final newUserEntry = <String, dynamic> {
         'height': -1,
-        'hydration': 64,
         'name': '',
-        'nutrition': 2000,
-        'sleep': 8,
         'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
         'email': FirebaseAuth.instance.currentUser!.email,
-        'weight': -1,
+        'hydration_goal': 64,
+        'nutrition_goal': 2000,
+        'sleep_goal': 8,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
         userDoc = newUserDoc;
@@ -117,9 +126,9 @@ class FirebaseService {
 
     while(!connected) { print('trying to write while '); }
     final newEntry = <String, dynamic>{
-      "nutrition": num.parse(data[0]),
-      "hydration": num.parse(data[1]),
-      "sleep": num.parse(data[2]),
+      "calorie_goal": num.parse(data[0]),
+      "hydration_goal": num.parse(data[1]),
+      "sleep_goal": num.parse(data[2]),
     };
     userDoc!.update(newEntry);
   }
