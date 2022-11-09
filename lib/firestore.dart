@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:collection/collection.dart';
 
@@ -18,6 +19,7 @@ class FirebaseService {
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
   CollectionReference? workoutCol;
+  CollectionReference? rawGraphCol;
 
   final CollectionReference userReference = FirebaseFirestore.instance.collection('users');
   final CollectionReference foodReference = FirebaseFirestore.instance.collection('foods');
@@ -41,6 +43,16 @@ class FirebaseService {
     DBFields.proteinN: 'protein_goal',
     DBFields.durationS: 'sleep_goal',
     DBFields.quantityH: 'hydration_goal',
+  };
+
+  final Map<DBFields, String> dbPlotYMap = {
+    DBFields.caloriesN: 'sum_calories_y',
+    DBFields.carbsN: 'sum_protein_y',
+    DBFields.fatN: 'sum_fats_y',
+    DBFields.proteinN: 'sum_carbs_y',
+    DBFields.durationS: 'sum_sleep_hours_y',
+    DBFields.qualityS: 'avg_sleep_quality_y',
+    DBFields.quantityH: 'sum_hydration_y',
   };
 
   Map<DBFields, CollectionReference?> dbColMap = {
@@ -68,7 +80,6 @@ class FirebaseService {
   };
 
   final Map<DBFields, String> dbTitleMap = {
-    DBFields.nameN: 'Food Name',
     DBFields.caloriesN: 'Calories',
     DBFields.carbsN: 'Carb',
     DBFields.fatN: 'Fats',
@@ -100,6 +111,7 @@ class FirebaseService {
           nutritionCol = userDoc!.collection('nutrition');
           hydrationCol = userDoc!.collection('hydration');
           workoutCol = userDoc!.collection('workout');
+          rawGraphCol = userDoc!.collection('raw_graph_points');
           dbColMap[DBFields.nameN] = nutritionCol;
           dbColMap[DBFields.caloriesN] = nutritionCol;
           dbColMap[DBFields.carbsN] = nutritionCol;
@@ -123,6 +135,7 @@ class FirebaseService {
     nutritionCol = null;
     hydrationCol = null;
     workoutCol = null;
+    rawGraphCol = null;
   }
 
   void initUser() {
@@ -133,6 +146,9 @@ class FirebaseService {
         'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
         'email': FirebaseAuth.instance.currentUser!.email,
         'hydration_goal': 64,
+        'protein_goal': 100,
+        'carb_goal': 50,
+        'fat_goal': 0,
         'nutrition_goal': 2000,
         'sleep_goal': 8,
       };
@@ -221,7 +237,6 @@ class FirebaseService {
       throw Exception('trying to read while not connected');
     }
     DateTime dt = DateTime.now().subtract(Duration(days: daysAgo, hours: DateTime.now().hour, minutes: DateTime.now().minute));
-    // Timestamp ts = Timestamp.fromDate(dt);
     dbColMap[field]!.where('time_logged', isGreaterThanOrEqualTo: dt).get().then((value) {
       List<num> fieldValList = [];
       print(value.docs.length);
@@ -233,16 +248,25 @@ class FirebaseService {
     });
   }
 
-  num get getNutGoal{
-    while(!connected) { print('trying to read while ');}
-    return (2000);
-  }
-  num get getHydroGoal{
-    while(!connected) { print('trying to read while ');}
-    return (64);
-  }
-  num get getSleepGoal{
-    while(!connected) { print('trying to read while ');}
-    return (8);
+  void getRawPlotPoints(DBFields field, void Function(List<FlSpot> points) whenGet, int daysAgo) async {
+    if(!connected){
+      throw Exception('trying to read while not connected');
+    }
+    final List<String> validDocIDs = List.generate(daysAgo, (i) {
+      DateTime curDay = DateTime.now().subtract(Duration(days:i));
+      return curDay.year.toString() + '-' + (curDay.month<10?'0':'') + curDay.month.toString() + '-' + (curDay.day<10?'0':'') + curDay.day.toString();
+    });
+    print(validDocIDs);
+    rawGraphCol!.where(FieldPath.documentId, whereIn: validDocIDs).get().then((value) {
+      List<FlSpot> points = [];
+      print(value.docs.length);
+      for(int i = 0; i < value.docs.length; i++) {
+        double datenum = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
+        num yval = value.docs[i].get(dbPlotYMap[field]!);
+        if(yval != -1)
+          points.add(FlSpot(datenum, yval.toDouble()));
+      }
+      whenGet(points);
+    });
   }
 }
