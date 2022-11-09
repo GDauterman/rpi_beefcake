@@ -132,9 +132,12 @@ class FirebaseService {
         'name': '',
         'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
         'email': FirebaseAuth.instance.currentUser!.email,
-        'hydration_goal': 64,
-        'nutrition_goal': 2000,
+        'calorie_goal': 2000,
+        'protein_goal': 200,
+        'fat_goal': 50,
+        'carb_goal': 150,
         'sleep_goal': 8,
+        'hydration_goal': 64,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
         userDoc = newUserDoc;
