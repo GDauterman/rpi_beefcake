@@ -30,6 +30,9 @@ class _HealthPage extends State<HealthPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.nutrition;});
                   }),
@@ -37,9 +40,7 @@ class _HealthPage extends State<HealthPage> {
                     padding: EdgeInsets.all(5),
                     child: Text(
                       'Log Nutrition',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
+                      style: Theme.of(context).textTheme.button,
                     ),
                   ),
                 ),
@@ -47,6 +48,9 @@ class _HealthPage extends State<HealthPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.sleep;});
                   }),
@@ -54,9 +58,7 @@ class _HealthPage extends State<HealthPage> {
                     padding: EdgeInsets.all(5),
                     child: Text(
                       'Log Sleep',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
+                      style: Theme.of(context).textTheme.button,
                     ),
                   ),
                 ),
@@ -64,6 +66,9 @@ class _HealthPage extends State<HealthPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.hydration;});
                   }),
@@ -71,9 +76,7 @@ class _HealthPage extends State<HealthPage> {
                     padding: EdgeInsets.all(5),
                     child: Text(
                       'Log Hydration',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
+                      style: Theme.of(context).textTheme.button,
                     ),
                   ),
                 ),
@@ -91,6 +94,9 @@ class _HealthPage extends State<HealthPage> {
                 child: Padding(
                   padding: EdgeInsets.all(10),
                   child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                      ),
                     onPressed: backCallback,
                     child: Text(
                       'Back',
@@ -262,7 +268,7 @@ class SleepPage extends StatelessWidget {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'Hours Slept',
-        invalidText: 'Enter a number',
+        invalidText: 'Enter  number',
         keyboard: TextInputType.number,
         regString: r'^0*\d{1,2}(\.\d+)?$',
       ),
@@ -279,6 +285,7 @@ class SleepPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
+
         child: Column(
           children: [
             Padding(

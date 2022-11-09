@@ -7,6 +7,7 @@ import 'package:rpi_beefcake/page_enum.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
+
 class BasePage extends StatefulWidget {
   final FirebaseService db;
   final GlobalKey<NavigatorState> nk;
@@ -38,7 +39,7 @@ class _BasePage extends State<BasePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(pageItem.getTitle),
-        backgroundColor: bc_style().accent2color,
+        backgroundColor: Theme.of(context).colorScheme.background,
         actions: [
           IconButton(
               onPressed: (() {widget.nk.currentState!.pushNamed('/settings');}),
@@ -56,26 +57,27 @@ class _BasePage extends State<BasePage> {
           return const TrendsPage();}
       } ()),
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.sports_gymnastics),
             label: 'Fitness',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.heart_broken),
             label: 'Health',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_graph),
             label: 'Trends',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
         ],
         currentIndex: pageItem.getIndex,
