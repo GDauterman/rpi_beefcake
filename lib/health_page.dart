@@ -232,7 +232,7 @@ class _HealthPage extends State<HealthPage> {
                       ),
                     ),
                   ),
-                  GoalsPage(FirebaseService().addGoals)
+                  ProfilePage(FirebaseService().addGoals)
                 ]
             )
         );
@@ -372,96 +372,6 @@ class SleepPage extends StatelessWidget {
             ),
             FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addSleep),
           ]
-        ),
-      ),
-    );
-  }
-}
-
-// class PersonalPage extends StatelessWidget {
-//   serviceCallback logFunc;
-//   PersonalPage(this.logFunc, {Key? key}) : super(key: key);
-//
-//   @override
-//   Widget build(BuildContext context){
-//     List<FieldOptions> sleepOptions = [
-//       FieldOptions(
-//         hint: 'Height (inches)',
-//         invalidText: 'Enter a number',
-//         keyboard: TextInputType.number,
-//         regString: r'^0*\d+(\.\d+)?$',
-//       ),
-//       FieldOptions(
-//         hint: 'Weight (lbs))',
-//         invalidText: 'Enter a number',
-//         keyboard: TextInputType.number,
-//         regString: r'^0*\d{1,2}(\.\d+)?$',
-//       ),
-//     ];
-//     return Material(
-//       // Sleep Container
-//       child: SingleChildScrollView(
-//         child: Column(
-//             children: [
-//               Padding(
-//                 padding: EdgeInsets.only(top:20),
-//                 child: Text(
-//                   'BMI Calculator',
-//                   style: TextStyle(
-//                       fontSize: 35
-//                   ),
-//                 ),
-//               ),
-//               FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
-//             ]
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-class GoalsPage extends StatelessWidget {
-  ServiceCallback logFunc;
-  GoalsPage(this.logFunc, {Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context){
-    List<FieldOptions> sleepOptions = [
-      FieldOptions(
-        hint: 'Nutrition Goal (Calories)',
-        invalidText: 'Enter a number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d+(\.\d+)?$',
-      ),
-      FieldOptions(
-        hint: 'Hydration Goal (fl oz)',
-        invalidText: 'Enter a number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d{1,2}(\.\d+)?$',
-      ),
-      FieldOptions(
-        hint: 'Sleep Goal (hrs)',
-        invalidText: 'Enter a number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d{1,2}(\.\d+)?$',
-      ),
-    ];
-    return Material(
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Set Goals',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
-            ]
         ),
       ),
     );

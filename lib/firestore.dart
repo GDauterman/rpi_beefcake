@@ -14,12 +14,10 @@ class FirebaseService {
   bool connected = false;
 
   DocumentReference? userDoc;
-  Map<String, dynamic>? userDocSnapshot;
   CollectionReference? sleepCol;
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
   CollectionReference? workoutCol;
-  DocumentSnapshot? userDocSnap;
 
   final CollectionReference userReference = FirebaseFirestore.instance.collection('users');
   final CollectionReference foodReference = FirebaseFirestore.instance.collection('foods');
@@ -55,6 +53,29 @@ class FirebaseService {
     DBFields.qualityS: null,
     DBFields.noteS: null,
     DBFields.quantityH: null,
+  };
+
+  final Map<DBFields, String> dbUnitMap = {
+    DBFields.nameN: '',
+    DBFields.caloriesN: '',
+    DBFields.carbsN: 'grams',
+    DBFields.fatN: 'grams',
+    DBFields.proteinN: 'grams',
+    DBFields.durationS: 'hours',
+    DBFields.qualityS: '0-100',
+    DBFields.noteS: '',
+    DBFields.quantityH: 'oz',
+  };
+
+  final Map<DBFields, String> dbTitleMap = {
+    DBFields.nameN: 'Food Name',
+    DBFields.caloriesN: 'Calories',
+    DBFields.carbsN: 'Carb',
+    DBFields.fatN: 'Fats',
+    DBFields.proteinN: 'Protein',
+    DBFields.durationS: 'Hours Slept',
+    DBFields.qualityS: 'Sleep Quality',
+    DBFields.quantityH: 'Water Consumed',
   };
 
   // makes firebase service a global singleton
@@ -122,15 +143,14 @@ class FirebaseService {
     }
   }
 
-  void addGoals(List<dynamic> data) async {
-
-    while(!connected) { print('trying to write while '); }
-    final newEntry = <String, dynamic>{
-      "calorie_goal": num.parse(data[0]),
-      "hydration_goal": num.parse(data[1]),
-      "sleep_goal": num.parse(data[2]),
+  void updateGoal(DBFields field, num val) async {
+    if(!connected) {
+      throw Exception('Attempted to add to sleep while not connected');
+    }
+    final Map<String, num> updateEntry = {
+      dbGoalMap[field]!: val
     };
-    userDoc!.update(newEntry);
+    userDoc!.update(updateEntry);
   }
 
   void addSleep(List<dynamic> data) async {
