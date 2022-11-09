@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
+import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
 enum healthSubPages { options, sleep, nutrition, hydration, goals }
@@ -17,7 +18,6 @@ class _HealthPage extends State<HealthPage> {
   void backCallback() {
     setState(() { widget.curPage = healthSubPages.options; });
   }
-
   @override
   Widget build(BuildContext context) {
     switch(widget.curPage) {
@@ -77,23 +77,6 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              // Padding(
-              //   padding: EdgeInsets.symmetric(vertical: 15),
-              //   child: ElevatedButton(
-              //     onPressed: (() {
-              //       setState(() {widget.curPage = healthSubPages.personal;});
-              //     }),
-              //     child: Padding(
-              //       padding: EdgeInsets.all(5),
-              //       child: Text(
-              //         'Log BMI',
-              //         style: TextStyle(
-              //             fontSize: 30
-              //         ),
-              //       ),
-              //     ),
-              //   ),
-              // ),
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
@@ -111,8 +94,6 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-
-
             ],
           )
         );
@@ -188,30 +169,6 @@ class _HealthPage extends State<HealthPage> {
             ]
           ),
         );
-      // case healthSubPages.personal:
-      //   return SingleChildScrollView(
-      //     child: Column(
-      //         children: [
-      //           Container(
-      //             height: 40,
-      //             alignment: Alignment.topLeft,
-      //             child: Padding(
-      //               padding: EdgeInsets.all(10),
-      //               child: ElevatedButton(
-      //                   onPressed: backCallback,
-      //                   child: Text(
-      //                     'Back',
-      //                     style: TextStyle(
-      //                       fontSize: 15,
-      //                     ),
-      //                   )
-      //               ),
-      //             ),
-      //           ),
-      //           SleepPage(widget.db.)
-      //         ]
-      //     ),
-      //   );
       case healthSubPages.goals:
         return SingleChildScrollView(
             child: Column(
@@ -232,7 +189,7 @@ class _HealthPage extends State<HealthPage> {
                       ),
                     ),
                   ),
-                  ProfilePage(FirebaseService().addGoals)
+                  ProfilePage()
                 ]
             )
         );
