@@ -37,6 +37,24 @@ class _FitnessPage extends State<FitnessPage> {
       }
     });
   }
+  void logRows() {
+    setState(() {
+      List<dynamic> data = [];
+
+      data.add(exerciseDropdown.child.getSelection().toString());
+      data.add('notes');
+      List<dynamic> reps = [];
+      List<dynamic> weight = [];
+      data.add(reps);
+      data.add(weight);
+      for(int i =0; i<rows.length;i++) {
+        data[2].add(num.parse(rows[i].child.getFields()?[1]));
+        data[3].add(num.parse(rows[i].child.getFields()?[0]));
+      }
+      FirebaseService().addWorkout(data);
+      clearRows();
+    });
+  }
   final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
   List<FitnessRow> rows = [];
 
@@ -73,7 +91,7 @@ class _FitnessPage extends State<FitnessPage> {
               Padding(
                   padding: EdgeInsets.zero,
                   child: ElevatedButton(
-                      onPressed: clearRows,
+                      onPressed: logRows,
                       child: Text('Log Set')
                   )
               ),
@@ -109,6 +127,8 @@ class _FitnessRow extends State<FitnessRow> {
     if(weightInput.child.isValid() && repInput.child.isValid()) {
       return [weightInput.child.getVal(), repInput.child.getVal()];
     }
+    List<dynamic> empty = [];
+    return(empty);
   }
 
   void clear() {
