@@ -25,7 +25,7 @@ class FieldOptions {
 
 class FieldWithEnter extends StatefulWidget {
   final List<FieldOptions> fieldOptions;
-  final serviceCallback dataEntry;
+  final ServiceCallback dataEntry;
   final String submitText;
   const FieldWithEnter({Key? key, required this.fieldOptions, required this.dataEntry, this.submitText = 'Submit' }) : super(key: key);
 
@@ -184,6 +184,39 @@ class CustDropdown extends StatefulWidget {
   State<CustDropdown> createState() {
     child = _CustDropdown();
     return child;
+  }
+}
+
+class CustomPopupRoute extends PopupRoute {
+  CustomPopupRoute({
+    required this.builder,
+    RouteSettings? settings,
+  }) : super(settings: settings);
+
+  final WidgetBuilder builder;
+
+  @override
+  Color get barrierColor => Colors.black54.withAlpha(200);
+  @override
+  bool get barrierDismissible => true;
+  @override
+  String get barrierLabel => 'customPopupRoute';
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => builder(context);
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child,) {
+    return ScaleTransition(
+      scale: animation,
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    );
   }
 }
 

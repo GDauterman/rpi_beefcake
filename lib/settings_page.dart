@@ -53,28 +53,6 @@ class SettingsPage extends StatelessWidget {
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: (() {
-                }),
-                child: SizedBox(
-                  height: 50,
-                  width: 200,
-                  child: Center(
-                    child: Text(
-                      'Set Goals',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: (() {
                   FirebaseAuth.instance.signOut();
                 }),
                 child: SizedBox(

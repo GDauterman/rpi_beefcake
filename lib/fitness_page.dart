@@ -7,8 +7,7 @@ import 'firestore.dart';
 List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift', 'Glute Spread'];
 
 class FitnessPage extends StatefulWidget {
-  FirebaseService db;
-  FitnessPage(this.db, {Key? key}) : super(key: key);
+  FitnessPage({Key? key}) : super(key: key);
 
   @override
   State<FitnessPage> createState() => _FitnessPage();
@@ -36,6 +35,24 @@ class _FitnessPage extends State<FitnessPage> {
       for (int i = 0; i < rows.length; i++) {
         rows[i].child.clear();
       }
+    });
+  }
+  void logRows() {
+    setState(() {
+      List<dynamic> data = [];
+
+      data.add(exerciseDropdown.child.getSelection().toString());
+      data.add('notes');
+      List<dynamic> reps = [];
+      List<dynamic> weight = [];
+      data.add(reps);
+      data.add(weight);
+      for(int i =0; i<rows.length;i++) {
+        data[2].add(num.parse(rows[i].child.getFields()?[1]));
+        data[3].add(num.parse(rows[i].child.getFields()?[0]));
+      }
+      FirebaseService().addWorkout(data);
+      clearRows();
     });
   }
   final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
@@ -74,7 +91,7 @@ class _FitnessPage extends State<FitnessPage> {
               Padding(
                   padding: EdgeInsets.zero,
                   child: ElevatedButton(
-                      onPressed: clearRows,
+                      onPressed: logRows,
                       child: Text('Log Set')
                   )
               ),
@@ -110,6 +127,8 @@ class _FitnessRow extends State<FitnessRow> {
     if(weightInput.child.isValid() && repInput.child.isValid()) {
       return [weightInput.child.getVal(), repInput.child.getVal()];
     }
+    List<dynamic> empty = [];
+    return(empty);
   }
 
   void clear() {

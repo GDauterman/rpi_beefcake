@@ -1,15 +1,15 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
+import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
-enum healthSubPages { options, sleep, nutrition, hydration }
+enum healthSubPages { options, sleep, nutrition, hydration, goals }
 
 class HealthPage extends StatefulWidget {
-  final FirebaseService db;
   healthSubPages curPage = healthSubPages.options;
 
-  HealthPage(this.db, {Key? key}) : super(key: key);
+  HealthPage({Key? key}) : super(key: key);
 
   State<HealthPage> createState() => _HealthPage();
 }
@@ -18,7 +18,6 @@ class _HealthPage extends State<HealthPage> {
   void backCallback() {
     setState(() { widget.curPage = healthSubPages.options; });
   }
-
   @override
   Widget build(BuildContext context) {
     switch(widget.curPage) {
@@ -81,6 +80,23 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 15),
+                child: ElevatedButton(
+                  onPressed: (() {
+                    setState(() {widget.curPage = healthSubPages.goals;});
+                  }),
+                  child: Padding(
+                    padding: EdgeInsets.all(5),
+                    child: Text(
+                      'Change Goals',
+                      style: TextStyle(
+                          fontSize: 30
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           )
         );
@@ -107,7 +123,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              SleepPage(widget.db.addSleep)
+              SleepPage()
             ]
           ),
         );
@@ -131,7 +147,7 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              HydrationPage(widget.db.addHydration)
+              HydrationPage()
             ]
           )
         );
@@ -155,17 +171,40 @@ class _HealthPage extends State<HealthPage> {
                   ),
                 ),
               ),
-              NutritionPage(widget.db.addNutrition)
+              NutritionPage()
             ]
           ),
+        );
+      case healthSubPages.goals:
+        return SingleChildScrollView(
+            child: Column(
+                children: [
+                  Container(
+                    height: 40,
+                    alignment: Alignment.topLeft,
+                    child: Padding(
+                      padding: EdgeInsets.all(10),
+                      child: ElevatedButton(
+                          onPressed: backCallback,
+                          child: Text(
+                            'Back',
+                            style: TextStyle(
+                              fontSize: 15,
+                            ),
+                          )
+                      ),
+                    ),
+                  ),
+                  ProfilePage()
+                ]
+            )
         );
     }
   }
 }
 
 class HydrationPage extends StatelessWidget {
-  serviceCallback logFunc;
-  HydrationPage(this.logFunc, {Key? key}) : super(key: key);
+  HydrationPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -191,7 +230,7 @@ class HydrationPage extends StatelessWidget {
                   ),
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
             ]
         ),
       ),
@@ -200,8 +239,7 @@ class HydrationPage extends StatelessWidget {
 }
 
 class NutritionPage extends StatelessWidget {
-  serviceCallback logFunc;
-  NutritionPage(this.logFunc, {Key? key}) : super(key: key);
+  NutritionPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -251,7 +289,7 @@ class NutritionPage extends StatelessWidget {
                   ),
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
             ]
         ),
       ),
@@ -260,8 +298,7 @@ class NutritionPage extends StatelessWidget {
 }
 
 class SleepPage extends StatelessWidget {
-  serviceCallback logFunc;
-  SleepPage(this.logFunc, {Key? key}) : super(key: key);
+  SleepPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context){
@@ -297,7 +334,7 @@ class SleepPage extends StatelessWidget {
                 ),
               ),
             ),
-            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: logFunc),
+            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addSleep),
           ]
         ),
       ),

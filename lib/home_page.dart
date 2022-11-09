@@ -1,26 +1,26 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 
 import 'firestore.dart';
+import 'dart:math';
 
 enum ColTypes { Nutrition, Hydration, Sleep }
 
 class HomePage extends StatelessWidget {
-  FirebaseService db;
-  HomePage(this.db, {Key? key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: DailyReport(db),
+      child: DailyReport(),
     );
   }
 }
 
 class DailyReport extends StatelessWidget {
-  FirebaseService db;
-  DailyReport(this.db, {Key? key}) : super(key: key);
+  DailyReport({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,9 +49,9 @@ class DailyReport extends StatelessWidget {
               ),
             )
           ),
-          ProgressMeter(db, 'Hours Slept (hr)', 'hours', ColTypes.Sleep, 10),
-          ProgressMeter(db, 'Calories Today', 'total_calories', ColTypes.Nutrition, 2000),
-          ProgressMeter(db, 'Water Drank (oz)', 'amount', ColTypes.Hydration, 128)
+          ProgressMeter('Hours Slept (hr)', DBFields.durationS),
+          ProgressMeter('Calories Today', DBFields.caloriesN),
+          ProgressMeter('Water Drank (oz)', DBFields.quantityH)
         ],
       )
     );
@@ -60,12 +60,9 @@ class DailyReport extends StatelessWidget {
 
 class ProgressMeter extends StatefulWidget {
 
-  final FirebaseService db;
   final String title;
-  final String field;
-  final ColTypes col;
-  final num goal;
-  const ProgressMeter(this.db, this.title, this.field, this.col, this.goal, {Key? key}) : super(key: key);
+  final DBFields field;
+  const ProgressMeter(this.title, this.field, {Key? key}) : super(key: key);
 
   @override
   State<ProgressMeter> createState() => _ProgressMeter();
@@ -73,56 +70,62 @@ class ProgressMeter extends StatefulWidget {
 
 class _ProgressMeter extends State<ProgressMeter> {
 
-  late double currentProgress;
-  late double currentNum;
+  num barDec = 0;
+  num progress = -1;
+  num goal = 0;
+
+  final userDocStream = FirebaseService().userDoc!.snapshots();
 
   void setLatestVal(num i) {
     setState(() {
-      currentNum = i.toDouble();
-      currentProgress=(i/widget.goal).toDouble();
+      progress = i.toDouble();
+      if(goal != -1)
+        barDec= progress/goal;
     });
   }
 
   @override
   initState() {
-    currentNum = 0;
-    currentProgress = 0;
-    switch(widget.col) {
-      case ColTypes.Hydration:
-        widget.db.getTodayHydration(widget.field, setLatestVal);
-        break;
-      case ColTypes.Nutrition:
-        widget.db.getTodayNutrition(widget.field, setLatestVal);
-        break;
-      case ColTypes.Sleep:
-        widget.db.getTodaySleep(widget.field, setLatestVal);
-        break;
-    }
+    FirebaseService().getFieldAggSince(widget.field, setLatestVal, 2, FirebaseService.sumAgg);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column (
-      children: [
-        Text(
-          widget.title,
-          style: TextStyle(
-            fontSize: 15
-          ),
-        ),
-        LinearProgressIndicator(
-          value: currentProgress,
-          backgroundColor: bc_style().accent1color,
-          color: bc_style().accent2color,
-        ),
-        Text(
-          currentNum.floor().toString()+'/'+widget.goal.floor().toString(),
-          style: TextStyle(
-            fontSize: 10,
-          ),
-        )
-      ],
+    return StreamBuilder(
+      stream: userDocStream,
+      builder: (context, snapshot) {
+        if(!snapshot.hasData) {
+          goal = -1;
+          barDec = 0;
+        } else {
+          goal = snapshot.data![FirebaseService().dbGoalMap[widget.field]!] as num;
+          if(progress != -1) {
+            barDec = progress/goal;
+          }
+        }
+        return Column (
+          children: [
+            Text(
+              widget.title,
+              style: TextStyle(
+                  fontSize: 15
+              ),
+            ),
+            LinearProgressIndicator(
+              value: barDec.toDouble(),
+              backgroundColor: bc_style().accent1color,
+              color: bc_style().accent2color,
+            ),
+            Text(
+              (goal == -1 || progress == -1) ? '--/--' : progress.floor().toString()+'/'+goal.toInt().toString(),
+              style: TextStyle(
+                fontSize: 10,
+              ),
+            )
+          ],
+        );
+      }
     );
+
   }
 }
-

@@ -29,7 +29,6 @@ class _MainApp extends State<MainApp> {
   late final Future fbFuture = Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
-  late final FirebaseService db;
 
   bool isDark = false;
 
@@ -46,15 +45,14 @@ class _MainApp extends State<MainApp> {
           return const Text('uh oh');
         }
         else if(snapshot.connectionState == ConnectionState.done) {
-          db = FirebaseService();
           FirebaseAuth.instance.authStateChanges().listen((User? user) {
             if (user == null) {
-              db.clearService();
+              FirebaseService().clearService();
               if (mainNavKey.currentState != null) {
                 mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
               }
             } else {
-              db.initService();
+              FirebaseService().initService();
               if (mainNavKey.currentState != null) {
                 mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
               }
@@ -72,7 +70,7 @@ class _MainApp extends State<MainApp> {
             navigatorKey: mainNavKey,
             initialRoute: '/loading',
             routes: {
-              '/':          (context) => BasePage(db: db, nk: mainNavKey),
+              '/':          (context) => BasePage(mainNavKey),
               '/login':     (context) => const LoginPage(),
               '/register':  (context) => const RegisterPage(),
               '/loading':   (context) => LoadingPage(),
