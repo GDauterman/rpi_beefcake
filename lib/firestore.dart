@@ -34,6 +34,15 @@ class FirebaseService {
     DBFields.quantityH: 'amount',
   };
 
+  final Map<DBFields, String> dbGoalMap = {
+    DBFields.caloriesN: 'calorie_goal',
+    DBFields.carbsN: 'carb_goal',
+    DBFields.fatN: 'fat_goal',
+    DBFields.proteinN: 'protein_goal',
+    DBFields.durationS: 'sleep_goal',
+    DBFields.quantityH: 'hydration_goal',
+  };
+
   Map<DBFields, CollectionReference?> dbColMap = {
     DBFields.nameN: null,
     DBFields.caloriesN: null,
@@ -44,6 +53,29 @@ class FirebaseService {
     DBFields.qualityS: null,
     DBFields.noteS: null,
     DBFields.quantityH: null,
+  };
+
+  final Map<DBFields, String> dbUnitMap = {
+    DBFields.nameN: '',
+    DBFields.caloriesN: '',
+    DBFields.carbsN: 'grams',
+    DBFields.fatN: 'grams',
+    DBFields.proteinN: 'grams',
+    DBFields.durationS: 'hours',
+    DBFields.qualityS: '0-100',
+    DBFields.noteS: '',
+    DBFields.quantityH: 'oz',
+  };
+
+  final Map<DBFields, String> dbTitleMap = {
+    DBFields.nameN: 'Food Name',
+    DBFields.caloriesN: 'Calories',
+    DBFields.carbsN: 'Carb',
+    DBFields.fatN: 'Fats',
+    DBFields.proteinN: 'Protein',
+    DBFields.durationS: 'Hours Slept',
+    DBFields.qualityS: 'Sleep Quality',
+    DBFields.quantityH: 'Water Consumed',
   };
 
   // makes firebase service a global singleton
@@ -100,13 +132,25 @@ class FirebaseService {
         'name': '',
         'uid': FirebaseAuth.instance.currentUser!.uid.toString(),
         'email': FirebaseAuth.instance.currentUser!.email,
-        'weight': -1,
+        'hydration_goal': 64,
+        'nutrition_goal': 2000,
+        'sleep_goal': 8,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
         userDoc = newUserDoc;
         initService();
       });
     }
+  }
+
+  void updateGoal(DBFields field, num val) async {
+    if(!connected) {
+      throw Exception('Attempted to add to sleep while not connected');
+    }
+    final Map<String, num> updateEntry = {
+      dbGoalMap[field]!: val
+    };
+    userDoc!.update(updateEntry);
   }
 
   void addSleep(List<dynamic> data) async {
@@ -187,5 +231,18 @@ class FirebaseService {
       num result = aggFunc(fieldValList);
       whenGet(result);
     });
+  }
+
+  num get getNutGoal{
+    while(!connected) { print('trying to read while ');}
+    return (2000);
+  }
+  num get getHydroGoal{
+    while(!connected) { print('trying to read while ');}
+    return (64);
+  }
+  num get getSleepGoal{
+    while(!connected) { print('trying to read while ');}
+    return (8);
   }
 }

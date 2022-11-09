@@ -187,6 +187,39 @@ class CustDropdown extends StatefulWidget {
   }
 }
 
+class CustomPopupRoute extends PopupRoute {
+  CustomPopupRoute({
+    required this.builder,
+    RouteSettings? settings,
+  }) : super(settings: settings);
+
+  final WidgetBuilder builder;
+
+  @override
+  Color get barrierColor => Colors.black54.withAlpha(200);
+  @override
+  bool get barrierDismissible => true;
+  @override
+  String get barrierLabel => 'customPopupRoute';
+
+  @override
+  Duration get transitionDuration => const Duration(milliseconds: 300);
+
+  @override
+  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => builder(context);
+
+  @override
+  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child,) {
+    return ScaleTransition(
+      scale: animation,
+      child: FadeTransition(
+        opacity: animation,
+        child: child,
+      ),
+    );
+  }
+}
+
 class _CustDropdown extends State<CustDropdown> {
   late String _curVal;
 
