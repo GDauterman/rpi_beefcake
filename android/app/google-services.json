@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "949902024414",
+    "project_id": "beefcake-f6164",
+    "storage_bucket": "beefcake-f6164.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:949902024414:android:264fac4664a6439a04ec4f",
+        "android_client_info": {
+          "package_name": "com.example.rpi_beefcake"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "949902024414-ttqe6hu4prl62jnpgtek15i643sd5bhu.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB0q2Rh-dXom_NLULl2giLDYP9zCv2QYdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "949902024414-ttqe6hu4prl62jnpgtek15i643sd5bhu.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "949902024414-f3iute8na60j02rrlf7nnvrn2snv1d45.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.rpiBeefcake"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
