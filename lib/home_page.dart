@@ -86,7 +86,7 @@ class _ProgressMeter extends State<ProgressMeter> {
 
   @override
   initState() {
-    FirebaseService().getFieldAggSince(widget.field, setLatestVal, 2, FirebaseService.sumAgg);
+    FirebaseService().getFieldAggSince(widget.field, setLatestVal, 0, FirebaseService.sumAgg);
   }
 
   @override
