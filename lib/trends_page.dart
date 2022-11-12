@@ -23,12 +23,42 @@ class _TrendsPage extends State<TrendsPage> {
     FlSpot(8,0),
   ];
   List<FlSpot>? points;
+  num goal = -1;
+  num xmin = 0;
+  num xmax = 1;
+  num ymin = 0;
+  num ymax = 0;
   late final List<DropDownValueModel> dbDropDownList;
   final SingleValueDropDownController ddController = SingleValueDropDownController();
   DBFields curField = DBFields.caloriesN;
 
-  void getPoints(List<FlSpot> newPoints) {
-    setState(() {points = newPoints;});
+  void getGoal(num ngoal) {
+    setState(() {
+      goal = ngoal;
+    });
+  }
+
+  void getPoints(List<dynamic> newPoints) {
+    setState(() {
+      print('start');
+      xmin = newPoints[0] as num;
+      xmax = newPoints[1] as num;
+      ymin = newPoints[2] as num;
+      ymax = newPoints[3] as num;
+      print(ymin);
+
+      num xtotal = xmax - xmin;
+      xmax += 0.1*xtotal;
+      xmin -= 0.1*xtotal;
+
+      num ytotal = ymax - ymin;
+      ymax += 0.1*ytotal;
+      ymin -= 0.1*ytotal;
+      print(ymin);
+
+      points = newPoints[4].cast<FlSpot>();
+      print('end');
+    });
   }
 
   static Widget custGetTitle(double value, TitleMeta meta) {
@@ -52,6 +82,7 @@ class _TrendsPage extends State<TrendsPage> {
       if(temp_ddvm.value == DBFields.caloriesN) {
         ddController.dropDownValue = temp_ddvm;
         FirebaseService().getRawPlotPoints(curField, getPoints, 7);
+        FirebaseService().userDoc!.get(FirebaseService().dbGoalMap[curField!]!);
       }
     }
   }
@@ -77,6 +108,7 @@ class _TrendsPage extends State<TrendsPage> {
                     curField = val.value;
                   points = null;
                   FirebaseService().getRawPlotPoints(curField, getPoints, 7);
+                  FirebaseService().
                 });
               }),
             ),
@@ -88,6 +120,14 @@ class _TrendsPage extends State<TrendsPage> {
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
                 LineChartData(
+
+                  minX: xmin.toDouble(),
+                  maxX: xmax.toDouble(),
+                  minY: ymin.toDouble(),
+                  maxY: ymax.toDouble(),
+                  extraLinesData: ExtraLinesData(
+                    horizontalLines:
+                  ),
                   gridData: FlGridData(
                     drawVerticalLine: false,
                   ),

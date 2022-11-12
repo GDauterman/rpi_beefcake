@@ -1,4 +1,5 @@
 import 'dart:core';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -248,7 +249,7 @@ class FirebaseService {
     });
   }
 
-  void getRawPlotPoints(DBFields field, void Function(List<FlSpot> points) whenGet, int daysAgo) async {
+  void getRawPlotPoints(DBFields field, void Function(List<dynamic> points) whenGet, int daysAgo) async {
     if(!connected){
       throw Exception('trying to read while not connected');
     }
@@ -259,14 +260,23 @@ class FirebaseService {
     print(validDocIDs);
     rawGraphCol!.where(FieldPath.documentId, whereIn: validDocIDs).get().then((value) {
       List<FlSpot> points = [];
+      num xmin = double.maxFinite;
+      num xmax = -double.maxFinite;
+      num ymin = double.maxFinite;
+      num ymax = -double.maxFinite;
       print(value.docs.length);
       for(int i = 0; i < value.docs.length; i++) {
-        double datenum = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
-        num yval = value.docs[i].get(dbPlotYMap[field]!);
-        if(yval != -1)
-          points.add(FlSpot(datenum, yval.toDouble()));
+        double xval = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
+        double yval = value.docs[i].get(dbPlotYMap[field]!).toDouble();
+        if(yval > 0) {
+          xmin = min(xval, xmin);
+          xmax = max(xval, xmax);
+          ymin = min(yval, ymin);
+          ymax = max(yval, ymax);
+          points.add(FlSpot(xval, yval));
+        }
       }
-      whenGet(points);
+      whenGet([xmin, xmax, ymin, ymax, points]);
     });
   }
 }
