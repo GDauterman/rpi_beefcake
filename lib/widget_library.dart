@@ -45,7 +45,6 @@ class _FieldWithEnter extends State<FieldWithEnter> {
     }
     return Container(
       padding: const EdgeInsets.all(30.0),
-      color: bc_style().backgroundcolor,
       child: Center(
           child: Column(children: [
             Column(
@@ -124,9 +123,19 @@ class _CustTextInput extends State<CustTextInput> {
       obscureText: widget.options.obscureText,
       keyboardType: widget.options.keyboard,
       decoration: InputDecoration(
-        hintText: widget.options.hint,
+        label: Text.rich(
+          TextSpan(
+            children: <InlineSpan>[
+              WidgetSpan(
+                  child: Text(
+                      widget.options.hint!,
+                  ),
+              ),
+            ]
+          ),
+        ),
         errorText: _isValid ? null : widget.options.invalidText,
-        border: InputBorder.none,
+        //border: InputBorder.none,
         prefixIcon: widget.options.prefixIcon,
       ),
       onChanged: ((String str) {
@@ -159,8 +168,8 @@ class _CustTextInput extends State<CustTextInput> {
       padding: const EdgeInsets.only(bottom: 7),
       child: Container(
         decoration: BoxDecoration(
-          color: bc_style().backgroundcolor,
-          border: Border.all(width: 5, color: bc_style().accent1color),
+          //color: bc_style().backgroundcolor,
+          //border: Border.all(width: 5, color: bc_style().accent1color),
           borderRadius: BorderRadius.circular(5),
         ),
         padding: const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
@@ -238,8 +247,8 @@ class _CustDropdown extends State<CustDropdown> {
       padding: EdgeInsets.only(top: 30),
       child: Container(
         decoration: BoxDecoration(
-          color: bc_style().backgroundcolor,
-          border: Border.all(width: 5, color: bc_style().accent1color),
+          //color: bc_style().backgroundcolor,
+          //border: Border.all(width: 5, color: bc_style().accent1color),
           borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.fromLTRB(7, 7, 7, 7),
@@ -247,7 +256,7 @@ class _CustDropdown extends State<CustDropdown> {
           value: _curVal,
           icon: const Icon(Icons.arrow_drop_down),
           elevation: 16,
-          style: TextStyle(color: bc_style().textcolor, fontSize: 24),
+          //style: TextStyle(color: bc_style().textcolor, fontSize: 24),
           onChanged: (String? value) {
             // This is called when the user selects an item.
             setState(() {

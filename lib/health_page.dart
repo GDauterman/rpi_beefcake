@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
 import 'package:rpi_beefcake/profile_page.dart';
+import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
 enum healthSubPages { options, sleep, nutrition, hydration, goals }
@@ -30,7 +31,7 @@ class _HealthPage extends State<HealthPage> {
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      backgroundColor: Theme.of(context).colorScheme.primary
                   ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.nutrition;});
@@ -48,7 +49,7 @@ class _HealthPage extends State<HealthPage> {
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
+                    primary: Theme.of(context).colorScheme.primary,
                   ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.sleep;});
@@ -83,6 +84,9 @@ class _HealthPage extends State<HealthPage> {
               Padding(
                 padding: EdgeInsets.symmetric(vertical: 15),
                 child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
                   onPressed: (() {
                     setState(() {widget.curPage = healthSubPages.goals;});
                   }),
@@ -90,13 +94,11 @@ class _HealthPage extends State<HealthPage> {
                     padding: EdgeInsets.all(5),
                     child: Text(
                       'Change Goals',
-                      style: TextStyle(
-                          fontSize: 30
+                       style: Theme.of(context).textTheme.button,
                       ),
                     ),
                   ),
                 ),
-              ),
             ],
           )
         );
@@ -322,7 +324,6 @@ class SleepPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-
         child: Column(
           children: [
             Padding(

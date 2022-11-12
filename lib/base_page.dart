@@ -19,6 +19,9 @@ class _BasePage extends State<BasePage> {
 
   PageItems pageItem = PageItems.health;
 
+  FloatingActionButtonLocation _fabLocation =
+      FloatingActionButtonLocation.endDocked;
+
   void _onItemTapped(int index) {
     setState(() {
       if(index == PageItems.home.getIndex) {
@@ -37,13 +40,14 @@ class _BasePage extends State<BasePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(pageItem.getTitle),
-        backgroundColor: Theme.of(context).colorScheme.background,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
               onPressed: (() {widget.nk.currentState!.pushNamed('/settings');}),
               icon: Icon(Icons.settings, size: 32,))
         ],
       ),
+
       body: (() {
         if(pageItem == PageItems.home) {
           return HomePage();}
@@ -54,34 +58,76 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.background,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_gymnastics),
-            label: 'Fitness',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.heart_broken),
-            label: 'Health',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_graph),
-            label: 'Trends',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
-        ],
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+          child: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.secondary
+      ) ,
+
+      bottomNavigationBar: BottomAppBar(
+        shape: CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.background,
+        child: Row(
+          children: <Widget>[
+            IconButton(
+                onPressed: () {
+                  _onItemTapped(pageItem.getIndex);
+                },
+                icon:  Icon(Icons.home),
+                color: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            IconButton(
+              onPressed: () {
+                _onItemTapped(pageItem.getIndex);
+              },
+              icon:  Icon(Icons.sports_gymnastics),
+              color: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            IconButton(
+              onPressed: () {
+                _onItemTapped(pageItem.getIndex);
+              },
+              icon:  Icon(Icons.heart_broken),
+              color: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            IconButton(
+              onPressed: () {
+                _onItemTapped(pageItem.getIndex);
+              },
+              icon:  Icon(Icons.auto_graph),
+              color: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            /*
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.sports_gymnastics),
+              label: 'Fitness',
+              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.heart_broken),
+              label: 'Health',
+              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.auto_graph),
+              label: 'Trends',
+              backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+            ),
+             */
+          ],
+        /*
         currentIndex: pageItem.getIndex,
-        selectedItemColor: Colors.grey,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         onTap: _onItemTapped,
-      ),
+        */
+        ),
+    ),
     );
   }
 }
