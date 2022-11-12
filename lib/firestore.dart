@@ -148,8 +148,8 @@ class FirebaseService {
         'hydration_goal': 64,
         'protein_goal': 100,
         'carb_goal': 50,
-        'fat_goal': 0,
-        'nutrition_goal': 2000,
+        'fat_goal': 5,
+        'calorie_goal': 2000,
         'sleep_goal': 8,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
@@ -161,12 +161,22 @@ class FirebaseService {
 
   void updateGoal(DBFields field, num val) async {
     if(!connected) {
-      throw Exception('Attempted to add to sleep while not connected');
+      throw Exception('Attempted to change goals while not connected');
     }
     final Map<String, num> updateEntry = {
       dbGoalMap[field]!: val
     };
     userDoc!.update(updateEntry);
+  }
+
+  void editStorage(DBFields field, DocumentReference doc, num val) async {
+    if(!connected) {
+      throw Exception('Attempted to update database while not connected');
+    }
+    final Map<String, num> updateEntry = {
+      dbFieldMap[field]!: val
+    };
+    doc.update(updateEntry);
   }
 
   void addSleep(List<dynamic> data) async {
@@ -185,7 +195,7 @@ class FirebaseService {
 
   void addHydration(List<dynamic> data) async {
     if(!connected) {
-      throw Exception('Attempted to add to sleep while not connected');
+      throw Exception('Attempted to add to hydration while not connected');
     }
     final newEntry = <String, dynamic>{
       "amount": num.parse(data[0]),
@@ -201,7 +211,7 @@ class FirebaseService {
     final newEntry = <String, dynamic>{
       "food_name": data[0],
       "time_logged": Timestamp.now(),
-      "total_calories": num.parse(data[1]),
+      "total_calories": double.parse(data[1]),
       "total_carbs": num.parse(data[2]),
       "total_fats": num.parse(data[3]),
       "total_protein": num.parse(data[4])
