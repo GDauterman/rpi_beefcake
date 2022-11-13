@@ -82,7 +82,9 @@ class _TrendsPage extends State<TrendsPage> {
       if(temp_ddvm.value == DBFields.caloriesN) {
         ddController.dropDownValue = temp_ddvm;
         FirebaseService().getRawPlotPoints(curField, getPoints, 7);
-        FirebaseService().userDoc!.get(FirebaseService().dbGoalMap[curField!]!);
+        FirebaseService().userDoc!.get().then((value) {
+          setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
+        });
       }
     }
   }
@@ -108,7 +110,9 @@ class _TrendsPage extends State<TrendsPage> {
                     curField = val.value;
                   points = null;
                   FirebaseService().getRawPlotPoints(curField, getPoints, 7);
-                  FirebaseService().
+                  FirebaseService().userDoc!.get().then((value) {
+                    setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
+                  });
                 });
               }),
             ),
@@ -126,9 +130,15 @@ class _TrendsPage extends State<TrendsPage> {
                   minY: ymin.toDouble(),
                   maxY: ymax.toDouble(),
                   extraLinesData: ExtraLinesData(
-                    horizontalLines:
+                    horizontalLines: [
+                      HorizontalLine(
+                        y: goal.toDouble(),
+                        color: Colors.red,
+                      )
+                    ]
                   ),
                   gridData: FlGridData(
+                    drawHorizontalLine: false,
                     drawVerticalLine: false,
                   ),
                   titlesData: FlTitlesData(
