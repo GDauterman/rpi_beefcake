@@ -1,4 +1,6 @@
 // ignore_for_file: prefer_const_constructors
+import 'dart:math';
+
 import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -47,13 +49,13 @@ class _TrendsPage extends State<TrendsPage> {
       ymax = newPoints[3] as num;
       print(ymin);
 
-      num xtotal = xmax - xmin;
-      xmax += 0.1*xtotal;
-      xmin -= 0.1*xtotal;
-
-      num ytotal = ymax - ymin;
-      ymax += 0.1*ytotal;
-      ymin -= 0.1*ytotal;
+      // num xtotal = xmax - xmin;
+      // xmax += 0.1*xtotal;
+      // xmin -= 0.1*xtotal;
+      //
+      // num ytotal = ymax - ymin;
+      // ymax += 0.1*ytotal;
+      // ymin -= 0.1*ytotal;
       print(ymin);
 
       points = newPoints[4].cast<FlSpot>();
@@ -61,11 +63,21 @@ class _TrendsPage extends State<TrendsPage> {
     });
   }
 
-  static Widget custGetTitle(double value, TitleMeta meta) {
+  static Widget getUnitAxisTickVals(double value, TitleMeta meta) {
+    return SideTitleWidget(
+      // angle: -pi/2,
+      axisSide: meta.axisSide,
+      child: Text(
+        value.toString().substring(0,value.toString().length-2),
+      ),
+    );
+  }
+
+  static Widget getDateAxisTickVals(double value, TitleMeta meta) {
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
-        meta.formattedValue.substring(5),
+        value.toString().substring(4,6) + "/" + value.toString().substring(6,8),
       ),
     );
   }
@@ -118,8 +130,8 @@ class _TrendsPage extends State<TrendsPage> {
             ),
             SizedBox(height:30),
             SizedBox(
-              width: 300,
-              height: 225,
+              width: 400,
+              height: 275,
               child: (points == null) ? SizedBox.shrink() : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
@@ -130,41 +142,46 @@ class _TrendsPage extends State<TrendsPage> {
                   minY: ymin.toDouble(),
                   maxY: ymax.toDouble(),
                   extraLinesData: ExtraLinesData(
-                    horizontalLines: [
+                    horizontalLines: (goal > ymin && goal < ymax) ? [
                       HorizontalLine(
                         y: goal.toDouble(),
                         color: Colors.red,
                       )
-                    ]
+                    ] : []
                   ),
                   gridData: FlGridData(
                     drawHorizontalLine: false,
                     drawVerticalLine: false,
                   ),
                   titlesData: FlTitlesData(
-                    bottomTitles: AxisTitles(
-                      axisNameWidget: Text('Date'),
-                      axisNameSize: 5,
-                    ),
-                    leftTitles: AxisTitles(
-                      axisNameWidget: Text(FirebaseService().dbTitleMap[curField]!),
-                      axisNameSize: 5,
-                    ),
-                    rightTitles: AxisTitles(
-                      sideTitles:SideTitles(
+                      bottomTitles: AxisTitles(
+                        axisNameWidget: Text('Date'),
+                        axisNameSize: 22,
+                        sideTitles:SideTitles(
+                          showTitles: true,
+                          getTitlesWidget: getDateAxisTickVals,
+                          interval: 1
+                        ),
                       ),
-                    ),
-                    topTitles: AxisTitles(
-                      sideTitles:SideTitles(
-                          getTitlesWidget: custGetTitle,
-                          interval: 7
+                      leftTitles: AxisTitles(
+                        axisNameWidget: Text(FirebaseService().dbTitleMap[curField]!),
+                        axisNameSize: 22,
+                        sideTitles:SideTitles(
+                          showTitles: true,
+                          reservedSize: 50,
+                          getTitlesWidget: getUnitAxisTickVals,
+                          // interval: (ymax-ymin).toDouble()
+                        ),
                       ),
-                    )
+                      rightTitles: AxisTitles(
+                      ),
+                      topTitles: AxisTitles(
+                      )
                   ),
                   lineBarsData: [
                     LineChartBarData(
                       spots: points,
-                      isCurved: false,
+                      isCurved: true,
                       // dotData: FlDotData(
                       //   show: false,
                       // ),
