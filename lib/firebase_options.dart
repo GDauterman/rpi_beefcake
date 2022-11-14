@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -49,11 +46,23 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyDQoiTXIQfnpQcsdDoMwGdJktvGib04lV0',
+    appId: '1:949902024414:web:c5fc847e466aca0304ec4f',
+    messagingSenderId: '949902024414',
+    projectId: 'beefcake-f6164',
+    authDomain: 'beefcake-f6164.firebaseapp.com',
+    databaseURL: 'https://beefcake-f6164-default-rtdb.firebaseio.com',
+    storageBucket: 'beefcake-f6164.appspot.com',
+    measurementId: 'G-P21VQ0HJQ0',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyB0q2Rh-dXom_NLULl2giLDYP9zCv2QYdo',
     appId: '1:949902024414:android:264fac4664a6439a04ec4f',
     messagingSenderId: '949902024414',
     projectId: 'beefcake-f6164',
+    databaseURL: 'https://beefcake-f6164-default-rtdb.firebaseio.com',
     storageBucket: 'beefcake-f6164.appspot.com',
   );
 
@@ -62,6 +71,7 @@ class DefaultFirebaseOptions {
     appId: '1:949902024414:ios:163586daf3b7700404ec4f',
     messagingSenderId: '949902024414',
     projectId: 'beefcake-f6164',
+    databaseURL: 'https://beefcake-f6164-default-rtdb.firebaseio.com',
     storageBucket: 'beefcake-f6164.appspot.com',
     iosClientId: '949902024414-f3iute8na60j02rrlf7nnvrn2snv1d45.apps.googleusercontent.com',
     iosBundleId: 'com.example.rpiBeefcake',
