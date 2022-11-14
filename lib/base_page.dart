@@ -5,6 +5,7 @@ import 'package:rpi_beefcake/home_page.dart';
 import 'package:rpi_beefcake/page_enum.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 
 
 class BasePage extends StatefulWidget {
@@ -16,10 +17,26 @@ class BasePage extends StatefulWidget {
 }
 
 class _BasePage extends State<BasePage> {
+  static const _actionTitles = ["LogSleep", "logHydration", "logCalories", "logGoals"]; //set goals to be added
+  bool? hideFab = true;
 
   PageItems pageItem = PageItems.health;
-  FloatingActionButtonLocation _fabLocation =
-      FloatingActionButtonLocation.endDocked;
+  void _showAction(BuildContext context, int index) {
+      showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CLOSE'),
+            ),
+          ],
+        );
+      },
+    );
+    }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -56,14 +73,29 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-          child: const Icon(Icons.add),
-        backgroundColor: Theme.of(context).colorScheme.secondary
-      ) ,
+      floatingActionButton: ExpandableFab(
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.hotel),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.local_drink),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
+            icon: const Icon(Icons.fastfood),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
+            icon: const Icon(Icons.monitor_weight),
+          ),
+        ],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.background,
-
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
