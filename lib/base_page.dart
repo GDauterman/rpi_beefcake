@@ -6,6 +6,7 @@ import 'package:rpi_beefcake/page_enum.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
+
 class BasePage extends StatefulWidget {
   final GlobalKey<NavigatorState> nk;
   const BasePage(this.nk, {Key? key}) : super(key: key);
@@ -17,6 +18,8 @@ class BasePage extends StatefulWidget {
 class _BasePage extends State<BasePage> {
 
   PageItems pageItem = PageItems.health;
+  FloatingActionButtonLocation _fabLocation =
+      FloatingActionButtonLocation.endDocked;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -36,7 +39,7 @@ class _BasePage extends State<BasePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(pageItem.getTitle),
-        backgroundColor: bc_style().accent2color,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
               onPressed: (() {widget.nk.currentState!.pushNamed('/settings');}),
@@ -53,31 +56,38 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+          child: const Icon(Icons.add),
+        backgroundColor: Theme.of(context).colorScheme.secondary
+      ) ,
       bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Theme.of(context).colorScheme.background,
+
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.sports_gymnastics),
+            icon: Icon(Icons.fitness_center),
             label: 'Fitness',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.heart_broken),
             label: 'Health',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.auto_graph),
             label: 'Trends',
-            backgroundColor: bc_style().accent2color,
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
         ],
         currentIndex: pageItem.getIndex,
-        selectedItemColor: Colors.grey,
+        selectedItemColor: Theme.of(context).colorScheme.primary,
         onTap: _onItemTapped,
       ),
     );

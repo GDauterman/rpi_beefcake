@@ -11,21 +11,33 @@ import 'package:rpi_beefcake/settings_page.dart';
 import 'firebase_options.dart';
 import 'firestore.dart';
 import 'loading_page.dart';
+import 'package:rpi_beefcake/style_lib.dart';
+
 
 void main() {
   runApp(MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
+  MainApp({super.key});
+
+  @override
+  State<MainApp> createState() => _MainApp();
+}
+
+class _MainApp extends State<MainApp> {
   late final Future fbFuture = Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
   final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
 
-  MainApp({super.key});
+  bool isDark = false;
+
+  void swapTheme() {
+    setState(() { isDark = !isDark; });
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return FutureBuilder(
       future: fbFuture,
       builder: (context, snapshot) {
@@ -48,6 +60,13 @@ class MainApp extends StatelessWidget {
           });
           return MaterialApp(
             title: 'Main App',
+            /*
+            darkTheme: customDarkTheme (),
+            theme: customLightTheme (),
+            themeMode: ThemeMode.system, //theme adapts to system settings
+            */
+            theme: isDark ? customDarkTheme () : customLightTheme(),
+
             navigatorKey: mainNavKey,
             initialRoute: '/loading',
             routes: {
@@ -55,7 +74,7 @@ class MainApp extends StatelessWidget {
               '/login':     (context) => const LoginPage(),
               '/register':  (context) => const RegisterPage(),
               '/loading':   (context) => LoadingPage(),
-              '/settings':  (context) => SettingsPage(mainNavKey),
+              '/settings':  (context) => SettingsPage(mainNavKey, swapTheme),
             },
 
           );

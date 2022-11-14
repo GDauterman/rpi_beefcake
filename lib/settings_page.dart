@@ -5,14 +5,15 @@ import 'package:rpi_beefcake/style_lib.dart';
 class SettingsPage extends StatelessWidget {
 
   GlobalKey<NavigatorState> nk;
-  SettingsPage(this.nk, {Key? key}) : super(key: key);
+  void Function() swapTheme;
+  SettingsPage(this.nk, this.swapTheme, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
-        backgroundColor: bc_style().accent2color,
+          backgroundColor: Theme.of(context).colorScheme.background,
         leading: IconButton(
               onPressed: (() {nk.currentState!.pop();}),
               icon: Icon(Icons.arrow_back_sharp, size: 32,)
@@ -25,7 +26,11 @@ class SettingsPage extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 15),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
                 onPressed: (() {
+                  swapTheme();
                 }),
                 child: SizedBox(
                   height: 50,
@@ -44,6 +49,9 @@ class SettingsPage extends StatelessWidget {
             Padding(
               padding: EdgeInsets.symmetric(vertical: 15),
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
                 onPressed: (() {
                   FirebaseAuth.instance.signOut();
                 }),
