@@ -25,11 +25,14 @@ class _TrendsPage extends State<TrendsPage> {
     FlSpot(8,0),
   ];
   List<FlSpot>? points;
+  List<FlSpot>? trendpoints;
   num goal = -1;
   num xmin = 0;
   num xmax = 1;
   num ymin = 0;
   num ymax = 0;
+  num trendm = 0;
+  num trendb = 0;
   late final List<DropDownValueModel> dbDropDownList;
   final SingleValueDropDownController ddController = SingleValueDropDownController();
   DBFields curField = DBFields.caloriesN;
@@ -40,26 +43,31 @@ class _TrendsPage extends State<TrendsPage> {
     });
   }
 
+  void queryForNewField() {
+    FirebaseService().getRawPlotPoints(curField, getPoints, 10);
+    FirebaseService().userDoc!.get().then((value) {
+      setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
+    });
+    trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
+    trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+  }
+
   void getPoints(List<dynamic> newPoints) {
     setState(() {
-      print('start');
       xmin = newPoints[0] as num;
       xmax = newPoints[1] as num;
       ymin = newPoints[2] as num;
       ymax = newPoints[3] as num;
-      print(ymin);
 
-      // num xtotal = xmax - xmin;
-      // xmax += 0.1*xtotal;
-      // xmin -= 0.1*xtotal;
-      //
-      // num ytotal = ymax - ymin;
-      // ymax += 0.1*ytotal;
-      // ymin -= 0.1*ytotal;
-      print(ymin);
+      trendpoints = [
+        FlSpot(xmin as double, trendm*xmin+trendb as double),
+        FlSpot(xmax as double, trendm*xmax+trendb as double),
+      ];
+
+      ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
+      ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
 
       points = newPoints[4].cast<FlSpot>();
-      print('end');
     });
   }
 
@@ -69,6 +77,7 @@ class _TrendsPage extends State<TrendsPage> {
       axisSide: meta.axisSide,
       child: Text(
         value.toString().substring(0,value.toString().length-2),
+        //style: COLOR: text style for individual axis ticks
       ),
     );
   }
@@ -78,6 +87,7 @@ class _TrendsPage extends State<TrendsPage> {
       axisSide: meta.axisSide,
       child: Text(
         value.toString().substring(4,6) + "/" + value.toString().substring(6,8),
+        //style: COLOR: text style for individual axis ticks
       ),
     );
   }
@@ -93,10 +103,7 @@ class _TrendsPage extends State<TrendsPage> {
       dbDropDownList.add(temp_ddvm);
       if(temp_ddvm.value == DBFields.caloriesN) {
         ddController.dropDownValue = temp_ddvm;
-        FirebaseService().getRawPlotPoints(curField, getPoints, 7);
-        FirebaseService().userDoc!.get().then((value) {
-          setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
-        });
+        queryForNewField();
       }
     }
   }
@@ -121,16 +128,13 @@ class _TrendsPage extends State<TrendsPage> {
                   if(!(val is String))
                     curField = val.value;
                   points = null;
-                  FirebaseService().getRawPlotPoints(curField, getPoints, 7);
-                  FirebaseService().userDoc!.get().then((value) {
-                    setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
-                  });
+                  queryForNewField();
                 });
               }),
             ),
             SizedBox(height:30),
             SizedBox(
-              width: 400,
+              width: 350,
               height: 275,
               child: (points == null) ? SizedBox.shrink() : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
@@ -141,11 +145,16 @@ class _TrendsPage extends State<TrendsPage> {
                   maxX: xmax.toDouble(),
                   minY: ymin.toDouble(),
                   maxY: ymax.toDouble(),
+                  borderData: FlBorderData(
+                    border: Border.all(
+                      color: Colors.black // COLOR: colors of each individual border (also width)
+                    )
+                  ),
                   extraLinesData: ExtraLinesData(
                     horizontalLines: (goal > ymin && goal < ymax) ? [
                       HorizontalLine(
                         y: goal.toDouble(),
-                        color: Colors.red,
+                        color: Colors.red, //COLOR: color of goal line
                       )
                     ] : []
                   ),
@@ -155,7 +164,7 @@ class _TrendsPage extends State<TrendsPage> {
                   ),
                   titlesData: FlTitlesData(
                       bottomTitles: AxisTitles(
-                        axisNameWidget: Text('Date'),
+                        axisNameWidget: Text('Date'), // COLORS: Text widget for x axis title
                         axisNameSize: 22,
                         sideTitles:SideTitles(
                           showTitles: true,
@@ -164,7 +173,7 @@ class _TrendsPage extends State<TrendsPage> {
                         ),
                       ),
                       leftTitles: AxisTitles(
-                        axisNameWidget: Text(FirebaseService().dbTitleMap[curField]!),
+                        axisNameWidget: Text(FirebaseService().dbTitleMap[curField]!), // COLORS: Text widget for x axis title
                         axisNameSize: 22,
                         sideTitles:SideTitles(
                           showTitles: true,
@@ -186,6 +195,13 @@ class _TrendsPage extends State<TrendsPage> {
                       //   show: false,
                       // ),
                     ),
+                    LineChartBarData(
+                      spots: trendpoints,
+                      color: Colors.greenAccent, //COLOR: color of trend line
+                      dotData: FlDotData(
+                        show: false,
+                      ),
+                    )
                   ],
                 ),
               ),
