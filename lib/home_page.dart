@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/style_lib.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 
 import 'firestore.dart';
 import 'dart:math';
@@ -10,11 +11,52 @@ import 'dart:math';
 enum ColTypes { Nutrition, Hydration, Sleep }
 
 class HomePage extends StatelessWidget {
+  static const _actionTitles = ["LogSleep", "logHydration", "logCalories", "logGoals"]; //set goals to be added
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          content: Text(_actionTitles[index]),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('CLOSE'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: DailyReport(),
+    return Scaffold(
+        body: Center(
+          child: DailyReport(),
+        ),
+      floatingActionButton: ExpandableFab(
+      distance: 112.0,
+      children: [
+        ActionButton(
+          onPressed: () => _showAction(context, 0),
+          icon: const Icon(Icons.hotel),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 1),
+          icon: const Icon(Icons.local_drink),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 2),
+          icon: const Icon(Icons.fastfood),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 2),
+          icon: const Icon(Icons.monitor_weight),
+        ),
+      ],
+    ),
     );
   }
 }
