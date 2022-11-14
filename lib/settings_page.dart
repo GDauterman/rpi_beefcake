@@ -32,10 +32,7 @@ class SettingsPage extends StatelessWidget {
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
-                onPressed: (() {
-                  swapTheme();
-                  (this.dark == false) ? this.dark = true : this.dark = false;
-                }),
+                onPressed: swapTheme,
                 label: Text(
                   'Toggle Dark Mode',
                   style: TextStyle(
