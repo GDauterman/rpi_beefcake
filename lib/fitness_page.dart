@@ -190,6 +190,7 @@ class _FitnessRow extends State<FitnessRow> {
             padding: EdgeInsets.only(left: 10),
             child: IconButton(
               icon: Icon(Icons.backspace_outlined),
+              color: Theme.of(context).colorScheme.primary,
               iconSize: 28,
               onPressed: (() {widget.deleteRow(index);}),
             )

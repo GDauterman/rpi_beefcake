@@ -85,6 +85,7 @@ ThemeData customLightTheme() {
     ),
     buttonTheme: lightTheme.buttonTheme.copyWith(buttonColor: Colors.red),
     errorColor: Colors.red,
+    visualDensity: VisualDensity.standard
   );
 }
 
@@ -170,6 +171,7 @@ ThemeData customDarkTheme() {
     ),
     buttonTheme: darkTheme.buttonTheme.copyWith(buttonColor:  Color(0xDD5FD0)),
     errorColor: Colors.red,
+    visualDensity: VisualDensity.standard
   );
 }
 

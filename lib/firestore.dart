@@ -14,6 +14,7 @@ enum DBFields { nameN, caloriesN, fatN, carbsN, proteinN, durationS, qualityS, n
 class FirebaseService {
 
   bool connected = false;
+  List<ValueSetter<bool>> _connectionCallbacks = [];
 
   DocumentReference? userDoc;
   CollectionReference? sleepCol;
@@ -95,8 +96,16 @@ class FirebaseService {
     DBFields.fatN: 'Fats',
     DBFields.proteinN: 'Protein',
     DBFields.durationS: 'Hours Slept',
-    DBFields.quantityH: 'Water Consumed',
+    DBFields.quantityH: 'Water Drank',
   };
+
+  void addConnectedCallback(ValueSetter<bool> callback){
+    _connectionCallbacks.add(callback);
+  }
+
+  void clearConnectedCallback() {
+    _connectionCallbacks.clear();
+  }
 
   // makes firebase service a global singleton
   static final FirebaseService _db = FirebaseService._internal();
@@ -119,6 +128,9 @@ class FirebaseService {
           userDoc!.collection('graph_data').where(FieldPath.documentId, isEqualTo: 'trend_data').get().then((value) {
             trendsDoc = value.docs.first;
             connected = true;
+            for(int i = 0; i < _connectionCallbacks.length; i++) {
+              _connectionCallbacks[i](true);
+            }
           });
           sleepCol = userDoc!.collection('sleep');
           nutritionCol = userDoc!.collection('nutrition');
@@ -148,6 +160,9 @@ class FirebaseService {
     hydrationCol = null;
     workoutCol = null;
     rawGraphCol = null;
+    for(int i = 0; i < _connectionCallbacks.length; i++) {
+      _connectionCallbacks[i](false);
+    }
   }
 
   void initUser() {

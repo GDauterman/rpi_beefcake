@@ -4,18 +4,19 @@ import 'package:rpi_beefcake/style_lib.dart';
 
 class SettingsPage extends StatelessWidget {
 
-  GlobalKey<NavigatorState> nk;
   void Function() swapTheme;
-  SettingsPage(this.nk, this.swapTheme, {Key? key}) : super(key: key);
+  SettingsPage(this.swapTheme, {Key? key}) : super(key: key);
+
+  bool dark = false;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
-          backgroundColor: Theme.of(context).colorScheme.background,
+          backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-              onPressed: (() {nk.currentState!.pop();}),
+              onPressed: (() {Navigator.of(context).pop();}),
               icon: Icon(Icons.arrow_back_sharp, size: 32,)
         )
       ),
@@ -25,50 +26,51 @@ class SettingsPage extends StatelessWidget {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(vertical: 15),
-              child: ElevatedButton(
+              child: ElevatedButton.icon(
+                icon: (this.dark == false) ? Icon(Icons.light_mode) : Icon(Icons.dark_mode),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
-                onPressed: (() {
-                  swapTheme();
-                }),
-                child: SizedBox(
-                  height: 50,
-                  width: 200,
-                  child: Center(
-                    child: Text(
-                      'Dark Theme',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
-                    ),
+                onPressed: swapTheme,
+                label: Text(
+                  'Toggle Dark Mode',
+                  style: TextStyle(
+                      fontSize: 30
                   ),
                 ),
+              )
               ),
-            ),
+            //),
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
-              child: ElevatedButton(
+              padding: EdgeInsets.only(top:20),
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.logout),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: (() {
                   FirebaseAuth.instance.signOut();
                 }),
-                child: SizedBox(
-                  height: 50,
-                  width: 200,
-                  child: Center(
-                    child: Text(
-                      'Log Out',
-                      style: TextStyle(
-                          fontSize: 30
-                      ),
-                    ),
+                label: Text(
+                  'Log Out',
+                  style: TextStyle(
+                    fontSize: 30
                   ),
                 ),
+
+                // child: SizedBox(
+                //   height: 50,
+                //   width: 200,
+                //   child: Center(
+                //     child: Text(
+                //       'Log Out',
+                //       style: TextStyle(
+                //           fontSize: 30
+                //       ),
+                //     ),
+                //   ),
+                ),
               ),
-            ),
           ],
         )
       ),

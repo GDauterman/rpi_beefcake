@@ -2,24 +2,22 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/fitness_page.dart';
 import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/home_page.dart';
+import 'package:rpi_beefcake/loading_page.dart';
 import 'package:rpi_beefcake/page_enum.dart';
-import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/trends_page.dart';
+
+import 'firestore.dart';
 
 
 class BasePage extends StatefulWidget {
-  final GlobalKey<NavigatorState> nk;
-  const BasePage(this.nk, {Key? key}) : super(key: key);
+  const BasePage({Key? key}) : super(key: key);
 
   @override
   State<BasePage> createState() => _BasePage();
 }
 
 class _BasePage extends State<BasePage> {
-
-  PageItems pageItem = PageItems.health;
-  FloatingActionButtonLocation _fabLocation =
-      FloatingActionButtonLocation.endDocked;
+  PageItems pageItem = PageItems.home;
 
   void _onItemTapped(int index) {
     setState(() {
@@ -35,6 +33,11 @@ class _BasePage extends State<BasePage> {
   }
 
   @override
+  initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -42,11 +45,13 @@ class _BasePage extends State<BasePage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-              onPressed: (() {widget.nk.currentState!.pushNamed('/settings');}),
+              onPressed: (() {Navigator.of(context).pushNamed('/settings');}),
               icon: Icon(Icons.settings, size: 32,))
         ],
       ),
       body: (() {
+        if(!FirebaseService().connected) {
+          return LoadingPage();}
         if(pageItem == PageItems.home) {
           return HomePage();}
         if(pageItem == PageItems.fitness) {
@@ -56,14 +61,8 @@ class _BasePage extends State<BasePage> {
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-          child: const Icon(Icons.add),
-        backgroundColor: Theme.of(context).colorScheme.secondary
-      ) ,
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.background,
-
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),

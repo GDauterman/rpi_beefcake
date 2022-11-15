@@ -2,19 +2,79 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/style_lib.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 
 import 'firestore.dart';
 import 'dart:math';
 
 enum ColTypes { Nutrition, Hydration, Sleep }
+enum healthSubPages { home, sleep, nutrition, hydration, goals }
 
 class HomePage extends StatelessWidget {
+  static const _actionTitles = ["LogSleep", "logHydration", "logCalories", "logGoals"]; //set goals to be added
+  healthSubPages curPage = healthSubPages.home;
+
+  void _showAction(BuildContext context, int index) {
+    showDialog<void>(
+      context: context,
+      builder: (context) {
+        switch(index) {
+          case 0:
+            return AlertDialog(
+                content: SleepPage()
+            );
+          case 2:
+            return AlertDialog(
+                content: NutritionPage()
+            );
+          case 1:
+            return AlertDialog(
+                content: HydrationPage()
+            );
+          case 3:
+            return AlertDialog(
+                content: ProfilePage()
+            );
+          default: //should never be triggered
+            return AlertDialog(
+              content: Text("Hello world :)")
+            );
+        }
+        //return null;
+      },
+    );
+  }
+
   HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: DailyReport(),
+    return Scaffold(
+        body: Center(
+          child: DailyReport(),
+        ),
+      floatingActionButton: ExpandableFab(
+      distance: 112.0,
+      children: [
+        ActionButton(
+          onPressed: () => _showAction(context, 0),
+          icon: const Icon(Icons.hotel),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 1),
+          icon: const Icon(Icons.local_drink),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 2),
+          icon: const Icon(Icons.fastfood),
+        ),
+        ActionButton(
+          onPressed: () => _showAction(context, 3),
+          icon: const Icon(Icons.monitor_weight),
+        ),
+      ],
+    ),
     );
   }
 }
@@ -126,6 +186,144 @@ class _ProgressMeter extends State<ProgressMeter> {
         );
       }
     );
+  }
+}
 
+class HydrationPage extends StatelessWidget {
+  HydrationPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    List<FieldOptions> sleepOptions = [
+      FieldOptions(
+        hint: 'oz of liquid',
+        invalidText: 'Enter a number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d+(\.\d+)?$',
+      ),
+    ];
+    return Material(
+      // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top:20),
+                child: Text(
+                  'Hydration Entry',
+                  style: TextStyle(
+                      fontSize: 35
+                  ),
+                ),
+              ),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
+            ]
+        ),
+      ),
+    );
+  }
+}
+
+class NutritionPage extends StatelessWidget {
+  NutritionPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context){
+    List<FieldOptions> sleepOptions = [
+      FieldOptions(
+        hint: 'Food',
+        invalidText: 'Enter name of food',
+        keyboard: TextInputType.text,
+        regString: r'.+',
+      ),
+      FieldOptions(
+        hint: 'Total Calories',
+        invalidText: 'Enter a whole number',
+        keyboard: TextInputType.number,
+        regString: r'\d+',
+      ),
+      FieldOptions(
+        hint: 'Total Carbohydrates',
+        invalidText: 'Enter a whole number',
+        keyboard: TextInputType.number,
+        regString: r'\d+',
+      ),
+      FieldOptions(
+        hint: 'Total Fats',
+        invalidText: 'Enter a whole number',
+        keyboard: TextInputType.number,
+        regString: r'\d+',
+      ),
+      FieldOptions(
+        hint: 'Total Protein',
+        invalidText: 'Enter a whole number',
+        keyboard: TextInputType.number,
+        regString: r'\d+',
+      ),
+    ];
+    return Material(
+      // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top:20),
+                child: Text(
+                  'Nutrition Entry',
+                  style: TextStyle(
+                      fontSize: 35
+                  ),
+                ),
+              ),
+              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
+            ]
+        ),
+      ),
+    );
+  }
+}
+
+class SleepPage extends StatelessWidget {
+  SleepPage({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    List<FieldOptions> sleepOptions = [
+      FieldOptions(
+        hint: 'Hours Slept',
+        invalidText: 'Enter  number',
+        keyboard: TextInputType.number,
+        regString: r'^0*\d{1,2}(\.\d+)?$',
+      ),
+      FieldOptions(
+        hint: 'Sleep Quality (0-100)',
+        invalidText: 'Enter an integer from 0 to 100',
+        keyboard: TextInputType.number,
+        regString: r'^0*(\d{1,2}|100)$',
+      ),
+      FieldOptions(
+        hint: 'Notes',
+      )
+    ];
+    return Material(
+      // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 20),
+                child: Text(
+                  'Sleep Entry',
+                  style: TextStyle(
+                      fontSize: 35
+                  ),
+                ),
+              ),
+              FieldWithEnter(fieldOptions: sleepOptions,
+                  dataEntry: FirebaseService().addSleep),
+            ]
+        ),
+      ),
+    );
   }
 }
