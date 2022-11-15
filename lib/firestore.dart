@@ -165,8 +165,24 @@ class FirebaseService {
         'hydration_goal': 64,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
+        const Map<String, num> initTrends = {
+          'calories_m': -1,
+          'calories_b': -1,
+          'carbs_m': -1,
+          'carbs_b': -1,
+          'fats_m': -1,
+          'fats_b': -1,
+          'protein_m': -1,
+          'protein_b': -1,
+          'sleep_hours_m': -1,
+          'sleep_hours_b': -1,
+          'hydration_m': -1,
+          'hydration_b': -1,
+        };
         userDoc = newUserDoc;
-        initService();
+        userDoc!.collection('graph_data').doc('trend_data').set(initTrends).then((value) {
+          initService();
+        });
       });
     }
   }
