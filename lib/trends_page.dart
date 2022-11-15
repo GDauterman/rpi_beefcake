@@ -15,6 +15,8 @@ class TrendsPage extends StatefulWidget {
 
 class _TrendsPage extends State<TrendsPage> {
 
+  static const List<int> possibleIntervals = [1, 2, 3, 5, 10, 25, 50, 100, 200, 250, 500, 1000];
+
   final List<FlSpot> pointsTest = [
     FlSpot(0,1),
     FlSpot(1,1),
@@ -31,6 +33,8 @@ class _TrendsPage extends State<TrendsPage> {
   num xmax = 1;
   num ymin = 0;
   num ymax = 0;
+  num xinterval = 1;
+  num yinterval = 1;
   num trendm = 0;
   num trendb = 0;
   late final List<DropDownValueModel> dbDropDownList;
@@ -50,6 +54,23 @@ class _TrendsPage extends State<TrendsPage> {
     });
     trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
     trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+  }
+
+  List<num> getIntervalRate(num min, num max, int intervalCount) {
+    int? minDiff;
+    int minVal = 0;
+    for(int i = 0; i < possibleIntervals.length; i++) {
+      int curDiff = (((max-min)/possibleIntervals[i]).floor()-intervalCount).abs();
+      if(minDiff == null || curDiff < minDiff){
+        minDiff = curDiff;
+        minVal = i;
+      }
+    }
+    num finalInterval = possibleIntervals[minVal];
+    num newMin = (min/finalInterval).floor()*finalInterval;
+    num newMax = (max/finalInterval).ceil()*finalInterval;
+
+    return [newMin, newMax, finalInterval];
   }
 
   void getPoints(List<dynamic> newPoints) {
@@ -76,7 +97,7 @@ class _TrendsPage extends State<TrendsPage> {
       // angle: -pi/2,
       axisSide: meta.axisSide,
       child: Text(
-        value.toString().substring(0,value.toString().length-2),
+        value.toInt().toString()
         //style: COLOR: text style for individual axis ticks
       ),
     );
@@ -110,7 +131,17 @@ class _TrendsPage extends State<TrendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    if(points != null && points!.length != 0) {
+      List<num> yres = getIntervalRate(ymin, ymax, 6);
+      List<num> xres = getIntervalRate(xmin, xmax, 6);
+      xmin = xres[0];
+      xmax = xres[1];
+      xinterval = xres[2];
+      ymin = yres[0];
+      ymax = yres[1];
+      yinterval = yres[2];
+    }
+      return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -136,7 +167,11 @@ class _TrendsPage extends State<TrendsPage> {
             SizedBox(
               width: 350,
               height: 275,
-              child: (points == null) ? SizedBox.shrink() : LineChart(
+              child: (points == null || points!.length == 0) ?
+                  Center(
+                    child: Text('No logged data in the last 7 days')
+                  )
+                  : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
                 LineChartData(
@@ -169,7 +204,7 @@ class _TrendsPage extends State<TrendsPage> {
                         sideTitles:SideTitles(
                           showTitles: true,
                           getTitlesWidget: getDateAxisTickVals,
-                          interval: 1
+                          interval: xinterval.toDouble(),
                         ),
                       ),
                       leftTitles: AxisTitles(
@@ -179,6 +214,7 @@ class _TrendsPage extends State<TrendsPage> {
                           showTitles: true,
                           reservedSize: 50,
                           getTitlesWidget: getUnitAxisTickVals,
+                          interval: yinterval.toDouble(),
                           // interval: (ymax-ymin).toDouble()
                         ),
                       ),
