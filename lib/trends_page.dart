@@ -44,7 +44,7 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void queryForNewField() {
-    FirebaseService().getRawPlotPoints(curField, getPoints, 10);
+    FirebaseService().getRawPlotPoints(curField, getPoints, 7);
     FirebaseService().userDoc!.get().then((value) {
       setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
     });
