@@ -41,36 +41,24 @@ class SettingsPage extends StatelessWidget {
               )
               ),
             //),
-            Padding(
-              padding: EdgeInsets.only(top:20),
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.logout),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: (() {
-                  FirebaseAuth.instance.signOut();
-                }),
-                label: Text(
-                  'Log Out',
-                  style: TextStyle(
-                    fontSize: 30
+              Padding(
+                padding: EdgeInsets.only(top:20),
+                child: ElevatedButton.icon(
+                  icon: Icon(Icons.logout),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  onPressed: (() {
+                    FirebaseAuth.instance.signOut();
+                  }),
+                  label: Text(
+                    'Log Out',
+                    style: TextStyle(
+                      fontSize: 30
+                    ),
                   ),
                 ),
-
-                // child: SizedBox(
-                //   height: 50,
-                //   width: 200,
-                //   child: Center(
-                //     child: Text(
-                //       'Log Out',
-                //       style: TextStyle(
-                //           fontSize: 30
-                //       ),
-                //     ),
-                //   ),
-                ),
-              ),
+             ),
           ],
         )
       ),

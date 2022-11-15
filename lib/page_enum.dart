@@ -21,10 +21,10 @@ extension PageExtension on PageItems {
         return 0;
       case PageItems.fitness:
         return 1;
-      case PageItems.health:
-        return 2;
       case PageItems.trends:
-        return 3;
+        return 2;
+      default:
+        return 0;
     }
   }
 }
