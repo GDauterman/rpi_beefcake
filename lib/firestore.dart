@@ -96,7 +96,7 @@ class FirebaseService {
     DBFields.fatN: 'Fats',
     DBFields.proteinN: 'Protein',
     DBFields.durationS: 'Hours Slept',
-    DBFields.quantityH: 'Water Consumed',
+    DBFields.quantityH: 'Water Drank',
   };
 
   void addConnectedCallback(ValueSetter<bool> callback){

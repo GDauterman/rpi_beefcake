@@ -87,7 +87,7 @@ class _GoalRow extends State<GoalRow> {
               )
             ),
             child: SizedBox(
-              height: 100,
+              height: 80,
               child: Padding(
                 padding: EdgeInsets.all(15),
                 child: Row(
@@ -100,13 +100,13 @@ class _GoalRow extends State<GoalRow> {
                         Text(
                           title,
                           style: TextStyle(
-                            fontSize: 35
+                            fontSize: 25
                           ),
                         ),
                         Text(
                           units,
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 15
                           )
                         )
                       ]
@@ -114,7 +114,7 @@ class _GoalRow extends State<GoalRow> {
                     Text(
                       val,
                       style: TextStyle(
-                        fontSize: 50
+                        fontSize: 45
                       ),
                     )
                   ]
