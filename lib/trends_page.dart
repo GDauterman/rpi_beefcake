@@ -97,7 +97,7 @@ class _TrendsPage extends State<TrendsPage> {
       // angle: -pi/2,
       axisSide: meta.axisSide,
       child: Text(
-        value.toString().substring(0,value.toString().length-2),
+        value.toInt().toString()
         //style: COLOR: text style for individual axis ticks
       ),
     );
