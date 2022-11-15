@@ -27,14 +27,6 @@ class MainApp extends StatefulWidget {
 
 class _MainApp extends State<MainApp> {
   late final Future fbFuture = Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
-  final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
-
-  bool isDark = false;
-
-  void swapTheme() {
-    setState(() { isDark = !isDark; });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,42 +37,92 @@ class _MainApp extends State<MainApp> {
           return const Text('uh oh');
         }
         else if(snapshot.connectionState == ConnectionState.done) {
-          FirebaseAuth.instance.authStateChanges().listen((User? user) {
-            if (user == null) {
-              FirebaseService().clearService();
-              if (mainNavKey.currentState != null) {
-                mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
-              }
-            } else {
-              FirebaseService().initService();
-              if (mainNavKey.currentState != null) {
-                mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
-              }
-            }
-          });
-          return MaterialApp(
-            title: 'Main App',
-            /*
-            darkTheme: customDarkTheme (),
-            theme: customLightTheme (),
-            themeMode: ThemeMode.system, //theme adapts to system settings
-            */
-            theme: isDark ? customDarkTheme () : customLightTheme(),
-
-            navigatorKey: mainNavKey,
-            initialRoute: '/loading',
-            routes: {
-              '/':          (context) => BasePage(mainNavKey),
-              '/login':     (context) => const LoginPage(),
-              '/register':  (context) => const RegisterPage(),
-              '/loading':   (context) => LoadingPage(),
-              '/settings':  (context) => SettingsPage(mainNavKey, swapTheme),
-            },
-
-          );
+          return NavPage();
         }
         return LoadingPage();
       },
     );
   }
 }
+
+class NavPage extends StatefulWidget {
+  NavPage({super.key});
+
+  @override
+  State<NavPage> createState() => _NavPage();
+}
+
+class _NavPage extends State<NavPage> {
+
+  final GlobalKey<NavigatorState> mainNavKey = GlobalKey<NavigatorState>();
+  final GlobalKey<NavigatorState> homeNavKey = GlobalKey<NavigatorState>();
+
+  bool subscribedToAuth = false;
+
+  bool isDark = false;
+
+  void swapTheme() {
+    setState(() { isDark = !isDark; });
+  }
+
+  void connetionStateChanges(bool connected) {
+    if(connected) {
+      mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
+    }
+    mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+  }
+
+  @override
+  initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    Widget app = MaterialApp(
+      title: 'Main App',
+      theme: isDark ? customDarkTheme () : customLightTheme(),
+      navigatorKey: mainNavKey,
+      initialRoute: '/loading',
+      routes: {
+        '/':          (context) => BasePage(),
+        '/login':     (context) => const LoginPage(),
+        '/register':  (context) => const RegisterPage(),
+        '/loading':   (context) => LoadingPage(),
+        '/settings':  (context) => SettingsPage(swapTheme),
+      },
+    );
+
+    //subscribes to authstate once (regardless of this page being rebuilt)
+    if(!subscribedToAuth) {
+      FirebaseService().addConnectedCallback((connected) {
+        if(connected) {
+          mainNavKey.currentState!.pushNamedAndRemoveUntil('/', (route) => false);
+        } else {
+          mainNavKey.currentState!.pushNamedAndRemoveUntil('/login', (route) => false);
+        }
+      });
+      FirebaseAuth.instance.authStateChanges().listen((User? user) {
+        if (user == null) {
+          print('clearing auth');
+          FirebaseService().clearService();
+        }
+        else {
+          print('init auth');
+          FirebaseService().initService();
+        }
+      });
+      subscribedToAuth = true;
+    }
+
+    return app;
+  }
+
+  // this would be where we would unsubscribe our authstatechanges listener (IF THEY GAVE US ONE)
+  @override
+  void deactivate() {
+    super.deactivate();
+  }
+
+}
+

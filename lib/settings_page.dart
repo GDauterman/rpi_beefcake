@@ -4,9 +4,8 @@ import 'package:rpi_beefcake/style_lib.dart';
 
 class SettingsPage extends StatelessWidget {
 
-  GlobalKey<NavigatorState> nk;
   void Function() swapTheme;
-  SettingsPage(this.nk, this.swapTheme, {Key? key}) : super(key: key);
+  SettingsPage(this.swapTheme, {Key? key}) : super(key: key);
 
   bool dark = false;
 
@@ -17,7 +16,7 @@ class SettingsPage extends StatelessWidget {
         title: Text('Settings'),
           backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
-              onPressed: (() {nk.currentState!.pop();}),
+              onPressed: (() {Navigator.of(context).pop();}),
               icon: Icon(Icons.arrow_back_sharp, size: 32,)
         )
       ),
