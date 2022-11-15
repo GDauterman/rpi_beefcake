@@ -110,6 +110,11 @@ class _TrendsPage extends State<TrendsPage> {
 
   @override
   Widget build(BuildContext context) {
+    print("AAAAAAAAAAAAAAA");
+    print((points == null || points!.length == 0));
+    if(points != null && points!.length != 0) {
+      print(points);
+    }
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -136,7 +141,11 @@ class _TrendsPage extends State<TrendsPage> {
             SizedBox(
               width: 350,
               height: 275,
-              child: (points == null) ? SizedBox.shrink() : LineChart(
+              child: (points == null || points!.length == 0) ?
+                  Center(
+                    child: Text('No logged data in the last 7 days')
+                  )
+                  : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
                 LineChartData(
