@@ -134,32 +134,36 @@ class _ProgressMeter extends State<ProgressMeter> {
   num progress = -1;
   num goal = 0;
 
-  final userDocStream = FirebaseService().userDoc!.snapshots();
-
-  void setLatestVal(num i) {
+  void setGoal(num i) {
     setState(() {
-      progress = i.toDouble();
-      if(goal != -1)
+      goal = i.toDouble();
+      if(progress != -1)
         barDec= progress/goal;
     });
   }
 
   @override
   initState() {
-    FirebaseService().getFieldAggSince(widget.field, setLatestVal, 0, FirebaseService.sumAgg);
+    FirebaseService().userDoc!.get().then((value) {
+      setGoal(value[FirebaseService().dbGoalMap[widget.field]!]);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: userDocStream,
+      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
       builder: (context, snapshot) {
-        if(!snapshot.hasData) {
-          goal = -1;
+        print(snapshot.connectionState.toString());
+        if(!snapshot.hasData || snapshot.data!.data() == null) {
+          print('no data :(');
+          progress = -1;
           barDec = 0;
         } else {
-          goal = snapshot.data![FirebaseService().dbGoalMap[widget.field]!] as num;
-          if(progress != -1) {
+          print('data!');
+          print(FirebaseService().dbTitleMap[widget.field!]);
+          progress = snapshot.data!.data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
+          if(goal != -1) {
             barDec = progress/goal;
           }
         }
@@ -194,7 +198,7 @@ class HydrationPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    List<FieldOptions> sleepOptions = [
+    List<FieldOptions> hydrationOptions = [
       FieldOptions(
         hint: 'oz of liquid',
         invalidText: 'Enter a number',
@@ -216,7 +220,7 @@ class HydrationPage extends StatelessWidget {
                   ),
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
+              FieldWithEnter(fieldOptions: hydrationOptions, dataEntry: FirebaseService().addHydration),
             ]
         ),
       ),
