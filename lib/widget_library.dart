@@ -3,9 +3,11 @@ import 'package:rpi_beefcake/firestore.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'dart:math' as math;
 
+typedef bool ValidatorFunction(String str);
 
 class FieldOptions {
   late RegExp validationRegex;
+  ValidatorFunction? validator;
   String? hint;
   String? invalidText;
   bool showValidSymbol;
@@ -14,7 +16,7 @@ class FieldOptions {
   Icon? prefixIcon;
   double? boxheight;
   double? boxwidth;
-  FieldOptions({this.boxheight, this.showValidSymbol = true, this.boxwidth, this.hint, this.invalidText, this.keyboard = TextInputType.text, String regString = '.*', IconData? icon, this.obscureText = false}) {
+  FieldOptions({this.validator, this.boxheight, this.showValidSymbol = true, this.boxwidth, this.hint, this.invalidText, this.keyboard = TextInputType.text, String regString = '.*', IconData? icon, this.obscureText = false}) {
     validationRegex = RegExp(regString);
     if(icon != null) {
       prefixIcon = Icon(icon, color: bc_style().textcolor);
@@ -118,6 +120,16 @@ class _CustTextInput extends State<CustTextInput> {
 
   @override
   Widget build(BuildContext context) {
+    Widget? validIcon;
+    if(widget.options.showValidSymbol && getVal().compareTo('') > 0) {
+      validIcon = Icon(
+          _isValid ? Icons.check_circle : Icons.flag_circle_rounded,
+          size: 28,
+          color: _isValid ? bc_style().correctcolor : bc_style().errorcolor
+      );
+    }
+    double _width = widget.options.boxwidth ?? MediaQuery.of(context).size.width;
+    double _height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
       controller: controller,
@@ -129,7 +141,7 @@ class _CustTextInput extends State<CustTextInput> {
             children: <InlineSpan>[
               WidgetSpan(
                   child: Text(
-                      widget.options.hint!,
+                      getVal().isEmpty ? widget.options.hint! : '',
                   ),
               ),
             ]
@@ -137,10 +149,16 @@ class _CustTextInput extends State<CustTextInput> {
         ),
         errorText: _isValid ? null : widget.options.invalidText,
         //border: InputBorder.none,
+        suffixIcon: validIcon,
         prefixIcon: widget.options.prefixIcon,
       ),
       onChanged: ((String str) {
-        bool valid = widget.options.validationRegex.hasMatch(str);
+        bool valid;
+        if(widget.options.validator != null) {
+          valid = widget.options.validator!(str);
+        } else {
+          valid = widget.options.validationRegex.hasMatch(str);
+        }
         if (_isValid && !valid) {
           setState(() {_isValid = false;});
         } else if (!_isValid && valid) {
@@ -148,23 +166,6 @@ class _CustTextInput extends State<CustTextInput> {
         }
       }),
     );
-
-    Container c;
-    if(widget.options.boxheight == null || widget.options.boxwidth == null) {
-      c = Container(
-        child: Expanded(
-          child: tf,
-        ),
-      );
-    } else {
-      c = Container(
-        child: SizedBox(
-          height: widget.options.boxheight,
-          width: widget.options.boxwidth,
-          child: tf,
-        ),
-      );
-    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 7),
       child: Container(
@@ -174,11 +175,10 @@ class _CustTextInput extends State<CustTextInput> {
           borderRadius: BorderRadius.circular(5),
         ),
         padding: const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
-        child: Row(
-          children: [
-            c,
-            widget.options.showValidSymbol ? Icon(_isValid ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: _isValid ? bc_style().correctcolor : bc_style().errorcolor) : SizedBox.shrink(),
-          ],
+        child: SizedBox(
+          child: tf,
+          width: _width,
+          height: _height,
         )
       ),
     );
