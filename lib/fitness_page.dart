@@ -14,6 +14,7 @@ class FitnessPage extends StatefulWidget {
 }
 
 class _FitnessPage extends State<FitnessPage> {
+  String errorText = '';
 
   void deleteIndex(int i) {
     i -= 1;
@@ -37,6 +38,16 @@ class _FitnessPage extends State<FitnessPage> {
       }
     });
   }
+
+  bool rowsValid() {
+    for(int i = 0; i < rows.length; i++) {
+      if(!rows[i].child.areValid()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void logRows() {
     setState(() {
       List<dynamic> data = [];
@@ -91,8 +102,26 @@ class _FitnessPage extends State<FitnessPage> {
               Padding(
                 padding: EdgeInsets.only(top: 10),
                 child: ElevatedButton(
-                  onPressed: logRows,
+                  onPressed: (() {
+                    if(rowsValid()) {
+                      errorText = '';
+                      logRows();
+                    } else {
+                      setState(() {
+                        errorText = 'Please enter something for all fields';
+                      });
+                    }
+                  }),
                   child: Text('Log Set')
+                )
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  errorText,
+                  style: TextStyle(
+                    color: Theme.of(context).errorColor
+                  ),
                 )
               ),
             ]
@@ -119,21 +148,27 @@ class FitnessRow extends StatefulWidget {
 
 class _FitnessRow extends State<FitnessRow> {
 
-  late CustTextInput weightInput;
-  late CustTextInput repInput;
+  late final FieldOptions _weightOptions;
+  late final FieldOptions _repOptions;
+  late CustTextInput _weightInput;
+  late CustTextInput _repInput;
   late int index;
 
   List<dynamic>? getFields() {
-    if(weightInput.child.isValid() && repInput.child.isValid()) {
-      return [weightInput.child.getVal(), repInput.child.getVal()];
+    if(_weightInput.child.isValid() && _repInput.child.isValid()) {
+      return [_weightInput.child.getVal(), _repInput.child.getVal()];
     }
     List<dynamic> empty = [];
     return(empty);
   }
 
+  bool areValid() {
+    return _weightInput.child.isValid() && _repInput.child.isValid();
+  }
+
   void clear() {
-    weightInput.child.clear();
-    repInput.child.clear();
+    _weightInput.child.clear();
+    _repInput.child.clear();
   }
 
   void decrementIndex() {
@@ -142,7 +177,7 @@ class _FitnessRow extends State<FitnessRow> {
 
   @override
   initState() {
-    FieldOptions weightOptions = FieldOptions(
+    _weightOptions = FieldOptions(
       hint: 'Weight (lbs)',
       regString: r'^0*\d+(\.\d+)?$',
       keyboard: TextInputType.number,
@@ -150,23 +185,23 @@ class _FitnessRow extends State<FitnessRow> {
       boxheight: 50,
       showValidSymbol: false,
     );
-    weightInput = CustTextInput(options: weightOptions);
 
-    FieldOptions repOptions = FieldOptions(
-      hint: 'Rps',
+    _repOptions = FieldOptions(
+      hint: 'Reps',
       regString: r'\d{1,3}',
       keyboard: TextInputType.number,
       boxwidth: 50,
       boxheight: 50,
       showValidSymbol: false,
     );
-    repInput = CustTextInput(options: repOptions);
 
     index = widget.initIndex;
   }
 
   @override
   Widget build(BuildContext context) {
+    _weightInput = CustTextInput(options: _weightOptions);
+    _repInput = CustTextInput(options: _repOptions);
     return Container(
       padding: EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -180,11 +215,11 @@ class _FitnessRow extends State<FitnessRow> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 7.5),
-            child: weightInput,
+            child: _weightInput,
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 7.5),
-            child: repInput,
+            child: _repInput,
           ),
           Padding(
             padding: EdgeInsets.only(left: 10),
