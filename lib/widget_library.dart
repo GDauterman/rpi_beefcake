@@ -100,6 +100,8 @@ class _CustTextInput extends State<CustTextInput> {
 
   TextEditingController controller = TextEditingController();
   late bool _isValid;
+  bool _showValid = true;
+
   @override
   void initState() {
     if(widget.options.validator != null) {
@@ -128,9 +130,9 @@ class _CustTextInput extends State<CustTextInput> {
     Widget? validIcon;
     if(widget.options.showValidSymbol && getVal().compareTo('') > 0) {
       validIcon = Icon(
-          _isValid ? Icons.check_circle : Icons.flag_circle_rounded,
+          _showValid ? Icons.check_circle : Icons.flag_circle_rounded,
           size: 28,
-          color: _isValid ? bc_style().correctcolor : bc_style().errorcolor
+          color: _showValid ? bc_style().correctcolor : bc_style().errorcolor
       );
     }
     double _width = widget.options.boxwidth ?? MediaQuery.of(context).size.width;
@@ -152,7 +154,7 @@ class _CustTextInput extends State<CustTextInput> {
             ]
           ),
         ),
-        errorText: _isValid ? null : widget.options.invalidText,
+        errorText: _showValid ? null : widget.options.invalidText,
         //border: InputBorder.none,
         suffixIcon: validIcon,
         prefixIcon: widget.options.prefixIcon,
@@ -168,6 +170,11 @@ class _CustTextInput extends State<CustTextInput> {
           setState(() {_isValid = false;});
         } else if (!_isValid && valid) {
           setState(() {_isValid = true;});
+        }
+        if(_showValid && !valid) {
+          setState(() {_showValid = false;});
+        } else if(!_showValid && valid) {
+          setState(() {_showValid = true;});
         }
       }),
     );
