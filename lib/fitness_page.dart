@@ -89,11 +89,11 @@ class _FitnessPage extends State<FitnessPage> {
                 )
               ),
               Padding(
-                  padding: EdgeInsets.zero,
-                  child: ElevatedButton(
-                      onPressed: logRows,
-                      child: Text('Log Set')
-                  )
+                padding: EdgeInsets.only(top: 10),
+                child: ElevatedButton(
+                  onPressed: logRows,
+                  child: Text('Log Set')
+                )
               ),
             ]
           )
