@@ -99,9 +99,14 @@ class CustTextInput extends StatefulWidget {
 class _CustTextInput extends State<CustTextInput> {
 
   TextEditingController controller = TextEditingController();
-  bool _isValid = true;
+  late bool _isValid;
   @override
   void initState() {
+    if(widget.options.validator != null) {
+      _isValid = widget.options.validator!('');
+    } else {
+      _isValid = widget.options.validationRegex.hasMatch('');
+    }
     super.initState();
   }
 
