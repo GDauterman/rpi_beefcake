@@ -100,29 +100,29 @@ class _FitnessPage extends State<FitnessPage> {
                 )
               ),
               Padding(
-                  padding: EdgeInsets.zero,
-                  child: ElevatedButton(
-                    onPressed: (() {
-                      if(rowsValid()) {
-                        errorText = '';
-                        logRows();
-                      } else {
-                        setState(() {
-                          errorText = 'Please enter something for all fields';
-                        });
-                      }
-                    }),
-                    child: Text('Log Set')
-                  )
+                padding: EdgeInsets.only(top: 10),
+                child: ElevatedButton(
+                  onPressed: (() {
+                    if(rowsValid()) {
+                      errorText = '';
+                      logRows();
+                    } else {
+                      setState(() {
+                        errorText = 'Please enter something for all fields';
+                      });
+                    }
+                  }),
+                  child: Text('Log Set')
+                )
               ),
               Padding(
-                  padding: EdgeInsets.only(top: 8),
-                  child: Text(
-                    errorText,
-                    style: TextStyle(
-                      color: Theme.of(context).errorColor
-                    ),
-                  )
+                padding: EdgeInsets.only(top: 8),
+                child: Text(
+                  errorText,
+                  style: TextStyle(
+                    color: Theme.of(context).errorColor
+                  ),
+                )
               ),
             ]
           )
