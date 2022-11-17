@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
+import 'dart:core';
 import 'dart:math';
 
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -41,6 +43,9 @@ class _TrendsPage extends State<TrendsPage> {
   final SingleValueDropDownController ddController = SingleValueDropDownController();
   DBFields curField = DBFields.caloriesN;
 
+  List<DocumentSnapshot> historyDocs = [];
+  List<Widget> historyRows = [];
+
   void getGoal(num ngoal) {
     setState(() {
       goal = ngoal;
@@ -48,12 +53,33 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void queryForNewField() {
+    points = [];
+    historyDocs = [];
+    historyRows = [];
+    FirebaseService().dbColMap[curField]!.orderBy('time_logged', descending: true).get().then(updateHistory);
     FirebaseService().getRawPlotPoints(curField, getPoints, 10);
     FirebaseService().userDoc!.get().then((value) {
       setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
     });
     trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
     trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+  }
+
+  void updateHistory(QuerySnapshot<Object?> value) {
+    setState(() {
+      if (value == null) {
+        return;
+      }
+      for (int i = 0; i < value.docs.length; i++) {
+        DocumentSnapshot tempDoc = value.docs[i];
+        Map<String, dynamic> tempData = tempDoc.data() as Map<String, dynamic>;
+        if (tempData.keys.contains(FirebaseService().dbFieldMap[curField]!) && tempData[FirebaseService().dbFieldMap[curField]!] != -1) {
+          historyDocs.add(tempDoc);
+          historyRows.add(HistoryRow(field: curField, doc: tempDoc));
+          // historyRows.add(Text('balls'));
+        }
+      }
+    });
   }
 
   List<num> getIntervalRate(num min, num max, int intervalCount) {
@@ -143,10 +169,13 @@ class _TrendsPage extends State<TrendsPage> {
         queryForNewField();
       }
     }
+
+
   }
 
   @override
   Widget build(BuildContext context) {
+    print(historyRows.length);
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -254,9 +283,70 @@ class _TrendsPage extends State<TrendsPage> {
                 ),
               ),
             ),
+            historyRows.length > 0 ? Expanded(
+              child: ListView(
+                children: historyRows
+              ),
+            ) : SizedBox.shrink(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class HistoryRow extends StatelessWidget {
+
+  DBFields field;
+  DocumentSnapshot doc;
+  HistoryRow({required this.field, required this.doc, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+    Timestamp ts = docData['time_logged'];
+    String tstr = DateTime.fromMillisecondsSinceEpoch(ts.millisecondsSinceEpoch).toString().substring(5, 16);
+    bool isFood = (field == DBFields.caloriesN || field == DBFields.carbsN || field == DBFields.fatN || field == DBFields.proteinN);
+    String title = isFood ? docData['food_name'].toString() : FirebaseService().dbTitleMap[field]!;
+    return GestureDetector(
+      child: Container(
+        child: SizedBox(
+          height: 70,
+          width: 350,
+          child: Padding(
+            padding: EdgeInsets.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 23
+                      ),
+                    ),
+                    Text(
+                      tstr,
+                      style: TextStyle(
+                        fontSize: 10
+                      )
+                    )
+                  ]
+                ),
+                Text(
+                  docData[FirebaseService().dbFieldMap[field]].toString(),
+                  style: TextStyle(
+                    fontSize: 35
+                  ),
+                )
+              ]
+            ),
+          ),
+        )
+      )
     );
   }
 }

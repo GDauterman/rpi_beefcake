@@ -142,7 +142,7 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
           presentString = widget.title + ': ';
           if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
             presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
-            presentString += FirebaseService().dbUnitMap[widget.field]!;
+            presentString += " " + FirebaseService().dbUnitMap[widget.field]!;
           } else {
             presentString += 'no data';
           }
