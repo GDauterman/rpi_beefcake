@@ -162,7 +162,7 @@ class FirebaseService {
     }
     _exerciseFields.add(field);
     _exerciseTitles.add(title);
-    _exercisePlotPoints.add("max1rm_" + field + "_y");
+    _exercisePlotPoints.add("max1rm_${field}_y");
   }
 
   static String fieldify(String title) {
@@ -170,8 +170,8 @@ class FirebaseService {
   }
 
   static String getDateDocName(DateTime date) {
-    String val = date.year.toString() + '-';
-    val += (date.month < 10 ? '0' : '') + date.month.toString() + '-';
+    String val = '${date.year}-';
+    val += '${date.month < 10 ? '0' : ''}${date.month}-';
     val += (date.day < 10 ? '0' : '') + date.day.toString();
     return val;
   }
@@ -193,10 +193,9 @@ class FirebaseService {
 
   void initService() {
     if (FirebaseAuth.instance.currentUser == null) {
-      print('Attempted to init firebaseservice without being logged in');
       assert(false);
     }
-    userReference!
+    userReference
         .where("uid", isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .get()
         .then((value) {
@@ -212,7 +211,7 @@ class FirebaseService {
         for (int i = 0; i < _exerciseTitles.length; i++) {
           String exField = fieldify(_exerciseTitles[i]);
           _exerciseFields.add(exField);
-          _exercisePlotPoints.add("max1rm_" + exField + "_y");
+          _exercisePlotPoints.add("max1rm_${exField}_y");
         }
         userDoc!
             .collection('graph_data')
@@ -438,13 +437,7 @@ class FirebaseService {
     }
     final List<String> validDocIDs = List.generate(daysAgo, (i) {
       DateTime curDay = DateTime.now().subtract(Duration(days: i));
-      return curDay.year.toString() +
-          '-' +
-          (curDay.month < 10 ? '0' : '') +
-          curDay.month.toString() +
-          '-' +
-          (curDay.day < 10 ? '0' : '') +
-          curDay.day.toString();
+      return '${curDay.year}-${curDay.month < 10 ? '0' : ''}${curDay.month}-${curDay.day < 10 ? '0' : ''}${curDay.day}';
     });
     rawGraphCol!
         .where(FieldPath.documentId, whereIn: validDocIDs)
