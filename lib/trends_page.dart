@@ -80,19 +80,28 @@ class _TrendsPage extends State<TrendsPage> {
       ymin = newPoints[2] as num;
       ymax = newPoints[3] as num;
 
-
-
-
-
       points = newPoints[4].cast<FlSpot>();
+
+      if(points != null && points!.length != 0) {
+        List<num> yres = getIntervalRate(ymin, ymax, 6);
+        List<num> xres = getIntervalRate(xmin, xmax, 6);
+        xmin = xres[0];
+        xmax = xres[1];
+        xinterval = xres[2];
+        ymin = yres[0];
+        ymax = yres[1];
+        yinterval = yres[2];
+
+        setTrendline();
+      }
     });
   }
 
   void setTrendline() {
     double lineOffset = 5;
     trendpoints = [
-    FlSpot((xmin-lineOffset), (trendm*(xmin-lineOffset)+trendb)),
-    FlSpot((xmax-lineOffset), (trendm*(xmax+lineOffset)+trendb)),
+      FlSpot((xmin-lineOffset), (trendm*(xmin-lineOffset)+trendb)),
+      FlSpot((xmax+lineOffset), (trendm*(xmax+lineOffset)+trendb)),
     ];
 
     ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
@@ -138,19 +147,7 @@ class _TrendsPage extends State<TrendsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if(points != null && points!.length != 0) {
-      List<num> yres = getIntervalRate(ymin, ymax, 6);
-      List<num> xres = getIntervalRate(xmin, xmax, 6);
-      xmin = xres[0];
-      xmax = xres[1];
-      xinterval = xres[2];
-      ymin = yres[0];
-      ymax = yres[1];
-      yinterval = yres[2];
-
-      setTrendline();
-    }
-      return Scaffold(
+    return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -240,6 +237,7 @@ class _TrendsPage extends State<TrendsPage> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: points,
+                      barWidth: 4.5,
                       isCurved: true,
                       // dotData: FlDotData(
                       //   show: false,
