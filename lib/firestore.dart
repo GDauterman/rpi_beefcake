@@ -397,7 +397,8 @@ class FirebaseService {
     rawGraphCol!.where(FieldPath.documentId, whereIn: validDocIDs).get().then((value) {
       String fieldStr = field == DBFields.exercise ? _exercisePlotPoints[exIdx!] : dbPlotYMap[field]!;
       print(fieldStr);
-
+      if(exIdx != null)
+        print(exIdx);
       List<FlSpot> points = [];
       num xmin = double.maxFinite;
       num xmax = -double.maxFinite;

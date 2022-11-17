@@ -229,12 +229,7 @@ class _TrendsPage extends State<TrendsPage> {
               dropDownItemCount: 4,
               onChanged: ((val) {
                 setState(() {
-                  if(val is String) {
-                    exIdx = FirebaseService().getExerciseTitles().indexOf(val);
-                  }
-                  if(val is int) {
-                    exIdx = val;
-                  }
+                  exIdx = val.value;
                   points = null;
                   queryForNewField();
                 });
