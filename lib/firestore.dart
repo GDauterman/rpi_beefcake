@@ -112,16 +112,16 @@ class FirebaseService {
   };
 
   final Map<DBFields, String> dbTitleMap = {
+    DBFields.exercise: 'Exercises',
     DBFields.caloriesN: 'Calories',
-    DBFields.carbsN: 'Carb',
-    DBFields.fatN: 'Fats',
-    DBFields.proteinN: 'Protein',
     DBFields.durationS: 'Hours Slept',
     DBFields.quantityH: 'Water Drank',
     DBFields.weightM: 'Weight',
+    DBFields.carbsN: 'Carb',
+    DBFields.fatN: 'Fats',
+    DBFields.proteinN: 'Protein',
     DBFields.waistM: 'Waist Circ.',
     DBFields.bicepM: 'Bicep Circ.',
-    DBFields.exercise: 'Exercises',
   };
 
   List<String> _exerciseFields = [];
