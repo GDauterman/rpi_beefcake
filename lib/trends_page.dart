@@ -104,8 +104,8 @@ class _TrendsPage extends State<TrendsPage> {
       FlSpot((xmax+lineOffset), (trendm*(xmax+lineOffset)+trendb)),
     ];
 
-    ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
-    ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
+    // ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
+    // ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
   }
 
   static Widget getUnitAxisTickVals(double value, TitleMeta meta) {
@@ -173,9 +173,9 @@ class _TrendsPage extends State<TrendsPage> {
             SizedBox(
               width: 350,
               height: 275,
-              child: (points == null || points!.length == 0) ?
+              child: (points == null || points!.length < 2) ?
                   Center(
-                    child: Text('No logged data in the last 7 days')
+                    child: Text('Not enough logged data in the last 7 days')
                   )
                   : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
