@@ -99,6 +99,14 @@ class FirebaseService {
     DBFields.quantityH: 'Water Drank',
   };
 
+  static String getDateDocName(DateTime date) {
+    String val = date.year.toString() + '-';
+    val += (date.month < 10 ? '0' : '') + date.month.toString() + '-';
+    val += (date.day < 10 ? '0' : '') + date.day.toString();
+    print(val);
+    return val;
+  }
+
   void addConnectedCallback(ValueSetter<bool> callback){
     _connectionCallbacks.add(callback);
   }
