@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
@@ -17,10 +19,9 @@ class HomePage extends StatelessWidget {
   healthSubPages curPage = healthSubPages.home;
 
   void _showAction(BuildContext context, int index) {
-    showDialog<void>(
-      context: context,
+    Navigator.of(context).push(CustomPopupRoute(
       builder: (context) {
-        switch(index) {
+        switch (index) {
           case 0:
             return AlertDialog(
                 content: SleepPage()
@@ -35,16 +36,15 @@ class HomePage extends StatelessWidget {
             );
           case 3:
             return AlertDialog(
-                content: ProfilePage()
+                content: MeasurementPage()
             );
           default: //should never be triggered
             return AlertDialog(
-              content: Text("Hello world :)")
+                content: Text("Hello world :)")
             );
         }
-        //return null;
       },
-    );
+    ));
   }
 
   HomePage({Key? key}) : super(key: key);
@@ -111,9 +111,47 @@ class DailyReport extends StatelessWidget {
           ),
           ProgressMeter('Hours Slept (hr)', DBFields.durationS),
           ProgressMeter('Calories Today', DBFields.caloriesN),
-          ProgressMeter('Water Drank (oz)', DBFields.quantityH)
+          ProgressMeter('Water Drank (oz)', DBFields.quantityH),
+          SingleValueUpdating(title: 'Today\'s Mean Weight', field: DBFields.weightM),
         ],
       )
+    );
+  }
+}
+
+class SingleValueUpdating extends StatefulWidget {
+  String title;
+  DBFields field;
+  IconData? icon;
+
+  SingleValueUpdating({Key? key, required this.title, required this.field, this.icon}) : super(key: key);
+
+  @override
+  State<SingleValueUpdating> createState() => _SingleValueUpdating();
+}
+
+class _SingleValueUpdating extends State<SingleValueUpdating> {
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
+      builder: (context, snapshot) {
+        String presentString = 'loading';
+        if(snapshot.hasData) {
+          presentString = widget.title + ': ';
+          if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
+            presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
+            presentString += FirebaseService().dbUnitMap[widget.field]!;
+          } else {
+            presentString += 'no data';
+          }
+        }
+        return Container(
+          padding: EdgeInsets.symmetric(vertical: 5),
+          child: Text(presentString),
+        );
+      },
     );
   }
 }

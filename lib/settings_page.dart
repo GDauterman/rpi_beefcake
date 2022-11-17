@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -14,7 +15,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
-          backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         leading: IconButton(
               onPressed: (() {Navigator.of(context).pop();}),
               icon: Icon(Icons.arrow_back_sharp, size: 32,)
@@ -25,7 +26,25 @@ class SettingsPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Padding(
-              padding: EdgeInsets.symmetric(vertical: 15),
+              padding: EdgeInsets.only(top:15),
+              child: ElevatedButton.icon(
+                icon: Icon(Icons.update_rounded),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.primary,
+                ),
+                onPressed: (() {
+                  Navigator.of(context).pushNamed('/profile');
+                }),
+                label: Text(
+                  'Update Goals',
+                  style: TextStyle(
+                      fontSize: 30
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 15),
               child: ElevatedButton.icon(
                 icon: (this.dark == false) ? Icon(Icons.light_mode) : Icon(Icons.dark_mode),
                 style: ElevatedButton.styleFrom(
@@ -42,7 +61,7 @@ class SettingsPage extends StatelessWidget {
               ),
             //),
             Padding(
-              padding: EdgeInsets.only(top:20),
+              padding: EdgeInsets.only(top:15),
               child: ElevatedButton.icon(
                 icon: Icon(Icons.logout),
                 style: ElevatedButton.styleFrom(

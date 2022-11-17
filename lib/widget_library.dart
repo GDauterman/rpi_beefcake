@@ -116,6 +116,10 @@ class _CustTextInput extends State<CustTextInput> {
     return _isValid;
   }
 
+  bool isEmpty() {
+    return getVal().isEmpty;
+  }
+
   void clear() {
     setState(() {
       _showValid = true;

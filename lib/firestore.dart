@@ -9,7 +9,7 @@ import 'package:collection/collection.dart';
 
 typedef void ServiceCallback(List<dynamic> data);
 
-enum DBFields { nameN, caloriesN, fatN, carbsN, proteinN, durationS, qualityS, noteS, quantityH }
+enum DBFields { nameN, caloriesN, fatN, carbsN, proteinN, durationS, qualityS, noteS, quantityH, weightM, waistM, bicepM }
 
 class FirebaseService {
 
@@ -21,6 +21,7 @@ class FirebaseService {
   CollectionReference? nutritionCol;
   CollectionReference? hydrationCol;
   CollectionReference? workoutCol;
+  CollectionReference? measurementCol;
   CollectionReference? rawGraphCol;
   DocumentSnapshot? trendsDoc;
 
@@ -37,6 +38,9 @@ class FirebaseService {
     DBFields.qualityS: 'sleep_quality',
     DBFields.noteS: 'notes',
     DBFields.quantityH: 'amount',
+    DBFields.weightM: 'weight',
+    DBFields.waistM: 'waist',
+    DBFields.bicepM: 'bicep',
   };
 
   final Map<DBFields, String> dbGoalMap = {
@@ -46,6 +50,9 @@ class FirebaseService {
     DBFields.proteinN: 'protein_goal',
     DBFields.durationS: 'sleep_goal',
     DBFields.quantityH: 'hydration_goal',
+    DBFields.weightM: 'weight_goal',
+    DBFields.waistM: 'waist_goal',
+    DBFields.bicepM: 'bicep_goal',
   };
 
   final Map<DBFields, String> dbPlotYMap = {
@@ -55,6 +62,9 @@ class FirebaseService {
     DBFields.proteinN: 'sum_protein_y',
     DBFields.durationS: 'sum_sleep_hours_y',
     DBFields.quantityH: 'sum_hydration_y',
+    DBFields.weightM: 'avg_weight_y',
+    DBFields.waistM: 'avg_waist_y',
+    DBFields.bicepM: 'avg_bicep_y',
   };
 
   Map<DBFields, List<String>> dbTrendMap = {
@@ -64,6 +74,9 @@ class FirebaseService {
     DBFields.proteinN: ['protein_m', 'protein_b'],
     DBFields.durationS: ['sleep_hours_m', 'sleep_hours_b'],
     DBFields.quantityH: ['hydration_m', 'hydration_b'],
+    DBFields.weightM: ['weight_m', 'weight_b'],
+    DBFields.waistM: ['waist_m', 'waist_b'],
+    DBFields.bicepM: ['bicep_m', 'bicep_b'],
   };
 
   Map<DBFields, CollectionReference?> dbColMap = {
@@ -76,6 +89,9 @@ class FirebaseService {
     DBFields.qualityS: null,
     DBFields.noteS: null,
     DBFields.quantityH: null,
+    DBFields.weightM: null,
+    DBFields.waistM: null,
+    DBFields.bicepM: null,
   };
 
   final Map<DBFields, String> dbUnitMap = {
@@ -88,6 +104,9 @@ class FirebaseService {
     DBFields.qualityS: '0-100',
     DBFields.noteS: '',
     DBFields.quantityH: 'oz',
+    DBFields.weightM: 'lbs',
+    DBFields.waistM: 'inches',
+    DBFields.bicepM: 'inches',
   };
 
   final Map<DBFields, String> dbTitleMap = {
@@ -97,13 +116,15 @@ class FirebaseService {
     DBFields.proteinN: 'Protein',
     DBFields.durationS: 'Hours Slept',
     DBFields.quantityH: 'Water Drank',
+    DBFields.weightM: 'Weight',
+    DBFields.waistM: 'Waist Circ.',
+    DBFields.bicepM: 'Bicep Circ.',
   };
 
   static String getDateDocName(DateTime date) {
     String val = date.year.toString() + '-';
     val += (date.month < 10 ? '0' : '') + date.month.toString() + '-';
     val += (date.day < 10 ? '0' : '') + date.day.toString();
-    print(val);
     return val;
   }
 
@@ -143,6 +164,7 @@ class FirebaseService {
           sleepCol = userDoc!.collection('sleep');
           nutritionCol = userDoc!.collection('nutrition');
           hydrationCol = userDoc!.collection('hydration');
+          measurementCol = userDoc!.collection('measurement');
           workoutCol = userDoc!.collection('workout');
           rawGraphCol = userDoc!.collection('raw_graph_points');
           dbColMap[DBFields.nameN] = nutritionCol;
@@ -154,6 +176,9 @@ class FirebaseService {
           dbColMap[DBFields.qualityS] = sleepCol;
           dbColMap[DBFields.noteS] = sleepCol;
           dbColMap[DBFields.quantityH] = hydrationCol;
+          dbColMap[DBFields.weightM] = measurementCol;
+          dbColMap[DBFields.waistM] = measurementCol;
+          dbColMap[DBFields.bicepM] = measurementCol;
         }
       },
       onError: (e) => print(e.toString())
@@ -166,6 +191,7 @@ class FirebaseService {
     sleepCol = null;
     nutritionCol = null;
     hydrationCol = null;
+    measurementCol = null;
     workoutCol = null;
     rawGraphCol = null;
     for(int i = 0; i < _connectionCallbacks.length; i++) {
@@ -186,6 +212,9 @@ class FirebaseService {
         'carb_goal': 150,
         'sleep_goal': 8,
         'hydration_goal': 64,
+        'weight_goal': 175,
+        'waist_goal': 30,
+        'bicep_goal': 15,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
         const Map<String, num> initTrends = {
@@ -201,6 +230,12 @@ class FirebaseService {
           'sleep_hours_b': -1,
           'hydration_m': -1,
           'hydration_b': -1,
+          'weight_m': -1,
+          'weight_b': -1,
+          'waist_m': -1,
+          'waist_b': -1,
+          'bicep_m': -1,
+          'bicep_b': -1,
         };
         userDoc = newUserDoc;
         userDoc!.collection('graph_data').doc('trend_data').set(initTrends).then((value) {
@@ -236,7 +271,7 @@ class FirebaseService {
 
   void addHydration(List<dynamic> data) async {
     if(!connected) {
-      throw Exception('Attempted to add to sleep while not connected');
+      throw Exception('Attempted to add to hydration while not connected');
     }
     final newEntry = <String, dynamic>{
       "amount": num.parse(data[0]),
@@ -264,17 +299,31 @@ class FirebaseService {
     if(!connected) {
       throw Exception('Attempted to add to sleep while not connected');
     }
-    int setCount = data[2].length;
+    num setCount = data[2].length;
 
     final newEntry = <String, dynamic>{
       "Workout_name": data[0],
       "notes": data[1],
       "set_count": setCount,
-      "reps": data[2],
-      "weight": data[3],
+      "reps": num.parse(data[2]),
+      "weight": num.parse(data[3]),
     };
     await workoutCol!.add(newEntry).then((documentSnapshot) => print("Added Workout Data with ID: ${documentSnapshot.id}"));
   }
+
+  void addMeasurement(List<dynamic> data) async {
+    if(!connected) {
+      throw Exception('Attempted to add to measurement while not connected');
+    }
+    final newEntry = <String, dynamic>{
+      "weight": data[0].isEmpty ? -1 : num.parse(data[0]),
+      "waist": data[1].isEmpty ? -1 : num.parse(data[1]),
+      "bicep": data[2].isEmpty ? -1 : num.parse(data[2]),
+      "time_logged": Timestamp.now(),
+    };
+    await measurementCol!.add(newEntry).then((documentSnapshot) => print("Added Measurement Data with ID: ${documentSnapshot.id}"));
+  }
+
   static num sumAgg(List<num> nums) {
     return nums.sum;
   }
@@ -290,9 +339,11 @@ class FirebaseService {
     DateTime dt = DateTime.now().subtract(Duration(days: daysAgo, hours: DateTime.now().hour, minutes: DateTime.now().minute));
     dbColMap[field]!.where('time_logged', isGreaterThanOrEqualTo: dt).get().then((value) {
       List<num> fieldValList = [];
-      print(value.docs.length);
       for(int i = 0; i < value.docs.length; i++) {
-        fieldValList.add(value.docs[i].get(dbFieldMap[field]!));
+        Map<String, dynamic> docData = value.docs[i].data() as Map<String, dynamic>;
+        if(docData.keys.contains(dbFieldMap[field]!)) {
+          fieldValList.add(value.docs[i].get(dbFieldMap[field]!));
+        }
       }
       num result = aggFunc(fieldValList);
       whenGet(result);
@@ -307,7 +358,6 @@ class FirebaseService {
       DateTime curDay = DateTime.now().subtract(Duration(days:i));
       return curDay.year.toString() + '-' + (curDay.month<10?'0':'') + curDay.month.toString() + '-' + (curDay.day<10?'0':'') + curDay.day.toString();
     });
-    print(validDocIDs);
     rawGraphCol!.where(FieldPath.documentId, whereIn: validDocIDs).get().then((value) {
       List<FlSpot> points = [];
       num xmin = double.maxFinite;
@@ -316,14 +366,17 @@ class FirebaseService {
       num ymax = -double.maxFinite;
       print(value.docs.length);
       for(int i = 0; i < value.docs.length; i++) {
-        double xval = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
-        double yval = value.docs[i].get(dbPlotYMap[field]!).toDouble();
-        if(yval > 0) {
-          xmin = min(xval, xmin);
-          xmax = max(xval, xmax);
-          ymin = min(yval, ymin);
-          ymax = max(yval, ymax);
-          points.add(FlSpot(xval, yval));
+        Map<String, dynamic> docData = value.docs[i].data() as Map<String, dynamic>;
+        if(docData.keys.contains(dbPlotYMap[field]!)) { //checks if document has an entry (for newly tracked values)
+          double xval = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
+          double yval = docData[dbPlotYMap[field]!].toDouble();
+          if (yval > 0) {
+            xmin = min(xval, xmin);
+            xmax = max(xval, xmax);
+            ymin = min(yval, ymin);
+            ymax = max(yval, ymax);
+            points.add(FlSpot(xval, yval));
+          }
         }
       }
       whenGet([xmin, xmax, ymin, ymax, points]);

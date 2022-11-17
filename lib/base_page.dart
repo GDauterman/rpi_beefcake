@@ -21,14 +21,12 @@ class _BasePage extends State<BasePage> {
 
   void _onItemTapped(int index) {
     setState(() {
-      if(index == PageItems.home.getIndex) {
-        pageItem = PageItems.home;}
-      if(index == PageItems.fitness.getIndex) {
-        pageItem = PageItems.fitness;}
-      if(index == PageItems.health.getIndex) {
-        pageItem = PageItems.health;}
-      if(index == PageItems.trends.getIndex) {
-        pageItem = PageItems.trends;}
+      for(int i = 0; i < PageItems.values.length; i++) {
+        if(i == index) {
+          pageItem = PageItems.values[i];
+          break;
+        }
+      }
     });
   }
 
@@ -56,14 +54,17 @@ class _BasePage extends State<BasePage> {
           return HomePage();}
         if(pageItem == PageItems.fitness) {
           return FitnessPage();}
-        if(pageItem == PageItems.health) {
-          return HealthPage();}
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.auto_graph),
+            label: 'Trends',
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -74,18 +75,8 @@ class _BasePage extends State<BasePage> {
             label: 'Fitness',
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.heart_broken),
-            label: 'Health',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.auto_graph),
-            label: 'Trends',
-            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-          ),
         ],
-        currentIndex: pageItem.getIndex,
+        currentIndex: pageItem.index,
         selectedItemColor: Theme.of(context).colorScheme.primary,
         onTap: _onItemTapped,
       ),
