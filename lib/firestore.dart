@@ -250,6 +250,7 @@ class FirebaseService {
         'weight_goal': 175,
         'waist_goal': 30,
         'bicep_goal': 15,
+        'exercises': ['Bench Press', 'Squat', 'Deadlift'],
       };
       userReference.add(newUserEntry).then((newUserDoc) {
         const Map<String, num> initTrends = {
