@@ -25,6 +25,8 @@ class _BasePage extends State<BasePage> {
         pageItem = PageItems.home;}
       if(index == PageItems.fitness.getIndex) {
         pageItem = PageItems.fitness;}
+      if(index == PageItems.health.getIndex) {
+        pageItem = PageItems.health;}
       if(index == PageItems.trends.getIndex) {
         pageItem = PageItems.trends;}
     });
@@ -54,11 +56,13 @@ class _BasePage extends State<BasePage> {
           return HomePage();}
         if(pageItem == PageItems.fitness) {
           return FitnessPage();}
+        if(pageItem == PageItems.health) {
+          return HealthPage();}
         if(pageItem == PageItems.trends) {
           return const TrendsPage();}
       } ()),
       bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        backgroundColor: Theme.of(context).colorScheme.background,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
@@ -68,6 +72,11 @@ class _BasePage extends State<BasePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
             label: 'Fitness',
+            backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.heart_broken),
+            label: 'Health',
             backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
           ),
           BottomNavigationBarItem(
