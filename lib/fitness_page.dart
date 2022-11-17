@@ -7,8 +7,7 @@ import 'firestore.dart';
 List<String> exercisesList = <String>[
   'Bench Press',
   'Squat',
-  'Deadlift',
-  'Glute Spread'
+  'Deadlift'
 ];
 
 class FitnessPage extends StatefulWidget {

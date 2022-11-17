@@ -83,16 +83,12 @@ class _TrendsPage extends State<TrendsPage> {
         .get()
         .then(updateHistory);
     FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
-    if (curField != DBFields.exercise) {
+    trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
+    trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+    if(curField != DBFields.exercise) {
       FirebaseService().userDoc!.get().then((value) {
         setState(() {
           goal = value[FirebaseService().dbGoalMap[curField]!];
-          trendm = FirebaseService()
-              .trendsDoc!
-              .get(FirebaseService().dbTrendMap[curField]![0]);
-          trendb = FirebaseService()
-              .trendsDoc!
-              .get(FirebaseService().dbTrendMap[curField]![1]);
         });
       });
     }
