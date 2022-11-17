@@ -81,5 +81,4 @@ class SettingsPage extends StatelessWidget {
 
 class DarkModeToggle extends ElevatedButton {
   DarkModeToggle({required super.onPressed, required super.child});
-
 }
