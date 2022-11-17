@@ -12,7 +12,16 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    return StreamBuilder(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Update Goals'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        leading: IconButton(
+            onPressed: (() {Navigator.of(context).pop();}),
+            icon: Icon(Icons.arrow_back_sharp, size: 32,)
+        )
+      ),
+      body: StreamBuilder(
       stream: userDocStream,
       builder: (context, snapshot) {
         return SingleChildScrollView(
@@ -33,10 +42,14 @@ class ProfilePage extends StatelessWidget {
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.carbsN)),
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.durationS)),
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.quantityH)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.weightM)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.waistM)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.bicepM)),
             ]
           ),
         );
-      }
+      },
+      )
     );
   }
 }
