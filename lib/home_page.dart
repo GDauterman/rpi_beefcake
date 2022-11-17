@@ -154,14 +154,10 @@ class _ProgressMeter extends State<ProgressMeter> {
     return StreamBuilder(
       stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
       builder: (context, snapshot) {
-        print(snapshot.connectionState.toString());
         if(!snapshot.hasData || snapshot.data!.data() == null) {
-          print('no data :(');
           progress = -1;
           barDec = 0;
         } else {
-          print('data!');
-          print(FirebaseService().dbTitleMap[widget.field!]);
           progress = snapshot.data!.data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
           if(goal != -1) {
             barDec = progress/goal;

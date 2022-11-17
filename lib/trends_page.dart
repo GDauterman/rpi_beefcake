@@ -80,16 +80,23 @@ class _TrendsPage extends State<TrendsPage> {
       ymin = newPoints[2] as num;
       ymax = newPoints[3] as num;
 
-      trendpoints = [
-        FlSpot(xmin as double, trendm*xmin+trendb as double),
-        FlSpot(xmax as double, trendm*xmax+trendb as double),
-      ];
 
-      ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
-      ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
+
+
 
       points = newPoints[4].cast<FlSpot>();
     });
+  }
+
+  void setTrendline() {
+    double lineOffset = 5;
+    trendpoints = [
+    FlSpot((xmin-lineOffset), (trendm*(xmin-lineOffset)+trendb)),
+    FlSpot((xmax-lineOffset), (trendm*(xmax+lineOffset)+trendb)),
+    ];
+
+    ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
+    ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
   }
 
   static Widget getUnitAxisTickVals(double value, TitleMeta meta) {
@@ -140,6 +147,8 @@ class _TrendsPage extends State<TrendsPage> {
       ymin = yres[0];
       ymax = yres[1];
       yinterval = yres[2];
+
+      setTrendline();
     }
       return Scaffold(
       body: Padding(
@@ -175,7 +184,6 @@ class _TrendsPage extends State<TrendsPage> {
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
                 LineChartData(
-
                   minX: xmin.toDouble(),
                   maxX: xmax.toDouble(),
                   minY: ymin.toDouble(),
@@ -184,6 +192,12 @@ class _TrendsPage extends State<TrendsPage> {
                     border: Border.all(
                       color: Colors.black // COLOR: colors of each individual border (also width)
                     )
+                  ),
+                  clipData: FlClipData(
+                    top: true,
+                    bottom: true,
+                    left: true,
+                    right: true,
                   ),
                   extraLinesData: ExtraLinesData(
                     horizontalLines: (goal > ymin && goal < ymax) ? [
