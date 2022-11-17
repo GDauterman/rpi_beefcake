@@ -4,7 +4,7 @@ import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
 
-List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift', 'Glute Spread'];
+List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift'];
 
 class FitnessPage extends StatefulWidget {
   FitnessPage({Key? key}) : super(key: key);
