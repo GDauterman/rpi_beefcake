@@ -12,7 +12,16 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-    return StreamBuilder(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Update Goals'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        leading: IconButton(
+            onPressed: (() {Navigator.of(context).pop();}),
+            icon: Icon(Icons.arrow_back_sharp, size: 32,)
+        )
+      ),
+      body: StreamBuilder(
       stream: userDocStream,
       builder: (context, snapshot) {
         return SingleChildScrollView(
@@ -33,10 +42,14 @@ class ProfilePage extends StatelessWidget {
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.carbsN)),
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.durationS)),
               Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.quantityH)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.weightM)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.waistM)),
+              Padding(padding: EdgeInsets.only(top: 8), child: GoalRow(userDocStream, DBFields.bicepM)),
             ]
           ),
         );
-      }
+      },
+      )
     );
   }
 }
@@ -87,7 +100,7 @@ class _GoalRow extends State<GoalRow> {
               )
             ),
             child: SizedBox(
-              height: 100,
+              height: 80,
               child: Padding(
                 padding: EdgeInsets.all(15),
                 child: Row(
@@ -100,13 +113,13 @@ class _GoalRow extends State<GoalRow> {
                         Text(
                           title,
                           style: TextStyle(
-                            fontSize: 35
+                            fontSize: 25
                           ),
                         ),
                         Text(
                           units,
                           style: TextStyle(
-                            fontSize: 20
+                            fontSize: 15
                           )
                         )
                       ]
@@ -114,7 +127,7 @@ class _GoalRow extends State<GoalRow> {
                     Text(
                       val,
                       style: TextStyle(
-                        fontSize: 50
+                        fontSize: 45
                       ),
                     )
                   ]
