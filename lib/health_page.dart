@@ -5,203 +5,103 @@ import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
-enum healthSubPages { options, sleep, nutrition, hydration, goals }
+class MeasurementPage extends StatefulWidget {
+  MeasurementPage({Key? key}) : super(key: key);
 
-class HealthPage extends StatefulWidget {
-  healthSubPages curPage = healthSubPages.options;
-
-  HealthPage({Key? key}) : super(key: key);
-
-  State<HealthPage> createState() => _HealthPage();
+  @override
+  State<MeasurementPage> createState() => _MeasurementPage();
 }
 
-class _HealthPage extends State<HealthPage> {
-  void backCallback() {
-    setState(() { widget.curPage = healthSubPages.options; });
-  }
+class _MeasurementPage extends State<MeasurementPage> {
+  late final FieldOptions _weightOptions;
+  late final FieldOptions _waistOptions;
+  late final FieldOptions _bicepOptions;
+  late final CustTextInput _weightInput;
+  late final CustTextInput _waistInput;
+  late final CustTextInput _bicepInput;
+
+  String errorText = '';
+
   @override
-  Widget build(BuildContext context) {
-    switch(widget.curPage) {
-      case healthSubPages.options:
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary
-                  ),
-                  onPressed: (() {
-                    setState(() {widget.curPage = healthSubPages.nutrition;});
-                  }),
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      'Log Nutrition',
-                      style: Theme.of(context).textTheme.button,
-                    ),
-                  ),
+  initState() {
+    _weightOptions = FieldOptions(
+      hint: 'Current Weight (lbs)',
+      invalidText: 'Enter a number',
+      keyboard: TextInputType.number,
+      regString: r'^0*\d*(\.\d+)?$',
+    );
+    _waistOptions = FieldOptions(
+      hint: 'Waist Circumference (in.)',
+      invalidText: 'Enter a number',
+      keyboard: TextInputType.number,
+      regString: r'^0*\d*(\.\d+)?$',
+    );
+    _bicepOptions = FieldOptions(
+      hint: 'Bicep Circumference (in.)',
+      invalidText: 'Enter a number',
+      keyboard: TextInputType.number,
+      regString: r'^0*\d*(\.\d+)?$',
+    );
+    _weightInput = CustTextInput(options: _weightOptions);
+    _waistInput = CustTextInput(options: _waistOptions);
+    _bicepInput = CustTextInput(options: _bicepOptions);
+  }
+
+  @override
+  Widget build(BuildContext context){
+    return Material(
+    // Sleep Container
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top:20),
+              child: Text(
+                'Body Measurement Entry',
+                style: TextStyle(
+                  fontSize: 35
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: (() {
-                    setState(() {widget.curPage = healthSubPages.sleep;});
-                  }),
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      'Log Sleep',
-                      style: Theme.of(context).textTheme.button,
-                    ),
-                  ),
+            ),
+            Padding(
+              padding: EdgeInsets.only(top:7),
+              child: Text(
+                'Enter at least 1 value',
+                style: TextStyle(
+                    fontSize: 15
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: (() {
-                    setState(() {widget.curPage = healthSubPages.hydration;});
-                  }),
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      'Log Hydration',
-                      style: Theme.of(context).textTheme.button,
-                    ),
-                  ),
+            ),
+            _weightInput,
+            _waistInput,
+            _bicepInput,
+            ElevatedButton(
+              onPressed: (() {
+                if(_weightInput.child.isEmpty() && _waistInput.child.isEmpty() && _bicepInput.child.isEmpty()) {
+                  setState((){errorText = 'Enter at least one metric before submitting';});
+                } else if(_weightInput.child.isValid() && _waistInput.child.isValid() && _bicepInput.child.isValid()) {
+                  setState((){errorText = '';});
+                  FirebaseService().addMeasurement([_weightInput.child.getVal(), _waistInput.child.getVal(), _bicepInput.child.getVal()]);
+                  _weightInput.child.clear();
+                  _waistInput.child.clear();
+                  _bicepInput.child.clear();
+                }
+              }),
+              child: Text('Submit')
+            ),
+            Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: Text(
+                errorText,
+                style: TextStyle(
+                  color: Theme.of(context).errorColor
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: 15),
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                  ),
-                  onPressed: (() {
-                    setState(() {widget.curPage = healthSubPages.goals;});
-                  }),
-                  child: Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Text(
-                      'Change Goals',
-                       style: Theme.of(context).textTheme.button,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
-          )
-        );
-      case healthSubPages.sleep:
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 40,
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
-                      ),
-                    onPressed: backCallback,
-                    child: Text(
-                      'Back',
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                    )
-                  ),
-                ),
-              ),
-              SleepPage()
-            ]
-          ),
-        );
-      case healthSubPages.hydration:
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 40,
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ElevatedButton(
-                    onPressed: backCallback,
-                    child: Text(
-                      'Back',
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                    )
-                  ),
-                ),
-              ),
-              HydrationPage()
-            ]
-          )
-        );
-      case healthSubPages.nutrition:
-        return SingleChildScrollView(
-          child: Column(
-            children: [
-              Container(
-                height: 40,
-                alignment: Alignment.topLeft,
-                child: Padding(
-                  padding: EdgeInsets.all(10),
-                  child: ElevatedButton(
-                    onPressed: backCallback,
-                    child: Text(
-                      'Back',
-                      style: TextStyle(
-                        fontSize: 15,
-                      ),
-                    )
-                  ),
-                ),
-              ),
-              NutritionPage()
-            ]
-          ),
-        );
-      case healthSubPages.goals:
-        return SingleChildScrollView(
-            child: Column(
-                children: [
-                  Container(
-                    height: 40,
-                    alignment: Alignment.topLeft,
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: ElevatedButton(
-                          onPressed: backCallback,
-                          child: Text(
-                            'Back',
-                            style: TextStyle(
-                              fontSize: 15,
-                            ),
-                          )
-                      ),
-                    ),
-                  ),
-                  ProfilePage()
-                ]
+              )
             )
-        );
-    }
+          ]
+        ),
+      ),
+    );
   }
 }
 
@@ -222,18 +122,18 @@ class HydrationPage extends StatelessWidget {
       // Sleep Container
       child: SingleChildScrollView(
         child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Hydration Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
+          children: [
+            Padding(
+              padding: EdgeInsets.only(top:20),
+              child: Text(
+                'Hydration Entry',
+                style: TextStyle(
+                    fontSize: 35
                 ),
               ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
-            ]
+            ),
+            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
+          ]
         ),
       ),
     );

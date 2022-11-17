@@ -1,7 +1,9 @@
 // ignore_for_file: prefer_const_constructors
+import 'dart:core';
 import 'dart:math';
 
 import 'package:dropdown_textfield/dropdown_textfield.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
@@ -41,6 +43,9 @@ class _TrendsPage extends State<TrendsPage> {
   final SingleValueDropDownController ddController = SingleValueDropDownController();
   DBFields curField = DBFields.caloriesN;
 
+  List<DocumentSnapshot> historyDocs = [];
+  List<Widget> historyRows = [];
+
   void getGoal(num ngoal) {
     setState(() {
       goal = ngoal;
@@ -48,12 +53,33 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void queryForNewField() {
+    points = [];
+    historyDocs = [];
+    historyRows = [];
+    FirebaseService().dbColMap[curField]!.orderBy('time_logged', descending: true).get().then(updateHistory);
     FirebaseService().getRawPlotPoints(curField, getPoints, 10);
     FirebaseService().userDoc!.get().then((value) {
       setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
     });
     trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
     trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+  }
+
+  void updateHistory(QuerySnapshot<Object?> value) {
+    setState(() {
+      if (value == null) {
+        return;
+      }
+      for (int i = 0; i < value.docs.length; i++) {
+        DocumentSnapshot tempDoc = value.docs[i];
+        Map<String, dynamic> tempData = tempDoc.data() as Map<String, dynamic>;
+        if (tempData.keys.contains(FirebaseService().dbFieldMap[curField]!) && tempData[FirebaseService().dbFieldMap[curField]!] != -1) {
+          historyDocs.add(tempDoc);
+          historyRows.add(HistoryRow(field: curField, doc: tempDoc));
+          // historyRows.add(Text('balls'));
+        }
+      }
+    });
   }
 
   List<num> getIntervalRate(num min, num max, int intervalCount) {
@@ -80,16 +106,32 @@ class _TrendsPage extends State<TrendsPage> {
       ymin = newPoints[2] as num;
       ymax = newPoints[3] as num;
 
-      trendpoints = [
-        FlSpot(xmin as double, trendm*xmin+trendb as double),
-        FlSpot(xmax as double, trendm*xmax+trendb as double),
-      ];
-
-      ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
-      ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
-
       points = newPoints[4].cast<FlSpot>();
+
+      if(points != null && points!.length != 0) {
+        List<num> yres = getIntervalRate(ymin, ymax, 6);
+        List<num> xres = getIntervalRate(xmin, xmax, 6);
+        xmin = xres[0];
+        xmax = xres[1];
+        xinterval = xres[2];
+        ymin = yres[0];
+        ymax = yres[1];
+        yinterval = yres[2];
+
+        setTrendline();
+      }
     });
+  }
+
+  void setTrendline() {
+    double lineOffset = 5;
+    trendpoints = [
+      FlSpot((xmin-lineOffset), (trendm*(xmin-lineOffset)+trendb)),
+      FlSpot((xmax+lineOffset), (trendm*(xmax+lineOffset)+trendb)),
+    ];
+
+    // ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
+    // ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
   }
 
   static Widget getUnitAxisTickVals(double value, TitleMeta meta) {
@@ -127,21 +169,14 @@ class _TrendsPage extends State<TrendsPage> {
         queryForNewField();
       }
     }
+
+
   }
 
   @override
   Widget build(BuildContext context) {
-    if(points != null && points!.length != 0) {
-      List<num> yres = getIntervalRate(ymin, ymax, 6);
-      List<num> xres = getIntervalRate(xmin, xmax, 6);
-      xmin = xres[0];
-      xmax = xres[1];
-      xinterval = xres[2];
-      ymin = yres[0];
-      ymax = yres[1];
-      yinterval = yres[2];
-    }
-      return Scaffold(
+    print(historyRows.length);
+    return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
         child: Column(
@@ -167,15 +202,14 @@ class _TrendsPage extends State<TrendsPage> {
             SizedBox(
               width: 350,
               height: 275,
-              child: (points == null || points!.length == 0) ?
+              child: (points == null || points!.length < 2) ?
                   Center(
-                    child: Text('No logged data in the last 7 days')
+                    child: Text('Not enough logged data in the last 7 days')
                   )
                   : LineChart(
                 swapAnimationDuration: Duration(milliseconds: 150),
                 swapAnimationCurve: Curves.linear,
                 LineChartData(
-
                   minX: xmin.toDouble(),
                   maxX: xmax.toDouble(),
                   minY: ymin.toDouble(),
@@ -184,6 +218,12 @@ class _TrendsPage extends State<TrendsPage> {
                     border: Border.all(
                       color: Colors.black // COLOR: colors of each individual border (also width)
                     )
+                  ),
+                  clipData: FlClipData(
+                    top: true,
+                    bottom: true,
+                    left: true,
+                    right: true,
                   ),
                   extraLinesData: ExtraLinesData(
                     horizontalLines: (goal > ymin && goal < ymax) ? [
@@ -226,6 +266,7 @@ class _TrendsPage extends State<TrendsPage> {
                   lineBarsData: [
                     LineChartBarData(
                       spots: points,
+                      barWidth: 4.5,
                       isCurved: true,
                       // dotData: FlDotData(
                       //   show: false,
@@ -242,9 +283,70 @@ class _TrendsPage extends State<TrendsPage> {
                 ),
               ),
             ),
+            historyRows.length > 0 ? Expanded(
+              child: ListView(
+                children: historyRows
+              ),
+            ) : SizedBox.shrink(),
           ],
         ),
       ),
+    );
+  }
+}
+
+class HistoryRow extends StatelessWidget {
+
+  DBFields field;
+  DocumentSnapshot doc;
+  HistoryRow({required this.field, required this.doc, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+    Timestamp ts = docData['time_logged'];
+    String tstr = DateTime.fromMillisecondsSinceEpoch(ts.millisecondsSinceEpoch).toString().substring(5, 16);
+    bool isFood = (field == DBFields.caloriesN || field == DBFields.carbsN || field == DBFields.fatN || field == DBFields.proteinN);
+    String title = isFood ? docData['food_name'].toString() : FirebaseService().dbTitleMap[field]!;
+    return GestureDetector(
+      child: Container(
+        child: SizedBox(
+          height: 70,
+          width: 350,
+          child: Padding(
+            padding: EdgeInsets.all(15),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 23
+                      ),
+                    ),
+                    Text(
+                      tstr,
+                      style: TextStyle(
+                        fontSize: 10
+                      )
+                    )
+                  ]
+                ),
+                Text(
+                  docData[FirebaseService().dbFieldMap[field]].toString(),
+                  style: TextStyle(
+                    fontSize: 35
+                  ),
+                )
+              ]
+            ),
+          ),
+        )
+      )
     );
   }
 }

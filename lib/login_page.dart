@@ -1,10 +1,15 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/style_lib.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 
-final emailRegex = RegExp(r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)');
-final existsRegex = RegExp(r'.+');
+const emailRegexString = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
+final emailRegex = RegExp(emailRegexString);
+const existsRegexString = r'.+';
+final existsRegex = RegExp(existsRegexString);
+const properPasswordRegexString = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
 final properPasswordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+const nameRegexString = r'[A-Z]\w* [A-Z]\w*';
 final nameRegex = RegExp(r'[A-Z]\w* [A-Z]\w*');
 
 class LoginPage extends StatefulWidget {
@@ -15,14 +20,39 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
+  late CustTextInput _emailInput;
+  late CustTextInput _pwInput;
+  late final FieldOptions _emailOptions;
+  late final FieldOptions _pwOptions;
   bool usernameCorrect = false;
   bool passwordCorrect = false;
   String errorText = '';
 
   @override
+  initState() {
+    _emailOptions = FieldOptions(
+        hint: "Email",
+        invalidText: "Enter a valid email",
+        showValidSymbol: true,
+        icon: Icons.mail_outline_rounded,
+        regString: emailRegexString,
+        obscureText: false
+    );
+
+    _pwOptions = FieldOptions(
+        hint: "Password",
+        invalidText: "Make sure your password is valid",
+        showValidSymbol: true,
+        icon: Icons.lock_outline_rounded,
+        regString: properPasswordRegexString,
+        obscureText: true
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
+    _emailInput = CustTextInput(options: _emailOptions);
+    _pwInput = CustTextInput(options: _pwOptions);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -43,97 +73,33 @@ class _LoginPage extends State<LoginPage> {
                 ))),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: bc_style().backgroundcolor,
-                  border: Border.all(width: 5, color: bc_style().accent1color),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: TextField(
-                          controller: usernameController,
-                          decoration: InputDecoration(
-                            hintText: 'Email',
-                            border: InputBorder.none,
-                            prefixIcon: Icon(Icons.email_outlined, color: bc_style().textcolor),
-                          ),
-                          onChanged: ((String str) {
-                            bool valid = emailRegex.hasMatch(str);
-                            if (usernameCorrect && !valid) {
-                              setState(() {usernameCorrect = false;});
-                            } else if (!usernameCorrect && valid) {
-                              setState(() {usernameCorrect = true;});
-                            }
-                          }),
-                        ),
-                      ),
-                    ),
-                    Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : bc_style().errorcolor),
-                  ],
-                )
-              ),
+              child: _emailInput,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
-              child: Container(
-                decoration: BoxDecoration(
-                  color: bc_style().backgroundcolor,
-                  border: Border.all(width: 5, color: bc_style().accent1color),
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: SizedBox(
-                        height: 40,
-                        child: TextField(
-                          decoration: InputDecoration(
-                            hintText: 'Password',
-                            border: InputBorder.none,
-                            prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
-                          ),
-                          controller: passwordController,
-                          obscureText: true,
-                          onChanged: ((String str) {
-                            bool valid = existsRegex.hasMatch(str);
-                            if (passwordCorrect && !valid) {
-                              setState(() {passwordCorrect = false;});
-                            } else if (!passwordCorrect && valid) {
-                              setState(() {passwordCorrect = true;});
-                            }
-                          })
-                        )
-                      )
-                    )
-                  ],
-                )
-              ),
+              child: _pwInput,
             ),
             ElevatedButton(
               onPressed: ((){
-                if(!usernameCorrect) {
+                if(!_emailInput.child.isValid()) {
                   setState(() {
                     errorText = 'Invalid Email';
                   });
-                } else if(!passwordCorrect) {
+                } else if(!_pwInput.child.isValid()) {
                   setState(() {
                     errorText = 'Enter a Password';
                   });
                 } else {
                   FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: usernameController.text.toString(),
-                      password: passwordController.text.toString()
+                      email: _emailInput.child.getVal(),
+                      password: _pwInput.child.getVal()
                   ).then((userCredential) =>
 
                   {
                   }).catchError((error) {
                     setState(() {
                       errorText = error.message;
-                      passwordController.clear();
+                      _pwInput.child.clear();
                     });
                   });
                 }
@@ -144,7 +110,7 @@ class _LoginPage extends State<LoginPage> {
             ElevatedButton(
               onPressed: (() {Navigator.of(context).popAndPushNamed('/register');}),
               child: const Text(
-                'Register with Email/Password',
+                'New User?',
                 textDirection: TextDirection.ltr
             ))
           ],
@@ -162,16 +128,57 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPage extends State<RegisterPage> {
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-  final passwordConfirmController = TextEditingController();
+  late CustTextInput _emailInput;
+  late CustTextInput _pw1Input;
+  late CustTextInput _pw2Input;
+  late final FieldOptions _emailOptions;
+  late final FieldOptions _pw1Options;
+  late final FieldOptions _pw2Options;
   bool usernameCorrect = false;
   bool passwordCorrect = false;
   bool passwordConfirmCorrect = false;
   String errorText = '';
 
+  bool confirmationValidator(String str) {
+    return str.compareTo(_pw1Input.child.getVal()) == 0;
+  }
+
+  @override
+  initState() {
+    _emailOptions = FieldOptions(
+        hint: "Email",
+        invalidText: "Enter a valid email",
+        showValidSymbol: true,
+        icon: Icons.mail_outline_rounded,
+        regString: emailRegexString,
+        obscureText: false
+    );
+
+    _pw1Options = FieldOptions(
+        hint: "Password",
+        invalidText: "Make sure your password is valid",
+        showValidSymbol: true,
+        icon: Icons.lock_outline_rounded,
+        regString: properPasswordRegexString,
+        obscureText: true
+    );
+
+    _pw2Options = FieldOptions(
+        hint: "Password Confirmation",
+        invalidText: "Make sure your passwords match",
+        showValidSymbol: true,
+        icon: Icons.lock_outline_rounded,
+        validator: confirmationValidator,
+        obscureText: true
+    );
+
+  }
+
   @override
   Widget build(BuildContext context) {
+    _emailInput = CustTextInput(options: _emailOptions);
+    _pw1Input = CustTextInput(options: _pw1Options);
+    _pw2Input = CustTextInput(options: _pw2Options);
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -192,138 +199,41 @@ class _RegisterPage extends State<RegisterPage> {
                     ))),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: bc_style().backgroundcolor,
-                    border: Border.all(width: 5, color: bc_style().accent1color),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 40,
-                          child: TextField(
-                            controller: usernameController,
-                            decoration: InputDecoration(
-                              hintText: 'Email',
-                              border: InputBorder.none,
-                              prefixIcon: Icon(Icons.email_outlined, color: bc_style().textcolor),
-                            ),
-                            onChanged: ((String str) {
-                              bool valid = emailRegex.hasMatch(str);
-                              if (usernameCorrect && !valid) {
-                                setState(() {usernameCorrect = false;});
-                              } else if (!usernameCorrect && valid) {
-                                setState(() {usernameCorrect = true;});
-                              }
-                            }),
-                          ),
-                        ),
-                      ),
-                      Icon(usernameCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: usernameCorrect ? Colors.green : bc_style().errorcolor),
-                    ],
-                  )
-              ),
+              child: _emailInput,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: bc_style().backgroundcolor,
-                    border: Border.all(width: 5, color: bc_style().accent1color),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 40,
-                          child: TextField(
-                            controller: passwordController,
-                            obscureText: true,
-                            decoration: InputDecoration(
-                              hintText: 'Password',
-                              border: InputBorder.none,
-                              prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
-                            ),
-                            onChanged: ((String str) {
-                              bool valid = properPasswordRegex.hasMatch(str);
-                              if (passwordCorrect && !valid) {
-                                setState(() {passwordCorrect = false;});
-                              } else if (!passwordCorrect && valid) {
-                                setState(() {passwordCorrect = true;});
-                              }
-                            }),
-                          ),
-                        ),
-                      ),
-                      Icon(passwordCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordCorrect ? Colors.green : bc_style().errorcolor),
-                    ],
-                  )
-              ),
+              child: _pw1Input,
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: bc_style().backgroundcolor,
-                    border: Border.all(width: 5, color: bc_style().accent1color),
-                    borderRadius: BorderRadius.circular(5),
-                  ),
-                  child: Row(
-                    children: [
-                      Expanded(
-                          child: SizedBox(
-                              height: 40,
-                              child: TextField(
-                                  decoration: InputDecoration(
-                                    hintText: 'Repeat Password',
-                                    border: InputBorder.none,
-                                    prefixIcon: Icon(Icons.lock_outline_rounded, color: bc_style().textcolor),
-                                  ),
-                                  controller: passwordConfirmController,
-                                  obscureText: true,
-                                  onChanged: ((String str) {
-                                    bool valid = str.compareTo(passwordController.text.toString()) == 0;
-                                    if (passwordConfirmCorrect && !valid) {
-                                      setState(() {passwordConfirmCorrect = false;});
-                                    } else if (!passwordConfirmCorrect && valid) {
-                                      setState(() {passwordConfirmCorrect = true;});
-                                    }
-                                  })
-                              )
-                          )
-                      ),
-                      Icon(passwordConfirmCorrect ? Icons.check_circle : Icons.flag_circle_rounded, size: 28, color: passwordConfirmCorrect ? Colors.green : bc_style().errorcolor),
-                    ],
-                  )
-              ),
+              child: _pw2Input,
             ),
             ElevatedButton(
                 onPressed: ((){
-                  if(!usernameCorrect) {
+                  if(!_emailInput.child.isValid()) {
                     setState(() {
                       errorText = 'Invalid Email';
                     });
-                  } else if(!passwordCorrect) {
+                  } else if(!_pw1Input.child.isValid()) {
                     setState(() {
                       errorText = 'Password must be 8 characters, including 1 number and 1 letter';
                     });
-                  } else if(!passwordConfirmCorrect) {
+                  } else if(!_pw2Input.child.isValid()) {
                     setState(() {
                       errorText = 'Passwords do not match';
                     });
                   } else {
                     FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: usernameController.text.toString(),
-                        password: passwordController.text.toString()
+                        email: _emailInput.child.getVal(),
+                        password: _pw1Input.child.getVal(),
                     ).then((userCredential) =>
                     {
                     }).catchError((error) {
                       setState(() {
                         errorText = error.message;
-                        passwordController.clear();
+                        _pw1Input.child.clear();
+                        _pw2Input.child.clear();
                       });
                     });
                   }
@@ -334,7 +244,7 @@ class _RegisterPage extends State<RegisterPage> {
             ElevatedButton(
               onPressed: (() {Navigator.of(context).popAndPushNamed('/login');}),
               child: const Text(
-                  'Login with Email/Password',
+                  'Returning User?',
                   textDirection: TextDirection.ltr
               ))
           ],

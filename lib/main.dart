@@ -7,6 +7,7 @@ import 'package:rpi_beefcake/base_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:rpi_beefcake/login_page.dart';
+import 'package:rpi_beefcake/profile_page.dart';
 import 'package:rpi_beefcake/settings_page.dart';
 import 'firebase_options.dart';
 import 'firestore.dart';
@@ -90,6 +91,7 @@ class _NavPage extends State<NavPage> {
         '/register':  (context) => const RegisterPage(),
         '/loading':   (context) => LoadingPage(),
         '/settings':  (context) => SettingsPage(swapTheme),
+        '/profile':   (context) => ProfilePage(),
       },
     );
 
