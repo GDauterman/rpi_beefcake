@@ -140,7 +140,7 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
         String presentString = 'loading';
         if(snapshot.hasData) {
           presentString = widget.title + ': ';
-          if(snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
+          if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
             presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
             presentString += FirebaseService().dbUnitMap[widget.field]!;
           } else {

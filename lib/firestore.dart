@@ -121,8 +121,6 @@ class FirebaseService {
     DBFields.bicepM: 'Bicep Circ.',
   };
 
-  MapEntry<String, num> buildEmptyDoc (_, str) => MapEntry(str, -1);
-
   static String getDateDocName(DateTime date) {
     String val = date.year.toString() + '-';
     val += (date.month < 10 ? '0' : '') + date.month.toString() + '-';
@@ -219,21 +217,26 @@ class FirebaseService {
         'bicep_goal': 15,
       };
       userReference.add(newUserEntry).then((newUserDoc) {
-        // const Map<String, num> initTrends = {
-        //   'calories_m': -1,
-        //   'calories_b': -1,
-        //   'carbs_m': -1,
-        //   'carbs_b': -1,
-        //   'fats_m': -1,
-        //   'fats_b': -1,
-        //   'protein_m': -1,
-        //   'protein_b': -1,
-        //   'sleep_hours_m': -1,
-        //   'sleep_hours_b': -1,
-        //   'hydration_m': -1,
-        //   'hydration_b': -1,
-        // };
-        Map<String, num> initTrends = dbTrendMap.map(buildEmptyDoc);
+        const Map<String, num> initTrends = {
+          'calories_m': -1,
+          'calories_b': -1,
+          'carbs_m': -1,
+          'carbs_b': -1,
+          'fats_m': -1,
+          'fats_b': -1,
+          'protein_m': -1,
+          'protein_b': -1,
+          'sleep_hours_m': -1,
+          'sleep_hours_b': -1,
+          'hydration_m': -1,
+          'hydration_b': -1,
+          'weight_m': -1,
+          'weight_b': -1,
+          'waist_m': -1,
+          'waist_b': -1,
+          'bicep_m': -1,
+          'bicep_b': -1,
+        };
         userDoc = newUserDoc;
         userDoc!.collection('graph_data').doc('trend_data').set(initTrends).then((value) {
           initService();

@@ -167,9 +167,9 @@ class _RegisterPage extends State<RegisterPage> {
         hint: "Password Confirmation",
         invalidText: "Make sure your passwords match",
         showValidSymbol: true,
-        icon: Icons.mail_outline_rounded,
+        icon: Icons.lock_outline_rounded,
         validator: confirmationValidator,
-        obscureText: false
+        obscureText: true
     );
 
   }
