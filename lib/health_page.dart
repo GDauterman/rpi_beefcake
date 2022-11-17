@@ -48,58 +48,60 @@ class _MeasurementPage extends State<MeasurementPage> {
   }
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return Material(
-    // Sleep Container
+      // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top:20),
-              child: Text(
-                'Body Measurement Entry',
-                style: TextStyle(
-                  fontSize: 35
-                ),
-              ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Body Measurement Entry',
+              style: TextStyle(fontSize: 35),
             ),
-            Padding(
-              padding: EdgeInsets.only(top:7),
-              child: Text(
-                'Enter at least 1 value',
-                style: TextStyle(
-                    fontSize: 15
-                ),
-              ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 7),
+            child: Text(
+              'Enter at least 1 value',
+              style: TextStyle(fontSize: 15),
             ),
-            _weightInput,
-            _waistInput,
-            _bicepInput,
-            ElevatedButton(
+          ),
+          _weightInput,
+          _waistInput,
+          _bicepInput,
+          ElevatedButton(
               onPressed: (() {
-                if(_weightInput.child.isEmpty() && _waistInput.child.isEmpty() && _bicepInput.child.isEmpty()) {
-                  setState((){errorText = 'Enter at least one metric before submitting';});
-                } else if(_weightInput.child.isValid() && _waistInput.child.isValid() && _bicepInput.child.isValid()) {
-                  setState((){errorText = '';});
-                  FirebaseService().addMeasurement([_weightInput.child.getVal(), _waistInput.child.getVal(), _bicepInput.child.getVal()]);
+                if (_weightInput.child.isEmpty() &&
+                    _waistInput.child.isEmpty() &&
+                    _bicepInput.child.isEmpty()) {
+                  setState(() {
+                    errorText = 'Enter at least one metric before submitting';
+                  });
+                } else if (_weightInput.child.isValid() &&
+                    _waistInput.child.isValid() &&
+                    _bicepInput.child.isValid()) {
+                  setState(() {
+                    errorText = '';
+                  });
+                  FirebaseService().addMeasurement([
+                    _weightInput.child.getVal(),
+                    _waistInput.child.getVal(),
+                    _bicepInput.child.getVal()
+                  ]);
                   _weightInput.child.clear();
                   _waistInput.child.clear();
                   _bicepInput.child.clear();
                 }
               }),
-              child: Text('Submit')
-            ),
-            Padding(
+              child: Text('Submit')),
+          Padding(
               padding: EdgeInsets.only(top: 10),
               child: Text(
                 errorText,
-                style: TextStyle(
-                  color: Theme.of(context).errorColor
-                ),
-              )
-            )
-          ]
-        ),
+                style: TextStyle(color: Theme.of(context).errorColor),
+              ))
+        ]),
       ),
     );
   }
@@ -109,7 +111,7 @@ class HydrationPage extends StatelessWidget {
   HydrationPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'oz of liquid',
@@ -121,20 +123,18 @@ class HydrationPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top:20),
-              child: Text(
-                'Hydration Entry',
-                style: TextStyle(
-                    fontSize: 35
-                ),
-              ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Hydration Entry',
+              style: TextStyle(fontSize: 35),
             ),
-            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addHydration),
-          ]
-        ),
+          ),
+          FieldWithEnter(
+              fieldOptions: sleepOptions,
+              dataEntry: FirebaseService().addHydration),
+        ]),
       ),
     );
   }
@@ -144,7 +144,7 @@ class NutritionPage extends StatelessWidget {
   NutritionPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'Food',
@@ -180,20 +180,18 @@ class NutritionPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Nutrition Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
-            ]
-        ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Nutrition Entry',
+              style: TextStyle(fontSize: 35),
+            ),
+          ),
+          FieldWithEnter(
+              fieldOptions: sleepOptions,
+              dataEntry: FirebaseService().addNutrition),
+        ]),
       ),
     );
   }
@@ -203,7 +201,7 @@ class SleepPage extends StatelessWidget {
   SleepPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'Hours Slept',
@@ -224,20 +222,18 @@ class SleepPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top:20),
-              child: Text(
-                'Sleep Entry',
-                style: TextStyle(
-                  fontSize: 35
-                ),
-              ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Sleep Entry',
+              style: TextStyle(fontSize: 35),
             ),
-            FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addSleep),
-          ]
-        ),
+          ),
+          FieldWithEnter(
+              fieldOptions: sleepOptions,
+              dataEntry: FirebaseService().addSleep),
+        ]),
       ),
     );
   }

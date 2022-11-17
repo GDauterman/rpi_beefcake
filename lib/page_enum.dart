@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 enum PageItems { trends, home, fitness }
+
 extension PageExtension on PageItems {
   String get name => describeEnum(this);
   String get getTitle {

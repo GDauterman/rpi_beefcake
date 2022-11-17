@@ -12,10 +12,16 @@ import 'firestore.dart';
 import 'dart:math';
 
 enum ColTypes { Nutrition, Hydration, Sleep }
+
 enum healthSubPages { home, sleep, nutrition, hydration, goals }
 
 class HomePage extends StatelessWidget {
-  static const _actionTitles = ["LogSleep", "logHydration", "logCalories", "logGoals"]; //set goals to be added
+  static const _actionTitles = [
+    "LogSleep",
+    "logHydration",
+    "logCalories",
+    "logGoals"
+  ]; //set goals to be added
   healthSubPages curPage = healthSubPages.home;
 
   void _showAction(BuildContext context, int index) {
@@ -23,25 +29,15 @@ class HomePage extends StatelessWidget {
       builder: (context) {
         switch (index) {
           case 0:
-            return AlertDialog(
-                content: SleepPage()
-            );
+            return AlertDialog(content: SleepPage());
           case 2:
-            return AlertDialog(
-                content: NutritionPage()
-            );
+            return AlertDialog(content: NutritionPage());
           case 1:
-            return AlertDialog(
-                content: HydrationPage()
-            );
+            return AlertDialog(content: HydrationPage());
           case 3:
-            return AlertDialog(
-                content: MeasurementPage()
-            );
+            return AlertDialog(content: MeasurementPage());
           default: //should never be triggered
-            return AlertDialog(
-                content: Text("Hello world :)")
-            );
+            return AlertDialog(content: Text("Hello world :)"));
         }
       },
     ));
@@ -51,30 +47,30 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-          child: DailyReport(),
-        ),
+      body: Center(
+        child: DailyReport(),
+      ),
       floatingActionButton: ExpandableFab(
-      distance: 112.0,
-      children: [
-        ActionButton(
-          onPressed: () => _showAction(context, 0),
-          icon: const Icon(Icons.hotel),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 1),
-          icon: const Icon(Icons.local_drink),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 2),
-          icon: const Icon(Icons.fastfood),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 3),
-          icon: const Icon(Icons.monitor_weight),
-        ),
-      ],
-    ),
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.hotel),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.local_drink),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
+            icon: const Icon(Icons.fastfood),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 3),
+            icon: const Icon(Icons.monitor_weight),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -84,38 +80,42 @@ class DailyReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
-      height: 450,
-      decoration: BoxDecoration(
-        color: Colors.white24,
-        border: Border.all(width: 5, color: Colors.black),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Daily Report',
-            style: TextStyle(
-              fontSize: 35,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              'Date: '+DateTime.now().month.toString()+'/'+DateTime.now().day.toString()+'/'+DateTime.now().year.toString(),
+        width: 300,
+        height: 450,
+        decoration: BoxDecoration(
+          color: Colors.white24,
+          border: Border.all(width: 5, color: Colors.black),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Daily Report',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 35,
               ),
-            )
-          ),
-          ProgressMeter('Hours Slept (hr)', DBFields.durationS),
-          ProgressMeter('Calories Today', DBFields.caloriesN),
-          ProgressMeter('Water Drank (oz)', DBFields.quantityH),
-          SingleValueUpdating(title: 'Today\'s Mean Weight', field: DBFields.weightM),
-        ],
-      )
-    );
+            ),
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                  'Date: ' +
+                      DateTime.now().month.toString() +
+                      '/' +
+                      DateTime.now().day.toString() +
+                      '/' +
+                      DateTime.now().year.toString(),
+                  style: TextStyle(
+                    fontSize: 20,
+                  ),
+                )),
+            ProgressMeter('Hours Slept (hr)', DBFields.durationS),
+            ProgressMeter('Calories Today', DBFields.caloriesN),
+            ProgressMeter('Water Drank (oz)', DBFields.quantityH),
+            SingleValueUpdating(
+                title: 'Today\'s Mean Weight', field: DBFields.weightM),
+          ],
+        ));
   }
 }
 
@@ -124,24 +124,36 @@ class SingleValueUpdating extends StatefulWidget {
   DBFields field;
   IconData? icon;
 
-  SingleValueUpdating({Key? key, required this.title, required this.field, this.icon}) : super(key: key);
+  SingleValueUpdating(
+      {Key? key, required this.title, required this.field, this.icon})
+      : super(key: key);
 
   @override
   State<SingleValueUpdating> createState() => _SingleValueUpdating();
 }
 
 class _SingleValueUpdating extends State<SingleValueUpdating> {
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
+      stream: FirebaseService()
+          .userDoc!
+          .collection('raw_graph_points')
+          .doc(FirebaseService.getDateDocName(DateTime.now()))
+          .snapshots(),
       builder: (context, snapshot) {
         String presentString = 'loading';
-        if(snapshot.hasData) {
+        if (snapshot.hasData) {
           presentString = widget.title + ': ';
-          if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
-            presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
+          if (snapshot.data != null &&
+              snapshot.data!.data() != null &&
+              snapshot.data!
+                  .data()!
+                  .keys
+                  .contains(FirebaseService().dbPlotYMap[widget.field]!)) {
+            presentString += snapshot.data!
+                .get(FirebaseService().dbPlotYMap[widget.field]!)
+                .toStringAsFixed(1);
             presentString += " " + FirebaseService().dbUnitMap[widget.field]!;
           } else {
             presentString += 'no data';
@@ -157,7 +169,6 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
 }
 
 class ProgressMeter extends StatefulWidget {
-
   final String title;
   final DBFields field;
   const ProgressMeter(this.title, this.field, {Key? key}) : super(key: key);
@@ -167,7 +178,6 @@ class ProgressMeter extends StatefulWidget {
 }
 
 class _ProgressMeter extends State<ProgressMeter> {
-
   num barDec = 0;
   num progress = -1;
   num goal = 0;
@@ -175,8 +185,7 @@ class _ProgressMeter extends State<ProgressMeter> {
   void setGoal(num i) {
     setState(() {
       goal = i.toDouble();
-      if(progress != -1)
-        barDec= progress/goal;
+      if (progress != -1) barDec = progress / goal;
     });
   }
 
@@ -190,40 +199,46 @@ class _ProgressMeter extends State<ProgressMeter> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
-      builder: (context, snapshot) {
-        if(!snapshot.hasData || snapshot.data!.data() == null) {
-          progress = -1;
-          barDec = 0;
-        } else {
-          progress = snapshot.data!.data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
-          if(goal != -1) {
-            barDec = progress/goal;
+        stream: FirebaseService()
+            .userDoc!
+            .collection('raw_graph_points')
+            .doc(FirebaseService.getDateDocName(DateTime.now()))
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.data() == null) {
+            progress = -1;
+            barDec = 0;
+          } else {
+            progress = snapshot.data!
+                .data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
+            if (goal != -1) {
+              barDec = progress / goal;
+            }
           }
-        }
-        return Column (
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(
-                  fontSize: 15
+          return Column(
+            children: [
+              Text(
+                widget.title,
+                style: TextStyle(fontSize: 15),
               ),
-            ),
-            LinearProgressIndicator(
-              value: barDec.toDouble(),
-              backgroundColor: bc_style().accent1color,
-              color: bc_style().accent2color,
-            ),
-            Text(
-              (goal == -1 || progress == -1) ? '--/--' : progress.floor().toString()+'/'+goal.toInt().toString(),
-              style: TextStyle(
-                fontSize: 10,
+              LinearProgressIndicator(
+                value: barDec.toDouble(),
+                backgroundColor: bc_style().accent1color,
+                color: bc_style().accent2color,
               ),
-            )
-          ],
-        );
-      }
-    );
+              Text(
+                (goal == -1 || progress == -1)
+                    ? '--/--'
+                    : progress.floor().toString() +
+                        '/' +
+                        goal.toInt().toString(),
+                style: TextStyle(
+                  fontSize: 10,
+                ),
+              )
+            ],
+          );
+        });
   }
 }
 
@@ -231,7 +246,7 @@ class HydrationPage extends StatelessWidget {
   HydrationPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     List<FieldOptions> hydrationOptions = [
       FieldOptions(
         hint: 'oz of liquid',
@@ -243,20 +258,18 @@ class HydrationPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Hydration Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: hydrationOptions, dataEntry: FirebaseService().addHydration),
-            ]
-        ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Hydration Entry',
+              style: TextStyle(fontSize: 35),
+            ),
+          ),
+          FieldWithEnter(
+              fieldOptions: hydrationOptions,
+              dataEntry: FirebaseService().addHydration),
+        ]),
       ),
     );
   }
@@ -266,7 +279,7 @@ class NutritionPage extends StatelessWidget {
   NutritionPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'Food',
@@ -302,20 +315,18 @@ class NutritionPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Nutrition Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
-            ]
-        ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Nutrition Entry',
+              style: TextStyle(fontSize: 35),
+            ),
+          ),
+          FieldWithEnter(
+              fieldOptions: sleepOptions,
+              dataEntry: FirebaseService().addNutrition),
+        ]),
       ),
     );
   }
@@ -346,21 +357,18 @@ class SleepPage extends StatelessWidget {
     return Material(
       // Sleep Container
       child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text(
-                  'Sleep Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions,
-                  dataEntry: FirebaseService().addSleep),
-            ]
-        ),
+        child: Column(children: [
+          Padding(
+            padding: EdgeInsets.only(top: 20),
+            child: Text(
+              'Sleep Entry',
+              style: TextStyle(fontSize: 35),
+            ),
+          ),
+          FieldWithEnter(
+              fieldOptions: sleepOptions,
+              dataEntry: FirebaseService().addSleep),
+        ]),
       ),
     );
   }

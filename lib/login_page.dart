@@ -36,8 +36,7 @@ class _LoginPage extends State<LoginPage> {
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
         regString: emailRegexString,
-        obscureText: false
-    );
+        obscureText: false);
 
     _pwOptions = FieldOptions(
         hint: "Password",
@@ -45,8 +44,7 @@ class _LoginPage extends State<LoginPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         regString: properPasswordRegexString,
-        obscureText: true
-    );
+        obscureText: true);
   }
 
   @override
@@ -59,18 +57,19 @@ class _LoginPage extends State<LoginPage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-              child: Image.asset('images/beefcake_icon.jpg', height:125, width:125),
+              child: Image.asset('images/beefcake_icon.jpg',
+                  height: 125, width: 125),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
-              child: Text('Welcome Back',
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Proxima Nova',
-                  fontFamilyFallback: <String>['Comic Sans'],
-                  fontSize: 38,
-                ))),
+                padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
+                child: Text('Welcome Back',
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Proxima Nova',
+                      fontFamilyFallback: <String>['Comic Sans'],
+                      fontSize: 38,
+                    ))),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: _emailInput,
@@ -80,39 +79,37 @@ class _LoginPage extends State<LoginPage> {
               child: _pwInput,
             ),
             ElevatedButton(
-              onPressed: ((){
-                if(!_emailInput.child.isValid()) {
-                  setState(() {
-                    errorText = 'Invalid Email';
-                  });
-                } else if(!_pwInput.child.isValid()) {
-                  setState(() {
-                    errorText = 'Enter a Password';
-                  });
-                } else {
-                  FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: _emailInput.child.getVal(),
-                      password: _pwInput.child.getVal()
-                  ).then((userCredential) =>
-
-                  {
-                  }).catchError((error) {
+                onPressed: (() {
+                  if (!_emailInput.child.isValid()) {
                     setState(() {
-                      errorText = error.message;
-                      _pwInput.child.clear();
+                      errorText = 'Invalid Email';
                     });
-                  });
-                }
-              }),
-              child: const Text('Log In')
-            ),
+                  } else if (!_pwInput.child.isValid()) {
+                    setState(() {
+                      errorText = 'Enter a Password';
+                    });
+                  } else {
+                    FirebaseAuth.instance
+                        .signInWithEmailAndPassword(
+                            email: _emailInput.child.getVal(),
+                            password: _pwInput.child.getVal())
+                        .then((userCredential) => {})
+                        .catchError((error) {
+                      setState(() {
+                        errorText = error.message;
+                        _pwInput.child.clear();
+                      });
+                    });
+                  }
+                }),
+                child: const Text('Log In')),
             Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
-              onPressed: (() {Navigator.of(context).popAndPushNamed('/register');}),
-              child: const Text(
-                'New User?',
-                textDirection: TextDirection.ltr
-            ))
+                onPressed: (() {
+                  Navigator.of(context).popAndPushNamed('/register');
+                }),
+                child:
+                    const Text('New User?', textDirection: TextDirection.ltr))
           ],
         ),
       ),
@@ -151,8 +148,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
         regString: emailRegexString,
-        obscureText: false
-    );
+        obscureText: false);
 
     _pw1Options = FieldOptions(
         hint: "Password",
@@ -160,8 +156,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         regString: properPasswordRegexString,
-        obscureText: true
-    );
+        obscureText: true);
 
     _pw2Options = FieldOptions(
         hint: "Password Confirmation",
@@ -169,9 +164,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         validator: confirmationValidator,
-        obscureText: true
-    );
-
+        obscureText: true);
   }
 
   @override
@@ -185,7 +178,8 @@ class _RegisterPage extends State<RegisterPage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-              child: Image.asset('images/beefcake_icon.jpg', height:125, width:125),
+              child: Image.asset('images/beefcake_icon.jpg',
+                  height: 125, width: 125),
             ),
             const Padding(
                 padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
@@ -210,26 +204,28 @@ class _RegisterPage extends State<RegisterPage> {
               child: _pw2Input,
             ),
             ElevatedButton(
-                onPressed: ((){
-                  if(!_emailInput.child.isValid()) {
+                onPressed: (() {
+                  if (!_emailInput.child.isValid()) {
                     setState(() {
                       errorText = 'Invalid Email';
                     });
-                  } else if(!_pw1Input.child.isValid()) {
+                  } else if (!_pw1Input.child.isValid()) {
                     setState(() {
-                      errorText = 'Password must be 8 characters, including 1 number and 1 letter';
+                      errorText =
+                          'Password must be 8 characters, including 1 number and 1 letter';
                     });
-                  } else if(!_pw2Input.child.isValid()) {
+                  } else if (!_pw2Input.child.isValid()) {
                     setState(() {
                       errorText = 'Passwords do not match';
                     });
                   } else {
-                    FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: _emailInput.child.getVal(),
-                        password: _pw1Input.child.getVal(),
-                    ).then((userCredential) =>
-                    {
-                    }).catchError((error) {
+                    FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                          email: _emailInput.child.getVal(),
+                          password: _pw1Input.child.getVal(),
+                        )
+                        .then((userCredential) => {})
+                        .catchError((error) {
                       setState(() {
                         errorText = error.message;
                         _pw1Input.child.clear();
@@ -238,19 +234,17 @@ class _RegisterPage extends State<RegisterPage> {
                     });
                   }
                 }),
-                child: const Text('Register')
-            ),
+                child: const Text('Register')),
             Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
-              onPressed: (() {Navigator.of(context).popAndPushNamed('/login');}),
-              child: const Text(
-                  'Returning User?',
-                  textDirection: TextDirection.ltr
-              ))
+                onPressed: (() {
+                  Navigator.of(context).popAndPushNamed('/login');
+                }),
+                child: const Text('Returning User?',
+                    textDirection: TextDirection.ltr))
           ],
         ),
       ),
     );
   }
 }
-

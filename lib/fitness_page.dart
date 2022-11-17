@@ -4,7 +4,12 @@ import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
 
-List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift', 'Glute Spread'];
+List<String> exercisesList = <String>[
+  'Bench Press',
+  'Squat',
+  'Deadlift',
+  'Glute Spread'
+];
 
 class FitnessPage extends StatefulWidget {
   FitnessPage({Key? key}) : super(key: key);
@@ -18,7 +23,7 @@ class _FitnessPage extends State<FitnessPage> {
 
   void deleteIndex(int i) {
     i -= 1;
-    if(rows.isEmpty || i < 0 || i >= rows.length) return;
+    if (rows.isEmpty || i < 0 || i >= rows.length) return;
     setState(() {
       rows.removeAt(i);
       for (; i < rows.length; i++) {
@@ -26,11 +31,13 @@ class _FitnessPage extends State<FitnessPage> {
       }
     });
   }
+
   void addRow() {
     setState(() {
       rows.add(FitnessRow(deleteIndex, rows.length + 1));
     });
   }
+
   void clearRows() {
     setState(() {
       for (int i = 0; i < rows.length; i++) {
@@ -40,8 +47,8 @@ class _FitnessPage extends State<FitnessPage> {
   }
 
   bool rowsValid() {
-    for(int i = 0; i < rows.length; i++) {
-      if(!rows[i].child.areValid()) {
+    for (int i = 0; i < rows.length; i++) {
+      if (!rows[i].child.areValid()) {
         return false;
       }
     }
@@ -58,7 +65,7 @@ class _FitnessPage extends State<FitnessPage> {
       List<dynamic> weight = [];
       data.add(reps);
       data.add(weight);
-      for(int i =0; i<rows.length;i++) {
+      for (int i = 0; i < rows.length; i++) {
         data[2].add(num.parse(rows[i].child.getFields()?[1]));
         data[3].add(num.parse(rows[i].child.getFields()?[0]));
       }
@@ -66,12 +73,13 @@ class _FitnessPage extends State<FitnessPage> {
       clearRows();
     });
   }
+
   final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
   List<FitnessRow> rows = [];
 
   @override
   initState() {
-    for(int i = 1; i <= 3; i++) {
+    for (int i = 1; i <= 3; i++) {
       addRow();
     }
   }
@@ -79,31 +87,24 @@ class _FitnessPage extends State<FitnessPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
-                child: exerciseDropdown,
-              ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: rows
-              ),
-              Padding(
-                padding: EdgeInsets.zero,
-                child: ElevatedButton(
-                  onPressed: addRow,
-                  child: Text('Add Set')
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 10),
-                child: ElevatedButton(
+        body: SingleChildScrollView(
+            child: Center(
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
+            child: exerciseDropdown,
+          ),
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: rows),
+          Padding(
+              padding: EdgeInsets.zero,
+              child: ElevatedButton(onPressed: addRow, child: Text('Add Set'))),
+          Padding(
+              padding: EdgeInsets.only(top: 10),
+              child: ElevatedButton(
                   onPressed: (() {
-                    if(rowsValid()) {
+                    if (rowsValid()) {
                       errorText = '';
                       logRows();
                     } else {
@@ -112,25 +113,15 @@ class _FitnessPage extends State<FitnessPage> {
                       });
                     }
                   }),
-                  child: Text('Log Set')
-                )
-              ),
-              Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Text(
-                  errorText,
-                  style: TextStyle(
-                    color: Theme.of(context).errorColor
-                  ),
-                )
-              ),
-            ]
-          )
-        )
-      )
-    );
+                  child: Text('Log Set'))),
+          Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Text(
+                errorText,
+                style: TextStyle(color: Theme.of(context).errorColor),
+              )),
+        ]))));
   }
-
 }
 
 class FitnessRow extends StatefulWidget {
@@ -147,7 +138,6 @@ class FitnessRow extends StatefulWidget {
 }
 
 class _FitnessRow extends State<FitnessRow> {
-
   late final FieldOptions _weightOptions;
   late final FieldOptions _repOptions;
   late CustTextInput _weightInput;
@@ -155,11 +145,11 @@ class _FitnessRow extends State<FitnessRow> {
   late int index;
 
   List<dynamic>? getFields() {
-    if(_weightInput.child.isValid() && _repInput.child.isValid()) {
+    if (_weightInput.child.isValid() && _repInput.child.isValid()) {
       return [_weightInput.child.getVal(), _repInput.child.getVal()];
     }
     List<dynamic> empty = [];
-    return(empty);
+    return (empty);
   }
 
   bool areValid() {
@@ -172,7 +162,9 @@ class _FitnessRow extends State<FitnessRow> {
   }
 
   void decrementIndex() {
-    setState(() {index--;});
+    setState(() {
+      index--;
+    });
   }
 
   @override
@@ -203,10 +195,8 @@ class _FitnessRow extends State<FitnessRow> {
     _weightInput = CustTextInput(options: _weightOptions);
     _repInput = CustTextInput(options: _repOptions);
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+        padding: EdgeInsets.symmetric(vertical: 5),
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Padding(
             padding: EdgeInsets.only(right: 10),
             child: Text(
@@ -222,16 +212,15 @@ class _FitnessRow extends State<FitnessRow> {
             child: _repInput,
           ),
           Padding(
-            padding: EdgeInsets.only(left: 10),
-            child: IconButton(
-              icon: Icon(Icons.backspace_outlined),
-              color: Theme.of(context).colorScheme.primary,
-              iconSize: 28,
-              onPressed: (() {widget.deleteRow(index);}),
-            )
-          )
-        ]
-      )
-    );
+              padding: EdgeInsets.only(left: 10),
+              child: IconButton(
+                icon: Icon(Icons.backspace_outlined),
+                color: Theme.of(context).colorScheme.primary,
+                iconSize: 28,
+                onPressed: (() {
+                  widget.deleteRow(index);
+                }),
+              ))
+        ]));
   }
 }

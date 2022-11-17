@@ -8,7 +8,6 @@ import 'package:rpi_beefcake/trends_page.dart';
 
 import 'firestore.dart';
 
-
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -21,8 +20,8 @@ class _BasePage extends State<BasePage> {
 
   void _onItemTapped(int index) {
     setState(() {
-      for(int i = 0; i < PageItems.values.length; i++) {
-        if(i == index) {
+      for (int i = 0; i < PageItems.values.length; i++) {
+        if (i == index) {
           pageItem = PageItems.values[i];
           break;
         }
@@ -43,20 +42,29 @@ class _BasePage extends State<BasePage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-              onPressed: (() {Navigator.of(context).pushNamed('/settings');}),
-              icon: Icon(Icons.settings, size: 32,))
+              onPressed: (() {
+                Navigator.of(context).pushNamed('/settings');
+              }),
+              icon: Icon(
+                Icons.settings,
+                size: 32,
+              ))
         ],
       ),
       body: (() {
-        if(!FirebaseService().connected) {
-          return LoadingPage();}
-        if(pageItem == PageItems.home) {
-          return HomePage();}
-        if(pageItem == PageItems.fitness) {
-          return FitnessPage();}
-        if(pageItem == PageItems.trends) {
-          return const TrendsPage();}
-      } ()),
+        if (!FirebaseService().connected) {
+          return LoadingPage();
+        }
+        if (pageItem == PageItems.home) {
+          return HomePage();
+        }
+        if (pageItem == PageItems.fitness) {
+          return FitnessPage();
+        }
+        if (pageItem == PageItems.trends) {
+          return const TrendsPage();
+        }
+      }()),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).colorScheme.background,
         items: <BottomNavigationBarItem>[

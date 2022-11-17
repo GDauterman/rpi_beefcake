@@ -1,11 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:rpi_beefcake/profile_page.dart';
-import 'package:rpi_beefcake/style_lib.dart';
 
 class SettingsPage extends StatelessWidget {
-
-  void Function() swapTheme;
+  final VoidCallback swapTheme;
   SettingsPage(this.swapTheme, {Key? key}) : super(key: key);
 
   bool dark = false;
@@ -14,85 +11,82 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
-        backgroundColor: Theme.of(context).colorScheme.primary,
-        leading: IconButton(
-              onPressed: (() {Navigator.of(context).pop();}),
-              icon: Icon(Icons.arrow_back_sharp, size: 32,)
-        )
-      ),
+          title: const Text('Settings'),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          leading: IconButton(
+              onPressed: (() {
+                Navigator.of(context).pop();
+              }),
+              icon: const Icon(
+                Icons.arrow_back_sharp,
+                size: 32,
+              ))),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: EdgeInsets.only(top:15),
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.update_rounded),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: (() {
-                  Navigator.of(context).pushNamed('/profile');
-                }),
-                label: Text(
-                  'Update Goals',
-                  style: TextStyle(
-                      fontSize: 30
-                  ),
-                ),
+          child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.update_rounded),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
+              onPressed: (() {
+                Navigator.of(context).pushNamed('/profile');
+              }),
+              label: const Text(
+                'Update Goals',
+                style: TextStyle(fontSize: 30),
               ),
             ),
-            Padding(
-              padding: EdgeInsets.only(top: 15),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(top: 15),
               child: ElevatedButton.icon(
-                icon: (this.dark == false) ? Icon(Icons.light_mode) : Icon(Icons.dark_mode),
+                icon: (dark == false)
+                    ? const Icon(Icons.light_mode)
+                    : const Icon(Icons.dark_mode),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: swapTheme,
-                label: Text(
+                label: const Text(
                   'Toggle Dark Mode',
-                  style: TextStyle(
-                      fontSize: 30
-                  ),
+                  style: TextStyle(fontSize: 30),
                 ),
-              )
+              )),
+          //),
+          Padding(
+            padding: const EdgeInsets.only(top: 15),
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.logout),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
-            //),
-            Padding(
-              padding: EdgeInsets.only(top:15),
-              child: ElevatedButton.icon(
-                icon: Icon(Icons.logout),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                ),
-                onPressed: (() {
-                  FirebaseAuth.instance.signOut();
-                }),
-                label: Text(
-                  'Log Out',
-                  style: TextStyle(
-                    fontSize: 30
-                  ),
-                ),
+              onPressed: (() {
+                FirebaseAuth.instance.signOut();
+              }),
+              label: const Text(
+                'Log Out',
+                style: TextStyle(fontSize: 30),
+              ),
 
-                // child: SizedBox(
-                //   height: 50,
-                //   width: 200,
-                //   child: Center(
-                //     child: Text(
-                //       'Log Out',
-                //       style: TextStyle(
-                //           fontSize: 30
-                //       ),
-                //     ),
-                //   ),
-                ),
-              ),
-          ],
-        )
-      ),
+              // child: SizedBox(
+              //   height: 50,
+              //   width: 200,
+              //   child: Center(
+              //     child: Text(
+              //       'Log Out',
+              //       style: TextStyle(
+              //           fontSize: 30
+              //       ),
+              //     ),
+              //   ),
+            ),
+          ),
+        ],
+      )),
     );
   }
 }

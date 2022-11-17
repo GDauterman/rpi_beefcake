@@ -16,9 +16,19 @@ class FieldOptions {
   Icon? prefixIcon;
   double? boxheight;
   double? boxwidth;
-  FieldOptions({this.validator, this.boxheight, this.showValidSymbol = true, this.boxwidth, this.hint, this.invalidText, this.keyboard = TextInputType.text, String regString = '.*', IconData? icon, this.obscureText = false}) {
+  FieldOptions(
+      {this.validator,
+      this.boxheight,
+      this.showValidSymbol = true,
+      this.boxwidth,
+      this.hint,
+      this.invalidText,
+      this.keyboard = TextInputType.text,
+      String regString = '.*',
+      IconData? icon,
+      this.obscureText = false}) {
     validationRegex = RegExp(regString);
-    if(icon != null) {
+    if (icon != null) {
       prefixIcon = Icon(icon, color: bc_style().textcolor);
     } else {
       prefixIcon = null;
@@ -30,7 +40,12 @@ class FieldWithEnter extends StatefulWidget {
   final List<FieldOptions> fieldOptions;
   final ServiceCallback dataEntry;
   final String submitText;
-  const FieldWithEnter({Key? key, required this.fieldOptions, required this.dataEntry, this.submitText = 'Submit' }) : super(key: key);
+  const FieldWithEnter(
+      {Key? key,
+      required this.fieldOptions,
+      required this.dataEntry,
+      this.submitText = 'Submit'})
+      : super(key: key);
 
   @override
   _FieldWithEnter createState() {
@@ -39,7 +54,6 @@ class FieldWithEnter extends StatefulWidget {
 }
 
 class _FieldWithEnter extends State<FieldWithEnter> {
-
   @override
   Widget build(BuildContext context) {
     List<CustTextInput> fieldList = List<CustTextInput>.empty(growable: true);
@@ -50,33 +64,32 @@ class _FieldWithEnter extends State<FieldWithEnter> {
       padding: const EdgeInsets.all(30.0),
       child: Center(
           child: Column(children: [
-            Column(
-              children: fieldList,
-            ),
-            Form(
-              child: ElevatedButton(
-                  onPressed: /*(_formKey.currentState == null) ? null :*/ () {
-                    List<dynamic> enteredData = List<dynamic>.empty(
-                        growable: true);
-                    for (int i = 0; i < widget.fieldOptions.length; i++) {
-                      print('accessing controllers');
-                      String contText = fieldList[i].child.getVal();
-                      if (widget.fieldOptions[i].validationRegex.hasMatch(contText)) {
-                        enteredData.add(contText);
-                      } else {
-                        print('{$i} doesn\'t match');
-                        return;
-                      }
-                    }
-                    for (int i = 0; i < widget.fieldOptions.length; i++) {
-                      fieldList[i].child.clear();
-                    }
-                    widget.dataEntry(enteredData);
-                  },
-                  child: Text(widget.submitText)
-              ),
-            ),
-          ])),
+        Column(
+          children: fieldList,
+        ),
+        Form(
+          child: ElevatedButton(
+              onPressed: /*(_formKey.currentState == null) ? null :*/ () {
+                List<dynamic> enteredData = List<dynamic>.empty(growable: true);
+                for (int i = 0; i < widget.fieldOptions.length; i++) {
+                  print('accessing controllers');
+                  String contText = fieldList[i].child.getVal();
+                  if (widget.fieldOptions[i].validationRegex
+                      .hasMatch(contText)) {
+                    enteredData.add(contText);
+                  } else {
+                    print('{$i} doesn\'t match');
+                    return;
+                  }
+                }
+                for (int i = 0; i < widget.fieldOptions.length; i++) {
+                  fieldList[i].child.clear();
+                }
+                widget.dataEntry(enteredData);
+              },
+              child: Text(widget.submitText)),
+        ),
+      ])),
     );
   }
 }
@@ -85,9 +98,7 @@ class CustTextInput extends StatefulWidget {
   final FieldOptions options;
   late _CustTextInput child;
 
-  CustTextInput(
-      {Key? key, required this.options})
-      : super(key: key);
+  CustTextInput({Key? key, required this.options}) : super(key: key);
 
   @override
   _CustTextInput createState() {
@@ -97,14 +108,13 @@ class CustTextInput extends StatefulWidget {
 }
 
 class _CustTextInput extends State<CustTextInput> {
-
   TextEditingController controller = TextEditingController();
   late bool _isValid;
   bool _showValid = true;
 
   @override
   void initState() {
-    if(widget.options.validator != null) {
+    if (widget.options.validator != null) {
       _isValid = widget.options.validator!('');
     } else {
       _isValid = widget.options.validationRegex.hasMatch('');
@@ -135,14 +145,14 @@ class _CustTextInput extends State<CustTextInput> {
   @override
   Widget build(BuildContext context) {
     Widget? validIcon;
-    if(widget.options.showValidSymbol && getVal().compareTo('') > 0) {
+    if (widget.options.showValidSymbol && getVal().compareTo('') > 0) {
       validIcon = Icon(
           _showValid ? Icons.check_circle : Icons.flag_circle_rounded,
           size: 28,
-          color: _showValid ? bc_style().correctcolor : bc_style().errorcolor
-      );
+          color: _showValid ? bc_style().correctcolor : bc_style().errorcolor);
     }
-    double _width = widget.options.boxwidth ?? MediaQuery.of(context).size.width;
+    double _width =
+        widget.options.boxwidth ?? MediaQuery.of(context).size.width;
     double _height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
@@ -151,15 +161,13 @@ class _CustTextInput extends State<CustTextInput> {
       keyboardType: widget.options.keyboard,
       decoration: InputDecoration(
         label: Text.rich(
-          TextSpan(
-            children: <InlineSpan>[
-              WidgetSpan(
-                  child: Text(
-                      getVal().isEmpty ? widget.options.hint! : '',
-                  ),
+          TextSpan(children: <InlineSpan>[
+            WidgetSpan(
+              child: Text(
+                getVal().isEmpty ? widget.options.hint! : '',
               ),
-            ]
-          ),
+            ),
+          ]),
         ),
         errorText: _showValid ? null : widget.options.invalidText,
         //border: InputBorder.none,
@@ -168,38 +176,46 @@ class _CustTextInput extends State<CustTextInput> {
       ),
       onChanged: ((String str) {
         bool valid;
-        if(widget.options.validator != null) {
+        if (widget.options.validator != null) {
           valid = widget.options.validator!(str);
         } else {
           valid = widget.options.validationRegex.hasMatch(str);
         }
         if (_isValid && !valid) {
-          setState(() {_isValid = false;});
+          setState(() {
+            _isValid = false;
+          });
         } else if (!_isValid && valid) {
-          setState(() {_isValid = true;});
+          setState(() {
+            _isValid = true;
+          });
         }
-        if(_showValid && !valid) {
-          setState(() {_showValid = false;});
-        } else if(!_showValid && valid) {
-          setState(() {_showValid = true;});
+        if (_showValid && !valid) {
+          setState(() {
+            _showValid = false;
+          });
+        } else if (!_showValid && valid) {
+          setState(() {
+            _showValid = true;
+          });
         }
       }),
     );
     return Padding(
       padding: const EdgeInsets.only(bottom: 7),
       child: Container(
-        decoration: BoxDecoration(
-          //color: bc_style().backgroundcolor,
-          //border: Border.all(width: 5, color: bc_style().accent1color),
-          borderRadius: BorderRadius.circular(5),
-        ),
-        padding: const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
-        child: SizedBox(
-          child: tf,
-          width: _width,
-          height: _height,
-        )
-      ),
+          decoration: BoxDecoration(
+            //color: bc_style().backgroundcolor,
+            //border: Border.all(width: 5, color: bc_style().accent1color),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          padding:
+              const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
+          child: SizedBox(
+            child: tf,
+            width: _width,
+            height: _height,
+          )),
     );
   }
 }
@@ -235,10 +251,17 @@ class CustomPopupRoute extends PopupRoute {
   Duration get transitionDuration => const Duration(milliseconds: 300);
 
   @override
-  Widget buildPage(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) => builder(context);
+  Widget buildPage(BuildContext context, Animation<double> animation,
+          Animation<double> secondaryAnimation) =>
+      builder(context);
 
   @override
-  Widget buildTransitions(BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation, Widget child,) {
+  Widget buildTransitions(
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
     return ScaleTransition(
       scale: animation,
       child: FadeTransition(
@@ -283,7 +306,8 @@ class _CustDropdown extends State<CustDropdown> {
               _curVal = value!;
             });
           },
-          items: widget.optionList.map<DropdownMenuItem<String>>((String value) {
+          items:
+              widget.optionList.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value),
@@ -443,8 +467,8 @@ class _ExpandableFabState extends State<ExpandableFab>
     final count = widget.children.length;
     final step = 90.0 / (count - 1);
     for (var i = 0, angleInDegrees = 0.0;
-    i < count;
-    i++, angleInDegrees += step) {
+        i < count;
+        i++, angleInDegrees += step) {
       children.add(
         _ExpandingActionButton(
           directionInDegrees: angleInDegrees,
