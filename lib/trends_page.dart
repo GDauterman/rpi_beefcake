@@ -312,6 +312,7 @@ class HistoryRow extends StatelessWidget {
       child: Container(
         child: SizedBox(
           height: 70,
+          width: 350,
           child: Padding(
             padding: EdgeInsets.all(15),
             child: Row(
