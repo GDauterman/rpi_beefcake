@@ -24,18 +24,22 @@ class HomePage extends StatelessWidget {
         switch (index) {
           case 0:
             return AlertDialog(
+              backgroundColor: Theme.of(context).colorScheme.background,
                 content: SleepPage()
             );
           case 2:
             return AlertDialog(
+                backgroundColor: Theme.of(context).colorScheme.background,
                 content: NutritionPage()
             );
           case 1:
             return AlertDialog(
+                backgroundColor: Theme.of(context).colorScheme.background,
                 content: HydrationPage()
             );
           case 3:
             return AlertDialog(
+                backgroundColor: Theme.of(context).colorScheme.background,
                 content: MeasurementPage()
             );
           default: //should never be triggered
@@ -87,7 +91,7 @@ class DailyReport extends StatelessWidget {
       width: 300,
       height: 450,
       decoration: BoxDecoration(
-        color: Colors.white24,
+        color: Theme.of(context).colorScheme.background,
         border: Border.all(width: 5, color: Colors.black),
         borderRadius: BorderRadius.circular(5),
       ),
@@ -96,23 +100,20 @@ class DailyReport extends StatelessWidget {
         children: [
           Text(
             'Daily Report',
-            style: TextStyle(
-              fontSize: 35,
-            ),
+            style: Theme.of(context).textTheme.headline3
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: 10),
             child: Text(
               'Date: '+DateTime.now().month.toString()+'/'+DateTime.now().day.toString()+'/'+DateTime.now().year.toString(),
-              style: TextStyle(
-                fontSize: 20,
-              ),
+              style: Theme.of(context).textTheme.headline4
             )
           ),
-          ProgressMeter('Hours Slept (hr)', DBFields.durationS),
-          ProgressMeter('Calories Today', DBFields.caloriesN),
-          ProgressMeter('Water Drank (oz)', DBFields.quantityH),
-          SingleValueUpdating(title: 'Today\'s Mean Weight', field: DBFields.weightM),
+          SizedBox(height: 25),
+          ProgressMeter('Hours Slept (hr): ', DBFields.durationS),
+          ProgressMeter('Calories Today: ', DBFields.caloriesN),
+          ProgressMeter('Water Drank (oz): ', DBFields.quantityH),
+          SingleValueUpdating(title: 'Today\'s Mean Weight:', field: DBFields.weightM),
         ],
       )
     );
@@ -139,7 +140,7 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
       builder: (context, snapshot) {
         String presentString = 'loading';
         if(snapshot.hasData) {
-          presentString = widget.title + ': ';
+          presentString = widget.title + "  ";
           if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
             presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
             presentString += " " + FirebaseService().dbUnitMap[widget.field]!;
@@ -147,9 +148,20 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
             presentString += 'no data';
           }
         }
-        return Container(
-          padding: EdgeInsets.symmetric(vertical: 5),
-          child: Text(presentString),
+        return SizedBox(
+          width: 280, //boxWidth = 300, 20 px padding preferred
+          height: 60,
+          child: Row (
+            children: [
+              SizedBox(width: 20),
+              Text(
+                presentString,
+                style: Theme.of(context).textTheme.headline2?.copyWith(
+                    fontWeight: FontWeight.bold
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -201,26 +213,41 @@ class _ProgressMeter extends State<ProgressMeter> {
             barDec = progress/goal;
           }
         }
-        return Column (
-          children: [
-            Text(
-              widget.title,
-              style: TextStyle(
-                  fontSize: 15
-              ),
+        return SizedBox(
+          width: 280, //boxWidth = 300, 20 px padding preferred
+          height: 60,
+            child: Row (
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    SizedBox(width: 20),
+                    Text(
+                      widget.title,
+                        style: Theme.of(context).textTheme.headline2?.copyWith(
+                          fontWeight: FontWeight.bold
+                        )
+                    ),
+                    SizedBox(width: 5),
+                    Text(
+                        (goal == -1 || progress == -1) ? '--/--' : progress.floor().toString()+'/'+goal.toInt().toString(),
+                        style: Theme.of(context).textTheme.headline2
+                    ),
+                  ],
+                ),
+                Row(
+                  children: [
+                    CircularProgressIndicator(
+                      value: barDec.toDouble(),
+                      backgroundColor: Colors.grey[200],
+                      color: Theme.of(context).colorScheme.primary,
+                      semanticsLabel: 'Hours Slept',
+                    ),
+                    SizedBox(width: 20)
+                  ],
+                ),
+              ],
             ),
-            LinearProgressIndicator(
-              value: barDec.toDouble(),
-              backgroundColor: bc_style().accent1color,
-              color: bc_style().accent2color,
-            ),
-            Text(
-              (goal == -1 || progress == -1) ? '--/--' : progress.floor().toString()+'/'+goal.toInt().toString(),
-              style: TextStyle(
-                fontSize: 10,
-              ),
-            )
-          ],
         );
       }
     );
@@ -241,6 +268,7 @@ class HydrationPage extends StatelessWidget {
       ),
     ];
     return Material(
+      color: Theme.of(context).colorScheme.background,
       // Sleep Container
       child: SingleChildScrollView(
         child: Column(
@@ -300,6 +328,7 @@ class NutritionPage extends StatelessWidget {
       ),
     ];
     return Material(
+      color: Theme.of(context).colorScheme.background,
       // Sleep Container
       child: SingleChildScrollView(
         child: Column(
@@ -344,6 +373,7 @@ class SleepPage extends StatelessWidget {
       )
     ];
     return Material(
+      color: Theme.of(context).colorScheme.background,
       // Sleep Container
       child: SingleChildScrollView(
         child: Column(

@@ -76,20 +76,8 @@ class SettingsPage extends StatelessWidget {
                     fontSize: 30
                   ),
                 ),
-
-                // child: SizedBox(
-                //   height: 50,
-                //   width: 200,
-                //   child: Center(
-                //     child: Text(
-                //       'Log Out',
-                //       style: TextStyle(
-                //           fontSize: 30
-                //       ),
-                //     ),
-                //   ),
-                ),
               ),
+            ),
           ],
         )
       ),
