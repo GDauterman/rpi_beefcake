@@ -9,15 +9,15 @@
   * Global variable declarations
 3) Variable naming convention
   * Local variables should have lower starting camel case (varForUse)
-  * Global variables should be upper starting camel (GlobalVar)
+  * Global variables should be lower starting camel (varForUse)
   * Constants should be all caps (CONSTANTVAR)
-  * Classes should be upper starting camel
+  * Classes should be upper starting camel (VarForUse)
   * Methods should be lower starting camel
   * Avoid numbers and underscores
   * Always be descriptive
   * Avoid 20+ character names
 4) Indentation
-  * 4 space tabs
+  * 2 space tabs
   * Space after any comma
   * At least one newline between each method/class
   * brackets should start on the same line as if/while/else:
