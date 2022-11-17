@@ -6,6 +6,7 @@ import 'package:dropdown_textfield/dropdown_textfield.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:rpi_beefcake/fitness_page.dart';
 
 import 'firestore.dart';
 
@@ -39,9 +40,14 @@ class _TrendsPage extends State<TrendsPage> {
   num yinterval = 1;
   num trendm = 0;
   num trendb = 0;
+
   late final List<DropDownValueModel> dbDropDownList;
+  late List<DropDownValueModel> dbDropDownListExercise;
   final SingleValueDropDownController ddController = SingleValueDropDownController();
+  final SingleValueDropDownController ddexController = SingleValueDropDownController();
+
   DBFields curField = DBFields.caloriesN;
+  int? exIdx;
 
   List<DocumentSnapshot> historyDocs = [];
   List<Widget> historyRows = [];
@@ -57,12 +63,17 @@ class _TrendsPage extends State<TrendsPage> {
     historyDocs = [];
     historyRows = [];
     FirebaseService().dbColMap[curField]!.orderBy('time_logged', descending: true).get().then(updateHistory);
-    FirebaseService().getRawPlotPoints(curField, getPoints, 10);
-    FirebaseService().userDoc!.get().then((value) {
-      setState((){goal = value[FirebaseService().dbGoalMap[curField]!];});
-    });
-    trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
-    trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+    FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
+    if(curField != DBFields.exercise) {
+      FirebaseService().userDoc!.get().then((value) {
+        setState(() {
+          goal = value[FirebaseService().dbGoalMap[curField]!];
+          trendm = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![0]);
+          trendb = FirebaseService().trendsDoc!.get(FirebaseService().dbTrendMap[curField]![1]);
+        });
+      });
+    }
+    // List<String> trendStr = curField == DBFields.exercise ? [FirebaseService().getExerciseFields()[exIdx!]+"_m", FirebaseService().getExerciseFields()[exIdx!]+"_m"] : FirebaseService().dbTrendMap[curField]!;
   }
 
   void updateHistory(QuerySnapshot<Object?> value) {
@@ -70,12 +81,18 @@ class _TrendsPage extends State<TrendsPage> {
       if (value == null) {
         return;
       }
+      String? fieldStr;
+      if(curField == DBFields.exercise) {
+        fieldStr = FirebaseService().getExerciseFields()[exIdx!];
+      } else {
+        fieldStr = FirebaseService().dbFieldMap[curField]!;
+      }
       for (int i = 0; i < value.docs.length; i++) {
         DocumentSnapshot tempDoc = value.docs[i];
         Map<String, dynamic> tempData = tempDoc.data() as Map<String, dynamic>;
-        if (tempData.keys.contains(FirebaseService().dbFieldMap[curField]!) && tempData[FirebaseService().dbFieldMap[curField]!] != -1) {
+        if (tempData.keys.contains(fieldStr!) && tempData[fieldStr!] != -1) {
           historyDocs.add(tempDoc);
-          historyRows.add(HistoryRow(field: curField, doc: tempDoc));
+          historyRows.add(HistoryRow(field: curField, doc: tempDoc, exIdx: exIdx));
           // historyRows.add(Text('balls'));
         }
       }
@@ -129,9 +146,6 @@ class _TrendsPage extends State<TrendsPage> {
       FlSpot((xmin-lineOffset), (trendm*(xmin-lineOffset)+trendb)),
       FlSpot((xmax+lineOffset), (trendm*(xmax+lineOffset)+trendb)),
     ];
-
-    // ymin = min(min(ymin, trendpoints![0].y), trendpoints![1].y);
-    // ymax = max(max(ymax, trendpoints![0].y), trendpoints![1].y);
   }
 
   static Widget getUnitAxisTickVals(double value, TitleMeta meta) {
@@ -169,8 +183,14 @@ class _TrendsPage extends State<TrendsPage> {
         queryForNewField();
       }
     }
-
-
+    dbDropDownListExercise = [
+    ];
+    for(int i = 0; i < exercisesList.length; i++) {
+      DropDownValueModel temp_ex = DropDownValueModel(name: FirebaseService().getExerciseTitles()[i], value: i);
+      dbDropDownListExercise.add(temp_ex);
+      if(i == 0)
+        ddexController.dropDownValue = temp_ex;
+    }
   }
 
   @override
@@ -193,6 +213,28 @@ class _TrendsPage extends State<TrendsPage> {
                 setState(() {
                   if(!(val is String))
                     curField = val.value;
+                  if(curField == DBFields.exercise)
+                    exIdx = 0;
+                  else
+                    exIdx = null;
+                  points = null;
+                  queryForNewField();
+                });
+              }),
+            ),
+            exIdx == null ? SizedBox.shrink() : DropDownTextField(
+              dropDownList: dbDropDownListExercise,
+              controller: ddexController,
+              enableSearch: true,
+              dropDownItemCount: 4,
+              onChanged: ((val) {
+                setState(() {
+                  if(val is String) {
+                    exIdx = FirebaseService().getExerciseTitles().indexOf(val);
+                  }
+                  if(val is int) {
+                    exIdx = val;
+                  }
                   points = null;
                   queryForNewField();
                 });
@@ -299,15 +341,33 @@ class HistoryRow extends StatelessWidget {
 
   DBFields field;
   DocumentSnapshot doc;
-  HistoryRow({required this.field, required this.doc, Key? key}) : super(key: key);
+  int? exIdx; // index of exercise if exercise is the field
+  HistoryRow({required this.field, required this.doc, this.exIdx, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
     Timestamp ts = docData['time_logged'];
     String tstr = DateTime.fromMillisecondsSinceEpoch(ts.millisecondsSinceEpoch).toString().substring(5, 16);
-    bool isFood = (field == DBFields.caloriesN || field == DBFields.carbsN || field == DBFields.fatN || field == DBFields.proteinN);
-    String title = isFood ? docData['food_name'].toString() : FirebaseService().dbTitleMap[field]!;
+    bool isFood = false;
+    String title = '';
+    String val = '';
+    if(field != DBFields.exercise) {
+      isFood = (field == DBFields.caloriesN || field == DBFields.carbsN || field == DBFields.fatN || field == DBFields.proteinN);
+      String fieldName = FirebaseService().dbFieldMap[field]!;
+      title = (isFood ? docData['food_name'].toString() : FirebaseService().dbTitleMap[field]!);
+      val = (docData[fieldName]).toStringAsFixed(1);
+    }
+    if(field == DBFields.exercise) {
+      num maxVal = 0;
+      title = FirebaseService().getExerciseTitles()[exIdx!];
+      List<num> weights = docData['weights'];
+      List<num> reps = docData['reps'];
+      for(int i = 0; i < docData['setCount']; i++) {
+        maxVal = max(maxVal, weights[i] / (1.0278 - (0.0278 * reps[i])));
+      }
+      val = maxVal.toStringAsFixed(1);
+    }
     return GestureDetector(
       child: Container(
         child: SizedBox(
@@ -337,7 +397,7 @@ class HistoryRow extends StatelessWidget {
                   ]
                 ),
                 Text(
-                  docData[FirebaseService().dbFieldMap[field]].toString(),
+                  val,
                   style: TextStyle(
                     fontSize: 35
                   ),
