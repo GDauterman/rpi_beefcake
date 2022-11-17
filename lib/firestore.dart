@@ -9,7 +9,7 @@ import 'package:collection/collection.dart';
 
 typedef void ServiceCallback(List<dynamic> data);
 
-enum DBFields { nameN, caloriesN, fatN, carbsN, proteinN, durationS, qualityS, noteS, quantityH, weightM, waistM, bicepM }
+enum DBFields { nameN, caloriesN, fatN, carbsN, proteinN, durationS, qualityS, noteS, quantityH, weightM, waistM, bicepM, exercise }
 
 class FirebaseService {
 
@@ -92,6 +92,7 @@ class FirebaseService {
     DBFields.weightM: null,
     DBFields.waistM: null,
     DBFields.bicepM: null,
+    DBFields.exercise: null,
   };
 
   final Map<DBFields, String> dbUnitMap = {
@@ -107,19 +108,43 @@ class FirebaseService {
     DBFields.weightM: 'lbs',
     DBFields.waistM: 'inches',
     DBFields.bicepM: 'inches',
+    DBFields.exercise: '1RM',
   };
 
   final Map<DBFields, String> dbTitleMap = {
+    DBFields.exercise: 'Exercises',
     DBFields.caloriesN: 'Calories',
-    DBFields.carbsN: 'Carb',
-    DBFields.fatN: 'Fats',
-    DBFields.proteinN: 'Protein',
     DBFields.durationS: 'Hours Slept',
     DBFields.quantityH: 'Water Drank',
     DBFields.weightM: 'Weight',
+    DBFields.carbsN: 'Carb',
+    DBFields.fatN: 'Fats',
+    DBFields.proteinN: 'Protein',
     DBFields.waistM: 'Waist Circ.',
     DBFields.bicepM: 'Bicep Circ.',
   };
+
+  List<String> _exerciseFields = [];
+  List<String> _exerciseTitles = [];
+  List<String> _exercisePlotPoints = [];
+
+  List<String> getExerciseFields() { return _exerciseFields; }
+  List<String> getExerciseTitles() { return _exerciseTitles; }
+  List<String> getExercisePlotPoints() { return _exercisePlotPoints; }
+
+  void addExerciseName(String title) {
+    String field = fieldify(title);
+    if(_exerciseFields.contains(field)) {
+      return;
+    }
+    _exerciseFields.add(field);
+    _exerciseTitles.add(title);
+    _exercisePlotPoints.add("max1rm_"+field+"_y");
+  }
+
+  static String fieldify(String title) {
+    return title.replaceAll(' ', '_').toLowerCase();
+  }
 
   static String getDateDocName(DateTime date) {
     String val = date.year.toString() + '-';
@@ -154,6 +179,15 @@ class FirebaseService {
           initUser();
         } else {
           userDoc = value.docs.first.reference;
+          List<dynamic> temp = (value.docs.first.data()! as Map<String, dynamic>)['exercises'];
+          for(int i = 0; i < temp.length; i++) {
+            _exerciseTitles.add(temp[i].toString());
+          }
+          for(int i = 0; i < _exerciseTitles.length; i++) {
+            String exField = fieldify(_exerciseTitles[i]);
+            _exerciseFields.add(exField);
+            _exercisePlotPoints.add("max1rm_"+exField+"_y");
+          }
           userDoc!.collection('graph_data').where(FieldPath.documentId, isEqualTo: 'trend_data').get().then((value) {
             trendsDoc = value.docs.first;
             connected = true;
@@ -179,6 +213,7 @@ class FirebaseService {
           dbColMap[DBFields.weightM] = measurementCol;
           dbColMap[DBFields.waistM] = measurementCol;
           dbColMap[DBFields.bicepM] = measurementCol;
+          dbColMap[DBFields.exercise] = workoutCol;
         }
       },
       onError: (e) => print(e.toString())
@@ -302,11 +337,12 @@ class FirebaseService {
     num setCount = data[2].length;
 
     final newEntry = <String, dynamic>{
-      "Workout_name": data[0],
+      "exercise_name": data[0],
+      "time_logged": Timestamp.now(),
       "notes": data[1],
       "set_count": setCount,
-      "reps": num.parse(data[2]),
-      "weight": num.parse(data[3]),
+      "reps": data[2],
+      "weight": data[3],
     };
     await workoutCol!.add(newEntry).then((documentSnapshot) => print("Added Workout Data with ID: ${documentSnapshot.id}"));
   }
@@ -350,7 +386,7 @@ class FirebaseService {
     });
   }
 
-  void getRawPlotPoints(DBFields field, void Function(List<dynamic> points) whenGet, int daysAgo) async {
+  void getRawPlotPoints(DBFields field, void Function(List<dynamic> points) whenGet, int daysAgo, int? exIdx) async {
     if(!connected){
       throw Exception('trying to read while not connected');
     }
@@ -359,6 +395,10 @@ class FirebaseService {
       return curDay.year.toString() + '-' + (curDay.month<10?'0':'') + curDay.month.toString() + '-' + (curDay.day<10?'0':'') + curDay.day.toString();
     });
     rawGraphCol!.where(FieldPath.documentId, whereIn: validDocIDs).get().then((value) {
+      String fieldStr = field == DBFields.exercise ? _exercisePlotPoints[exIdx!] : dbPlotYMap[field]!;
+      print(fieldStr);
+      if(exIdx != null)
+        print(exIdx);
       List<FlSpot> points = [];
       num xmin = double.maxFinite;
       num xmax = -double.maxFinite;
@@ -367,9 +407,9 @@ class FirebaseService {
       print(value.docs.length);
       for(int i = 0; i < value.docs.length; i++) {
         Map<String, dynamic> docData = value.docs[i].data() as Map<String, dynamic>;
-        if(docData.keys.contains(dbPlotYMap[field]!)) { //checks if document has an entry (for newly tracked values)
+        if(docData.keys.contains(fieldStr)) { //checks if document has an entry (for newly tracked values)
           double xval = double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
-          double yval = docData[dbPlotYMap[field]!].toDouble();
+          double yval = docData[fieldStr].toDouble();
           if (yval > 0) {
             xmin = min(xval, xmin);
             xmax = max(xval, xmax);
