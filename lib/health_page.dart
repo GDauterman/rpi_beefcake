@@ -50,6 +50,7 @@ class _MeasurementPage extends State<MeasurementPage> {
   @override
   Widget build(BuildContext context) {
     return Material(
+      color: Theme.of(context).colorScheme.background,
       // Sleep Container
       child: SingleChildScrollView(
         child: Column(children: [

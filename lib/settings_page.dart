@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:rpi_beefcake/profile_page.dart';
+import 'package:rpi_beefcake/style_lib.dart';
 
 class SettingsPage extends StatelessWidget {
-  final VoidCallback swapTheme;
+  void Function() swapTheme;
   SettingsPage(this.swapTheme, {Key? key}) : super(key: key);
 
   bool dark = false;
@@ -11,13 +13,13 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text('Settings'),
+          title: Text('Settings'),
           backgroundColor: Theme.of(context).colorScheme.primary,
           leading: IconButton(
               onPressed: (() {
                 Navigator.of(context).pop();
               }),
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back_sharp,
                 size: 32,
               ))),
@@ -26,48 +28,48 @@ class SettingsPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Padding(
-            padding: const EdgeInsets.only(top: 15),
+            padding: EdgeInsets.only(top: 15),
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.update_rounded),
+              icon: Icon(Icons.update_rounded),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               onPressed: (() {
                 Navigator.of(context).pushNamed('/profile');
               }),
-              label: const Text(
+              label: Text(
                 'Update Goals',
                 style: TextStyle(fontSize: 30),
               ),
             ),
           ),
           Padding(
-              padding: const EdgeInsets.only(top: 15),
+              padding: EdgeInsets.only(top: 15),
               child: ElevatedButton.icon(
-                icon: (dark == false)
-                    ? const Icon(Icons.light_mode)
-                    : const Icon(Icons.dark_mode),
+                icon: (this.dark == false)
+                    ? Icon(Icons.light_mode)
+                    : Icon(Icons.dark_mode),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Theme.of(context).colorScheme.primary,
                 ),
                 onPressed: swapTheme,
-                label: const Text(
+                label: Text(
                   'Toggle Dark Mode',
                   style: TextStyle(fontSize: 30),
                 ),
               )),
           //),
           Padding(
-            padding: const EdgeInsets.only(top: 15),
+            padding: EdgeInsets.only(top: 15),
             child: ElevatedButton.icon(
-              icon: const Icon(Icons.logout),
+              icon: Icon(Icons.logout),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               onPressed: (() {
                 FirebaseAuth.instance.signOut();
               }),
-              label: const Text(
+              label: Text(
                 'Log Out',
                 style: TextStyle(fontSize: 30),
               ),
@@ -77,8 +79,4 @@ class SettingsPage extends StatelessWidget {
       )),
     );
   }
-}
-
-class DarkModeToggle extends ElevatedButton {
-  DarkModeToggle({required super.onPressed, required super.child});
 }
