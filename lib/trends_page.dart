@@ -148,7 +148,7 @@ class _TrendsPage extends State<TrendsPage> {
       points = newPoints[4].cast<FlSpot>();
 
       if (points != null && points!.isNotEmpty) {
-        List<num> yres = getIntervalRate(ymin, ymax, 6);
+        List<num> yres = getIntervalRate(ymin, ymax, 4);
         List<num> xres = getIntervalRate(xmin, xmax, 6);
         xmin = xres[0];
         xmax = xres[1];
@@ -163,7 +163,7 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void setTrendline() {
-    double lineOffset = 5;
+    double lineOffset = 0.1;
     trendpoints = [
       FlSpot((xmin - lineOffset), (trendm * (xmin - lineOffset) + trendb)),
       FlSpot((xmax + lineOffset), (trendm * (xmax + lineOffset) + trendb)),
@@ -326,7 +326,7 @@ class _TrendsPage extends State<TrendsPage> {
                           LineChartBarData(
                             spots: points,
                             barWidth: 4.5,
-                            isCurved: true,
+                            isCurved: false,
                             // dotData: FlDotData(
                             //   show: false,
                             // ),
