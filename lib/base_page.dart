@@ -1,13 +1,35 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/fitness_page.dart';
-import 'package:rpi_beefcake/health_page.dart';
 import 'package:rpi_beefcake/home_page.dart';
 import 'package:rpi_beefcake/loading_page.dart';
-import 'package:rpi_beefcake/page_enum.dart';
 import 'package:rpi_beefcake/trends_page.dart';
 
 import 'firestore.dart';
 
+/// Possible pages to enter from BasePage
+enum PageItems { trends, home, fitness }
+
+/// Extension to add titles to enum
+extension PageExtension on PageItems {
+  String get name => describeEnum(this);
+  String get getTitle {
+    switch (this) {
+      case PageItems.home:
+        return 'Beefcake Home';
+      case PageItems.fitness:
+        return 'Fitness Logging';
+      case PageItems.trends:
+        return 'Trends';
+    }
+  }
+}
+
+/// A StatefulWidget representing the main page of our app
+///
+/// Includes Trends page, Home page, and Exercise page
+///
+/// State depends on which page is to be shown often balls
 class BasePage extends StatefulWidget {
   const BasePage({Key? key}) : super(key: key);
 
@@ -15,17 +37,16 @@ class BasePage extends StatefulWidget {
   State<BasePage> createState() => _BasePage();
 }
 
+/// Underlying state class for BasePage
 class _BasePage extends State<BasePage> {
+
+  /// Current page to be shown based on bottom navbar
   PageItems pageItem = PageItems.home;
 
+  /// Callback func to change current page
   void _onItemTapped(int index) {
+    pageItem = PageItems.values[index];
     setState(() {
-      for (int i = 0; i < PageItems.values.length; i++) {
-        if (i == index) {
-          pageItem = PageItems.values[i];
-          break;
-        }
-      }
     });
   }
 
@@ -52,6 +73,7 @@ class _BasePage extends State<BasePage> {
         ],
       ),
       body: (() {
+        // Show loading page if we disconnect from firebase
         if (!FirebaseService().connected) {
           return LoadingPage();
         }
