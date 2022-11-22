@@ -1,10 +1,12 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/firestore.dart';
-import 'package:rpi_beefcake/profile_page.dart';
-import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
+// stateful due to errortext being required for this logging popup
+/// Stateful Widget that represents the page for logging a body measuremnent
+///
+/// State depends on changing values in fields
 class MeasurementPage extends StatefulWidget {
   MeasurementPage({Key? key}) : super(key: key);
 
@@ -12,7 +14,9 @@ class MeasurementPage extends StatefulWidget {
   State<MeasurementPage> createState() => _MeasurementPage();
 }
 
+/// Underlying state implementation of MeasurementPage
 class _MeasurementPage extends State<MeasurementPage> {
+  // Options and widgets for all inputs for this page
   late final FieldOptions _weightOptions;
   late final FieldOptions _waistOptions;
   late final FieldOptions _bicepOptions;
@@ -20,7 +24,8 @@ class _MeasurementPage extends State<MeasurementPage> {
   late final CustTextInput _waistInput;
   late final CustTextInput _bicepInput;
 
-  String errorText = '';
+  // string that should be shown beneath submit in the case of user error
+  String _errorText = '';
 
   @override
   initState() {
@@ -72,18 +77,20 @@ class _MeasurementPage extends State<MeasurementPage> {
           _waistInput,
           _bicepInput,
           ElevatedButton(
+              // Checks for validity of log attempt, shows error if not valid,
+              // logs and clears values if valid
               onPressed: (() {
                 if (_weightInput.child.isEmpty() &&
                     _waistInput.child.isEmpty() &&
                     _bicepInput.child.isEmpty()) {
                   setState(() {
-                    errorText = 'Enter at least one metric before submitting';
+                    _errorText = 'Enter at least one metric before submitting';
                   });
                 } else if (_weightInput.child.isValid() &&
                     _waistInput.child.isValid() &&
                     _bicepInput.child.isValid()) {
                   setState(() {
-                    errorText = '';
+                    _errorText = '';
                   });
                   FirebaseService().addMeasurement([
                     _weightInput.child.getVal(),
@@ -99,7 +106,7 @@ class _MeasurementPage extends State<MeasurementPage> {
           Padding(
               padding: EdgeInsets.only(top: 10),
               child: Text(
-                errorText,
+                _errorText,
                 style: TextStyle(color: Theme.of(context).errorColor),
               ))
         ]),
@@ -108,6 +115,7 @@ class _MeasurementPage extends State<MeasurementPage> {
   }
 }
 
+/// Stateless Widget that represents the page for logging hydration
 class HydrationPage extends StatelessWidget {
   HydrationPage({Key? key}) : super(key: key);
 
@@ -141,6 +149,7 @@ class HydrationPage extends StatelessWidget {
   }
 }
 
+/// Stateless Widget that represents the page for logging nutrition
 class NutritionPage extends StatelessWidget {
   NutritionPage({Key? key}) : super(key: key);
 
@@ -198,6 +207,7 @@ class NutritionPage extends StatelessWidget {
   }
 }
 
+/// Stateless Widget that represents the page for logging sleep
 class SleepPage extends StatelessWidget {
   SleepPage({Key? key}) : super(key: key);
 

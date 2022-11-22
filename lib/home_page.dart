@@ -11,22 +11,15 @@ import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
 import 'dart:math';
 
-enum ColTypes { Nutrition, Hydration, Sleep }
-
-enum healthSubPages { home, sleep, nutrition, hydration, goals }
-
+/// Stateless widget representing the homepage of our app
 class HomePage extends StatelessWidget {
-  static const _actionTitles = [
-    "LogSleep",
-    "logHydration",
-    "logCalories",
-    "logGoals"
-  ]; //set goals to be added
-  healthSubPages curPage = healthSubPages.home;
+
+  HomePage({Key? key}) : super(key: key);
 
   void _showAction(BuildContext context, int index) {
     Navigator.of(context).push(CustomPopupRoute(
       builder: (context) {
+        // builds popups of different logging pages
         switch (index) {
           case 0:
             return AlertDialog(
@@ -51,7 +44,6 @@ class HomePage extends StatelessWidget {
     ));
   }
 
-  HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -83,6 +75,7 @@ class HomePage extends StatelessWidget {
   }
 }
 
+/// StatelessWidget that represents the box in the middle of the page
 class DailyReport extends StatelessWidget {
   DailyReport({Key? key}) : super(key: key);
   @override
@@ -120,9 +113,17 @@ class DailyReport extends StatelessWidget {
   }
 }
 
+/// StatefulWidget that represents the daily update row of a single field
+///
+/// Specifically shows a single value
+///
+/// State depends on changing log values
 class SingleValueUpdating extends StatefulWidget {
+  /// Title to be used for this row
   String title;
+  /// Field to be grabbed for this row
   DBFields field;
+  /// Optional icon to be shown
   IconData? icon;
 
   SingleValueUpdating(
@@ -133,6 +134,7 @@ class SingleValueUpdating extends StatefulWidget {
   State<SingleValueUpdating> createState() => _SingleValueUpdating();
 }
 
+/// Underlying implementation of SingleValueUpdating
 class _SingleValueUpdating extends State<SingleValueUpdating> {
   @override
   Widget build(BuildContext context) {
@@ -181,6 +183,11 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
   }
 }
 
+/// StatefulWidget that represents the daily update row of a single field
+///
+/// Specifically shows a value compared with its goal, along with a progressbar
+///
+/// State depends on changing log values
 class ProgressMeter extends StatefulWidget {
   final String title;
   final DBFields field;
@@ -267,140 +274,5 @@ class _ProgressMeter extends State<ProgressMeter> {
             ),
           );
         });
-  }
-}
-
-class HydrationPage extends StatelessWidget {
-  HydrationPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<FieldOptions> hydrationOptions = [
-      FieldOptions(
-        hint: 'oz of liquid',
-        invalidText: 'Enter a number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d+(\.\d+)?$',
-      ),
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: Text(
-              'Hydration Entry',
-              style: TextStyle(fontSize: 35),
-            ),
-          ),
-          FieldWithEnter(
-              fieldOptions: hydrationOptions,
-              dataEntry: FirebaseService().addHydration),
-        ]),
-      ),
-    );
-  }
-}
-
-class NutritionPage extends StatelessWidget {
-  NutritionPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<FieldOptions> sleepOptions = [
-      FieldOptions(
-        hint: 'Food',
-        invalidText: 'Enter name of food',
-        keyboard: TextInputType.text,
-        regString: r'.+',
-      ),
-      FieldOptions(
-        hint: 'Total Calories',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Carbohydrates',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Fats',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Protein',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: Text(
-              'Nutrition Entry',
-              style: TextStyle(fontSize: 35),
-            ),
-          ),
-          FieldWithEnter(
-              fieldOptions: sleepOptions,
-              dataEntry: FirebaseService().addNutrition),
-        ]),
-      ),
-    );
-  }
-}
-
-class SleepPage extends StatelessWidget {
-  SleepPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<FieldOptions> sleepOptions = [
-      FieldOptions(
-        hint: 'Hours Slept',
-        invalidText: 'Enter  number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d{1,2}(\.\d+)?$',
-      ),
-      FieldOptions(
-        hint: 'Sleep Quality (0-100)',
-        invalidText: 'Enter an integer from 0 to 100',
-        keyboard: TextInputType.number,
-        regString: r'^0*(\d{1,2}|100)$',
-      ),
-      FieldOptions(
-        hint: 'Notes',
-      )
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(children: [
-          Padding(
-            padding: EdgeInsets.only(top: 20),
-            child: Text(
-              'Sleep Entry',
-              style: TextStyle(fontSize: 35),
-            ),
-          ),
-          FieldWithEnter(
-              fieldOptions: sleepOptions,
-              dataEntry: FirebaseService().addSleep),
-        ]),
-      ),
-    );
   }
 }
