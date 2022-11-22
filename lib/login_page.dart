@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
+// Regex strings and objects for matching emails and passwords
 const emailRegexString = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
 final emailRegex = RegExp(emailRegexString);
 const existsRegexString = r'.+';
 final existsRegex = RegExp(existsRegexString);
 const properPasswordRegexString = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
-final properPasswordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+final properPasswordRegex = RegExp(properPasswordRegexString);
 const nameRegexString = r'[A-Z]\w* [A-Z]\w*';
-final nameRegex = RegExp(r'[A-Z]\w* [A-Z]\w*');
+final nameRegex = RegExp(nameRegexString);
 
+/// StatefulWidget representing the login page of this app
+///
+/// State depends on fields of app and login state
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -19,14 +23,15 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPage();
 }
 
+/// Underlying implementation of LoginPage
 class _LoginPage extends State<LoginPage> {
+  // options and options for the email and password fields
   late CustTextInput _emailInput;
   late CustTextInput _pwInput;
   late final FieldOptions _emailOptions;
   late final FieldOptions _pwOptions;
-  bool usernameCorrect = false;
-  bool passwordCorrect = false;
-  String errorText = '';
+  // error string to be shown in case of user error
+  String _errorText = '';
 
   @override
   initState() {
@@ -82,11 +87,11 @@ class _LoginPage extends State<LoginPage> {
                 onPressed: (() {
                   if (!_emailInput.child.isValid()) {
                     setState(() {
-                      errorText = 'Invalid Email';
+                      _errorText = 'Invalid Email';
                     });
                   } else if (!_pwInput.child.isValid()) {
                     setState(() {
-                      errorText = 'Enter a Password';
+                      _errorText = 'Enter a Password';
                     });
                   } else {
                     FirebaseAuth.instance
@@ -96,14 +101,14 @@ class _LoginPage extends State<LoginPage> {
                         .then((userCredential) => {})
                         .catchError((error) {
                       setState(() {
-                        errorText = error.message;
+                        _errorText = error.message;
                         _pwInput.child.clear();
                       });
                     });
                   }
                 }),
                 child: const Text('Log In')),
-            Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
+            Text(_errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
                 onPressed: (() {
                   Navigator.of(context).popAndPushNamed('/register');
@@ -117,6 +122,9 @@ class _LoginPage extends State<LoginPage> {
   }
 }
 
+/// StatefulWidget representing the register page of this app
+///
+/// State depends on fields of app and register state
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -124,16 +132,15 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPage();
 }
 
+/// Underlying State implementation of RegisterPage
 class _RegisterPage extends State<RegisterPage> {
+  // inputs for all fields on this page
   late CustTextInput _emailInput;
   late CustTextInput _pw1Input;
   late CustTextInput _pw2Input;
   late final FieldOptions _emailOptions;
   late final FieldOptions _pw1Options;
   late final FieldOptions _pw2Options;
-  bool usernameCorrect = false;
-  bool passwordCorrect = false;
-  bool passwordConfirmCorrect = false;
   String errorText = '';
 
   bool confirmationValidator(String str) {

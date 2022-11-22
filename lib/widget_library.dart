@@ -3,17 +3,30 @@ import 'package:rpi_beefcake/firestore.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'dart:math' as math;
 
+/// Function that takes in a string and retuns whether or not that value is valid
 typedef bool ValidatorFunction(String str);
 
+/// Class representation of a CustFieldInput's settings
 class FieldOptions {
+  /// regexp object to test validity of input
   late RegExp validationRegex;
+  /// The validator function that can be used instead of regexp
   ValidatorFunction? validator;
+  /// the hint to be shown on the field
   String? hint;
+  /// the text to be shown when the field is invalid
   String? invalidText;
+  /// whether the input should show the validity flag
   bool showValidSymbol;
+  /// which keyboard should be shown when the user has this input selected
   TextInputType keyboard;
+  /// whether to obscure text in input
   bool obscureText;
+  /// option to show an icon before the field
   Icon? prefixIcon;
+  /// option for the size of the field
+  ///
+  /// This value not being set means the field will expand to whatever size it needs
   double? boxheight;
   double? boxwidth;
   FieldOptions(
@@ -36,10 +49,15 @@ class FieldOptions {
   }
 }
 
+/// A StatefulWidget representing a list of CustTextInputs with a submit button
 class FieldWithEnter extends StatefulWidget {
+  /// All fieldoptions to be used
   final List<FieldOptions> fieldOptions;
+  /// A callback to be used to send data when submitting
   final ServiceCallback dataEntry;
+  /// The string to be shown in the submit button
   final String submitText;
+
   const FieldWithEnter(
       {Key? key,
       required this.fieldOptions,
@@ -53,6 +71,7 @@ class FieldWithEnter extends StatefulWidget {
   }
 }
 
+/// The underlying state input of FieldWithEnter
 class _FieldWithEnter extends State<FieldWithEnter> {
   @override
   Widget build(BuildContext context) {
@@ -94,8 +113,11 @@ class _FieldWithEnter extends State<FieldWithEnter> {
   }
 }
 
+/// A StatefulWidget representing an inputfield with set [options]
 class CustTextInput extends StatefulWidget {
+  /// Options of this textinput
   final FieldOptions options;
+  /// accessor to be able to access getters of this input
   late _CustTextInput child;
 
   CustTextInput({Key? key, required this.options}) : super(key: key);
@@ -107,9 +129,14 @@ class CustTextInput extends StatefulWidget {
   }
 }
 
+/// The underlying state implementation of CustTextInput
 class _CustTextInput extends State<CustTextInput> {
+  /// Controller of this object's input
   TextEditingController controller = TextEditingController();
+  /// Whether this field is valid
   late bool _isValid;
+  // Used to not have to show invalid when a user hasn't yet entered anything
+  /// Whether or not to show that this field is valid
   bool _showValid = true;
 
   @override
@@ -122,14 +149,17 @@ class _CustTextInput extends State<CustTextInput> {
     super.initState();
   }
 
+  /// Returns whether this input is currently valid
   bool isValid() {
     return _isValid;
   }
 
+  /// Returns whether this input is currently fully empty
   bool isEmpty() {
     return getVal().isEmpty;
   }
 
+  /// Clears this input
   void clear() {
     setState(() {
       _showValid = true;
@@ -138,6 +168,7 @@ class _CustTextInput extends State<CustTextInput> {
   }
 
 //TODO: make nullable and return null if not valid (should be on this func)
+  /// Returns the string value currently entered into the input
   String getVal() {
     return controller.text.toString();
   }
@@ -320,53 +351,7 @@ class _CustDropdown extends State<CustDropdown> {
 }
 
 @immutable
-class LogMenu extends StatelessWidget {
-  static const _actionTitles = ['Log Sleep', 'Log Hydration', 'Log Nutrition'];
-
-  const LogMenu({super.key});
-
-  void _showAction(BuildContext context, int index) {
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text(_actionTitles[index]),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CLOSE'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: ExpandableFab(
-        distance: 112.0,
-        children: [
-          ActionButton(
-            onPressed: () => _showAction(context, 0),
-            icon: const Icon(Icons.hotel),
-          ),
-          ActionButton(
-            onPressed: () => _showAction(context, 1),
-            icon: const Icon(Icons.local_drink),
-          ),
-          ActionButton(
-            onPressed: () => _showAction(context, 2),
-            icon: const Icon(Icons.fastfood),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-@immutable
+/// Represents the expandable log button on the home page
 class ExpandableFab extends StatefulWidget {
   const ExpandableFab({
     super.key,
