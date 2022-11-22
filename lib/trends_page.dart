@@ -10,6 +10,7 @@ import 'package:rpi_beefcake/fitness_page.dart';
 
 import 'firestore.dart';
 
+/// StatefulWidget representing the trends page of the app
 class TrendsPage extends StatefulWidget {
   const TrendsPage({Key? key}) : super(key: key);
 
@@ -17,6 +18,7 @@ class TrendsPage extends StatefulWidget {
   State<TrendsPage> createState() => _TrendsPage();
 }
 
+/// Underlying representation of TrendsPage
 class _TrendsPage extends State<TrendsPage> {
 
   static const List<int> possibleIntervals = [
