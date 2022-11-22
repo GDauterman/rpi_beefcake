@@ -93,8 +93,8 @@ class _GoalRow extends State<GoalRow> {
   @override
   void initState() {
     super.initState();
-    title = FirebaseService().dbTitleMap[widget.field]!;
-    units = FirebaseService().dbUnitMap[widget.field]!;
+    title = widget.field.getTitle;
+    units = widget.field.getUnits;
   }
 
   @override
@@ -105,7 +105,7 @@ class _GoalRow extends State<GoalRow> {
           String val = '--';
           if (snapshot.hasData) {
             val = snapshot.data!
-                .get(FirebaseService().dbGoalMap[widget.field]!)
+                .get(widget.field.getGoalStr)
                 .toString();
           }
           return GestureDetector(
@@ -171,7 +171,7 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
   initState() {
     super.initState();
     FieldOptions popupOptions = FieldOptions(
-        hint: FirebaseService().dbTitleMap[widget.field],
+        hint: widget.field.getTitle,
         invalidText: 'Enter a number',
         regString: r'\d+',
         keyboard: TextInputType.number,

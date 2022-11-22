@@ -151,11 +151,11 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
               snapshot.data!
                   .data()!
                   .keys
-                  .contains(FirebaseService().dbPlotYMap[widget.field]!)) {
+                  .contains(widget.field.getRawPlotStr)) {
             presentString += snapshot.data!
-                .get(FirebaseService().dbPlotYMap[widget.field]!)
+                .get(widget.field.getRawPlotStr)
                 .toStringAsFixed(1);
-            presentString += " " + FirebaseService().dbUnitMap[widget.field]!;
+            presentString += " " + widget.field.getUnits;
           } else {
             presentString += 'no data';
           }
@@ -205,7 +205,7 @@ class _ProgressMeter extends State<ProgressMeter> {
   @override
   initState() {
     FirebaseService().userDoc!.get().then((value) {
-      setGoal(value[FirebaseService().dbGoalMap[widget.field]!]);
+      setGoal(value[widget.field.getGoalStr]);
     });
   }
 
@@ -223,7 +223,7 @@ class _ProgressMeter extends State<ProgressMeter> {
             barDec = 0;
           } else {
             progress = snapshot.data!
-                .data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
+                .data()![widget.field.getRawPlotStr] as num;
             if (goal != -1) {
               barDec = progress / goal;
             }

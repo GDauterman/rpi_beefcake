@@ -6,9 +6,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:collection/collection.dart';
+import 'package:flutter/foundation.dart';
 
 typedef void ServiceCallback(List<dynamic> data);
 
+/// Enumeration to define all possible log fields
+///
+/// Last letter is the collection it is a part of
 enum DBFields {
   nameN,
   caloriesN,
@@ -25,7 +29,138 @@ enum DBFields {
   exercise
 }
 
+/// Extends associated values upon the DBFields enumeration
+extension DBFieldValues on DBFields {
+  /// Returns the field name used in Firestore
+  ///
+  /// Throws an exception if the field has no such property
+  String get getFieldStr {
+    switch(this) {
+      case DBFields.nameN:      return 'food_name';
+      case DBFields.caloriesN:  return 'total_calories';
+      case DBFields.carbsN:     return 'total_carbs';
+      case DBFields.fatN:       return 'total_fat';
+      case DBFields.proteinN:   return 'total_protein';
+      case DBFields.durationS:  return 'hours';
+      case DBFields.qualityS:   return 'sleep_quality';
+      case DBFields.noteS:      return 'notes';
+      case DBFields.quantityH:  return 'amount';
+      case DBFields.weightM:    return 'weight';
+      case DBFields.waistM:     return 'waist';
+      case DBFields.bicepM:     return 'bicep';
+      default:                  throw Exception('There is no field for the enum ${toString()}');
+    }
+  }
+  /// Returns the field name of the user's goal in this category
+  ///
+  /// Throws an exception if the field has no such property
+  String get getGoalStr {
+    switch(this) {
+      case DBFields.caloriesN:  return 'calorie_goal';
+      case DBFields.carbsN:     return 'carb_goal';
+      case DBFields.fatN:       return 'fat_goal';
+      case DBFields.proteinN:   return 'protein_goal';
+      case DBFields.durationS:  return 'sleep_goal';
+      case DBFields.quantityH:  return 'hydration_goal';
+      case DBFields.weightM:    return 'weight_goal';
+      case DBFields.waistM:     return 'waist_goal';
+      case DBFields.bicepM:     return 'bicep_goal';
+      default:                  throw Exception('There is no goal for the field ${toString()}');
+    }
+  }
+  /// Returns the field name of the user's aggregate plot points in this category
+  ///
+  /// Throws an exception if the field has no such property
+  String get getRawPlotStr {
+    switch(this) {
+      case DBFields.caloriesN:  return 'sum_calories_y';
+      case DBFields.carbsN:     return 'sum_carbs_y';
+      case DBFields.fatN:       return 'sum_fats_y';
+      case DBFields.proteinN:   return 'sum_protein_y';
+      case DBFields.durationS:  return 'sum_sleep_hours_y';
+      case DBFields.quantityH:  return 'sum_hydration_y';
+      case DBFields.weightM:    return 'avg_weight_y';
+      case DBFields.waistM:     return 'avg_waist_y';
+      case DBFields.bicepM:     return 'avg_bicep_y';
+      default:                  throw Exception('There is no plot points for the field ${toString()}');
+    }
+  }
+  /// Returns the field names of the user's trendline in this category
+  /// (based on raw plot points)
+  ///
+  /// Uses y=mx+b
+  ///
+  /// [0]: represents the m
+  ///
+  /// [1]: represents the b
+  ///
+  /// Throws an exception if the field has no such property
+  List<String> get getTrendsStr {
+    switch(this) {
+      case DBFields.caloriesN:  return ['calories_m', 'calories_b'];
+      case DBFields.carbsN:     return ['carbs_m', 'carbs_b'];
+      case DBFields.fatN:       return ['fats_m', 'fats_b'];
+      case DBFields.proteinN:   return ['protein_m', 'protein_b'];
+      case DBFields.durationS:  return ['sleep_hours_m', 'sleep_hours_b'];
+      case DBFields.quantityH:  return ['hydration_m', 'hydration_b'];
+      case DBFields.weightM:    return ['weight_m', 'weight_b'];
+      case DBFields.waistM:     return ['waist_m', 'waist_b'];
+      case DBFields.bicepM:     return ['bicep_m', 'bicep_b'];
+      default:                  throw Exception('There are no trends for the field ${toString()}');
+    }
+  }
+  /// Returns the title name of this field
+  ///
+  /// Throws an exception if the field has no such property
+  String get getTitle {
+    switch(this) {
+      case DBFields.exercise:   return 'Exercises';
+      case DBFields.caloriesN:  return 'Calories';
+      case DBFields.durationS:  return 'Hours Slept';
+      case DBFields.quantityH:  return 'Water Drank';
+      case DBFields.weightM:    return 'Weight';
+      case DBFields.carbsN:     return 'Carb';
+      case DBFields.fatN:       return 'Fats';
+      case DBFields.proteinN:   return 'Protein';
+      case DBFields.waistM:     return 'Waist Circ.';
+      case DBFields.bicepM:     return 'Bicep Circ.';
+      default:                  return '';
+    }
+  }
+  /// Returns the units of this field
+  ///
+  /// Throws an exception if the field has no such property
+  String get getUnits {
+    switch(this) {
+      case DBFields.nameN:      return '';
+      case DBFields.caloriesN:  return '';
+      case DBFields.carbsN:     return 'grams';
+      case DBFields.fatN:       return 'grams';
+      case DBFields.proteinN:   return 'grams';
+      case DBFields.durationS:  return 'hours';
+      case DBFields.qualityS:   return '0-100';
+      case DBFields.noteS:      return '';
+      case DBFields.quantityH:  return 'oz';
+      case DBFields.weightM:    return 'lbs';
+      case DBFields.waistM:     return 'inches';
+      case DBFields.bicepM:     return 'inches';
+      case DBFields.exercise:   return '1RM';
+      default:                  return '';
+    }
+  }
+
+
+}
+
 class FirebaseService {
+
+  // makes firebase service a global singleton
+  static final FirebaseService _db = FirebaseService._internal();
+  factory FirebaseService() {
+    return _db;
+  }
+  FirebaseService._internal();
+
   bool connected = false;
   List<ValueSetter<bool>> _connectionCallbacks = [];
 
@@ -43,57 +178,9 @@ class FirebaseService {
   final CollectionReference foodReference =
       FirebaseFirestore.instance.collection('foods');
 
-  final Map<DBFields, String> dbFieldMap = {
-    DBFields.nameN: 'food_name',
-    DBFields.caloriesN: 'total_calories',
-    DBFields.carbsN: 'total_carbs',
-    DBFields.fatN: 'total_fat',
-    DBFields.proteinN: 'total_protein',
-    DBFields.durationS: 'hours',
-    DBFields.qualityS: 'sleep_quality',
-    DBFields.noteS: 'notes',
-    DBFields.quantityH: 'amount',
-    DBFields.weightM: 'weight',
-    DBFields.waistM: 'waist',
-    DBFields.bicepM: 'bicep',
-  };
-
-  final Map<DBFields, String> dbGoalMap = {
-    DBFields.caloriesN: 'calorie_goal',
-    DBFields.carbsN: 'carb_goal',
-    DBFields.fatN: 'fat_goal',
-    DBFields.proteinN: 'protein_goal',
-    DBFields.durationS: 'sleep_goal',
-    DBFields.quantityH: 'hydration_goal',
-    DBFields.weightM: 'weight_goal',
-    DBFields.waistM: 'waist_goal',
-    DBFields.bicepM: 'bicep_goal',
-  };
-
-  final Map<DBFields, String> dbPlotYMap = {
-    DBFields.caloriesN: 'sum_calories_y',
-    DBFields.carbsN: 'sum_carbs_y',
-    DBFields.fatN: 'sum_fats_y',
-    DBFields.proteinN: 'sum_protein_y',
-    DBFields.durationS: 'sum_sleep_hours_y',
-    DBFields.quantityH: 'sum_hydration_y',
-    DBFields.weightM: 'avg_weight_y',
-    DBFields.waistM: 'avg_waist_y',
-    DBFields.bicepM: 'avg_bicep_y',
-  };
-
-  Map<DBFields, List<String>> dbTrendMap = {
-    DBFields.caloriesN: ['calories_m', 'calories_b'],
-    DBFields.carbsN: ['carbs_m', 'carbs_b'],
-    DBFields.fatN: ['fats_m', 'fats_b'],
-    DBFields.proteinN: ['protein_m', 'protein_b'],
-    DBFields.durationS: ['sleep_hours_m', 'sleep_hours_b'],
-    DBFields.quantityH: ['hydration_m', 'hydration_b'],
-    DBFields.weightM: ['weight_m', 'weight_b'],
-    DBFields.waistM: ['waist_m', 'waist_b'],
-    DBFields.bicepM: ['bicep_m', 'bicep_b'],
-  };
-
+  /// Maps all DBField objects to a collectionreference object
+  ///
+  /// Updated each time this object is updated
   Map<DBFields, CollectionReference?> dbColMap = {
     DBFields.nameN: null,
     DBFields.caloriesN: null,
@@ -110,53 +197,33 @@ class FirebaseService {
     DBFields.exercise: null,
   };
 
-  final Map<DBFields, String> dbUnitMap = {
-    DBFields.nameN: '',
-    DBFields.caloriesN: '',
-    DBFields.carbsN: 'grams',
-    DBFields.fatN: 'grams',
-    DBFields.proteinN: 'grams',
-    DBFields.durationS: 'hours',
-    DBFields.qualityS: '0-100',
-    DBFields.noteS: '',
-    DBFields.quantityH: 'oz',
-    DBFields.weightM: 'lbs',
-    DBFields.waistM: 'inches',
-    DBFields.bicepM: 'inches',
-    DBFields.exercise: '1RM',
-  };
-
-  final Map<DBFields, String> dbTitleMap = {
-    DBFields.exercise: 'Exercises',
-    DBFields.caloriesN: 'Calories',
-    DBFields.durationS: 'Hours Slept',
-    DBFields.quantityH: 'Water Drank',
-    DBFields.weightM: 'Weight',
-    DBFields.carbsN: 'Carb',
-    DBFields.fatN: 'Fats',
-    DBFields.proteinN: 'Protein',
-    DBFields.waistM: 'Waist Circ.',
-    DBFields.bicepM: 'Bicep Circ.',
-  };
-
+  /// Represents all of this user's logged exercises
   List<String> _exerciseFields = [];
+  /// Represents the titles of all exerciseFields
   List<String> _exerciseTitles = [];
+  /// Represents the plotpoint fields of all exerciseFields
   List<String> _exercisePlotPoints = [];
 
+  /// Represents all of this user's logged exercises
   List<String> getExerciseFields() {
     return _exerciseFields;
   }
 
+  /// Represents the titles of all exerciseFields
   List<String> getExerciseTitles() {
     return _exerciseTitles;
   }
 
+  /// Represents the plotpoint fields of all exerciseFields
   List<String> getExercisePlotPoints() {
     return _exercisePlotPoints;
   }
 
+  /// Adds a new exercise with title [title] that the user wants to be able to log
+  ///
+  /// Adds to both database and current lists  of exercises
   void addExerciseName(String title) {
-    String field = fieldify(title);
+    String field = exerciseTitleToField(title);
     if (_exerciseFields.contains(field)) {
       return;
     }
@@ -165,10 +232,12 @@ class FirebaseService {
     _exercisePlotPoints.add("max1rm_${field}_y");
   }
 
-  static String fieldify(String title) {
+  /// Returns a field name based on an exercise's title
+  static String exerciseTitleToField(String title) {
     return title.replaceAll(' ', '_').toLowerCase();
   }
 
+  /// Gets the formatted document title based on [date]
   static String getDateDocName(DateTime date) {
     String val = '${date.year}-';
     val += '${date.month < 10 ? '0' : ''}${date.month}-';
@@ -176,20 +245,16 @@ class FirebaseService {
     return val;
   }
 
+  /// [callback] will be called when connection status changes with a bool
   void addConnectedCallback(ValueSetter<bool> callback) {
     _connectionCallbacks.add(callback);
   }
 
+  /// Remove all callbacks that are listening for connection status changes
   void clearConnectedCallback() {
     _connectionCallbacks.clear();
   }
 
-  // makes firebase service a global singleton
-  static final FirebaseService _db = FirebaseService._internal();
-  factory FirebaseService() {
-    return _db;
-  }
-  FirebaseService._internal();
 
   void initService() {
     if (FirebaseAuth.instance.currentUser == null) {
@@ -209,7 +274,7 @@ class FirebaseService {
           _exerciseTitles.add(temp[i].toString());
         }
         for (int i = 0; i < _exerciseTitles.length; i++) {
-          String exField = fieldify(_exerciseTitles[i]);
+          String exField = exerciseTitleToField(_exerciseTitles[i]);
           _exerciseFields.add(exField);
           _exercisePlotPoints.add("max1rm_${exField}_y");
         }
@@ -261,6 +326,9 @@ class FirebaseService {
     }
   }
 
+  /// Initializes the current user a new document
+  ///
+  /// Fills goals, exercises, and trends with empty/default values
   void initUser() {
     if (FirebaseAuth.instance.currentUser != null) {
       final newUserEntry = <String, dynamic>{
@@ -312,14 +380,22 @@ class FirebaseService {
     }
   }
 
+  /// Updates the current users's goal for the given [field] with [val]
   void updateGoal(DBFields field, num val) async {
     if (!connected) {
       throw Exception('Attempted to add to sleep while not connected');
     }
-    final Map<String, num> updateEntry = {dbGoalMap[field]!: val};
+    final Map<String, num> updateEntry = {field.getGoalStr: val};
     userDoc!.update(updateEntry);
   }
 
+  /// Logs the given [data] into the user's sleep collection
+  ///
+  /// data[0]: string of the log's hours of sleep
+  ///
+  /// data[1]: string of the log's sleep quality
+  ///
+  /// data[2]: string of the log's notes
   void addSleep(List<dynamic> data) async {
     if (!connected) {
       throw Exception('Attempted to add to sleep while not connected');
@@ -334,6 +410,9 @@ class FirebaseService {
         print("Added Sleep Data with ID: ${documentSnapshot.id}"));
   }
 
+  /// Logs the given [data] into the user's hydration collection
+  ///
+  /// data[0]: string of the log's new hydration
   void addHydration(List<dynamic> data) async {
     if (!connected) {
       throw Exception('Attempted to add to hydration while not connected');
@@ -346,6 +425,17 @@ class FirebaseService {
         print("Added Hydration Data with ID: ${documentSnapshot.id}"));
   }
 
+  /// Logs the given [data] into the user's nutrition collection
+  ///
+  /// data[0]: string of the log's food name
+  ///
+  /// data[1]: string of the log's total calories
+  ///
+  /// data[2]: string of the log's total carbs
+  ///
+  /// data[3]: string of the log's total fats
+  ///
+  /// data[4]: string of the log's total protein
   void addNutrition(List<dynamic> data) async {
     if (!connected) {
       throw Exception('Attempted to add to sleep while not connected');
@@ -362,6 +452,15 @@ class FirebaseService {
         print("Added Nutrition Data with ID: ${documentSnapshot.id}"));
   }
 
+  /// Logs the given [data] into the user's workout collection
+  ///
+  /// data[0]: string of the log's exercise name
+  ///
+  /// data[1]: string of the log's notes
+  ///
+  /// data[2]: list of nums of the log's exercise reps
+  ///
+  /// data[3]: list of nums of the log's exercise weight
   void addWorkout(List<dynamic> data) async {
     if (!connected) {
       throw Exception('Attempted to add to sleep while not connected');
@@ -380,6 +479,16 @@ class FirebaseService {
         print("Added Workout Data with ID: ${documentSnapshot.id}"));
   }
 
+  /// Logs the given [data] into the user's measurement collection
+  ///
+  /// [data] must be of length 3, but values can be empty if no data should
+  /// be logged
+  ///
+  /// data[0]: string of log's weight (empty if no logged value)
+  ///
+  /// data[1]: string of log's waist circumference (empty if no logged value)
+  ///
+  /// data[2]: string of log's bicep circumference (empty if no logged value)
   void addMeasurement(List<dynamic> data) async {
     if (!connected) {
       throw Exception('Attempted to add to measurement while not connected');
@@ -394,14 +503,18 @@ class FirebaseService {
         print("Added Measurement Data with ID: ${documentSnapshot.id}"));
   }
 
+  /// Returns the sum of all values in a list
   static num sumAgg(List<num> nums) {
     return nums.sum;
   }
 
+  /// Returns the average of all values in a list
   static num avgAgg(List<num> nums) {
     return nums.average;
   }
 
+  /// Calls [whenGet] with the result of [aggFunc] given all [field] values in
+  /// the last [daysAgo] days
   void getFieldAggSince(DBFields field, ValueSetter<num> whenGet, int daysAgo,
       num Function(List<num> nums) aggFunc) async {
     if (!connected) {
@@ -419,8 +532,8 @@ class FirebaseService {
       for (int i = 0; i < value.docs.length; i++) {
         Map<String, dynamic> docData =
             value.docs[i].data() as Map<String, dynamic>;
-        if (docData.keys.contains(dbFieldMap[field]!)) {
-          fieldValList.add(value.docs[i].get(dbFieldMap[field]!));
+        if (docData.keys.contains(field.getFieldStr)) {
+          fieldValList.add(value.docs[i].get(field.getFieldStr));
         }
       }
       num result = aggFunc(fieldValList);
@@ -428,6 +541,11 @@ class FirebaseService {
     });
   }
 
+  /// Calls [whenGet] with a list of points from raw data points in [field].
+  ///
+  /// there can be up to [daysAgo] values, however they will be filtered for invalid results
+  ///
+  /// [exIdx] should specify the index of the exercise if [field] specifies an exercise field
   void getRawPlotPoints(
       DBFields field,
       void Function(List<dynamic> points) whenGet,
@@ -446,7 +564,7 @@ class FirebaseService {
         .then((value) {
       String fieldStr = field == DBFields.exercise
           ? _exercisePlotPoints[exIdx!]
-          : dbPlotYMap[field]!;
+          : field.getRawPlotStr;
       print(fieldStr);
       if (exIdx != null) print(exIdx);
       List<FlSpot> points = [];

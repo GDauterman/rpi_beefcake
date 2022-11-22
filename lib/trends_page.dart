@@ -18,6 +18,7 @@ class TrendsPage extends StatefulWidget {
 }
 
 class _TrendsPage extends State<TrendsPage> {
+
   static const List<int> possibleIntervals = [
     1,
     2,
@@ -74,27 +75,29 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void queryForNewField() {
-    points = [];
-    historyDocs = [];
-    historyRows = [];
-    FirebaseService()
-        .dbColMap[curField]!
-        .orderBy('time_logged', descending: true)
-        .get()
-        .then(updateHistory);
-    FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
-    trendm = FirebaseService()
-        .trendsDoc!
-        .get(FirebaseService().dbTrendMap[curField]![0]);
-    trendb = FirebaseService()
-        .trendsDoc!
-        .get(FirebaseService().dbTrendMap[curField]![1]);
-    if (curField != DBFields.exercise) {
-      FirebaseService().userDoc!.get().then((value) {
-        setState(() {
-          goal = value[FirebaseService().dbGoalMap[curField]!];
+    if(curField != DBFields.exercise || exIdx != null) {
+      points = [];
+      historyDocs = [];
+      historyRows = [];
+      FirebaseService()
+          .dbColMap[curField]!
+          .orderBy('time_logged', descending: true)
+          .get()
+          .then(updateHistory);
+      FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
+      trendm = FirebaseService()
+          .trendsDoc!
+          .get(curField.getTrendsStr[0]);
+      trendb = FirebaseService()
+          .trendsDoc!
+          .get(curField.getTrendsStr[1]);
+      if (curField != DBFields.exercise) {
+        FirebaseService().userDoc!.get().then((value) {
+          setState(() {
+            goal = value[curField.getGoalStr];
+          });
         });
-      });
+      }
     }
     // List<String> trendStr = curField == DBFields.exercise ? [FirebaseService().getExerciseFields()[exIdx!]+"_m", FirebaseService().getExerciseFields()[exIdx!]+"_m"] : FirebaseService().dbTrendMap[curField]!;
   }
@@ -105,7 +108,7 @@ class _TrendsPage extends State<TrendsPage> {
       if (curField == DBFields.exercise) {
         fieldStr = FirebaseService().getExerciseFields()[exIdx!];
       } else {
-        fieldStr = FirebaseService().dbFieldMap[curField]!;
+        fieldStr = curField.getFieldStr;
       }
       for (int i = 0; i < value.docs.length; i++) {
         DocumentSnapshot tempDoc = value.docs[i];
@@ -194,11 +197,13 @@ class _TrendsPage extends State<TrendsPage> {
   initState() {
     super.initState();
     dbDropDownList = [];
-    List<DBFields> titledFields = FirebaseService().dbTitleMap.keys.toList();
-    for (int i = 0; i < titledFields.length; i++) {
+    for (int i = 0; i < DBFields.values.length; i++) {
+      if(DBFields.values[i].getTitle == '') {
+        continue;
+      }
       DropDownValueModel ddvmVal = DropDownValueModel(
-          name: FirebaseService().dbTitleMap[titledFields[i]]!,
-          value: titledFields[i]);
+          name: DBFields.values[i]!.getTitle,
+          value: DBFields.values[i]);
       dbDropDownList.add(ddvmVal);
       if (ddvmVal.value == DBFields.caloriesN) {
         ddController.dropDownValue = ddvmVal;
@@ -234,6 +239,8 @@ class _TrendsPage extends State<TrendsPage> {
                   if (val is! String) curField = val.value;
                   if (curField == DBFields.exercise) {
                     exIdx = 0;
+                    print(curField.toString());
+                    print(exIdx);
                   } else {
                     exIdx = null;
                   }
@@ -309,8 +316,7 @@ class _TrendsPage extends State<TrendsPage> {
                               ),
                             ),
                             leftTitles: AxisTitles(
-                              axisNameWidget: Text(FirebaseService().dbTitleMap[
-                                  curField]!), // COLORS: Text widget for x axis title
+                              axisNameWidget: Text(curField.getTitle), // COLORS: Text widget for x axis title
                               axisNameSize: 22,
                               sideTitles: SideTitles(
                                 showTitles: true,
@@ -378,10 +384,10 @@ class HistoryRow extends StatelessWidget {
           field == DBFields.carbsN ||
           field == DBFields.fatN ||
           field == DBFields.proteinN);
-      String fieldName = FirebaseService().dbFieldMap[field]!;
+      String fieldName = field.getFieldStr;
       title = (isFood
           ? docData['food_name'].toString()
-          : FirebaseService().dbTitleMap[field]!);
+          : field.getTitle);
       val = (docData[fieldName]).toStringAsFixed(1);
     }
     if (field == DBFields.exercise) {
