@@ -4,8 +4,13 @@ import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
 
+// ToDo: replace with database call
+/// Represents all possible exercise fields
 List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift'];
 
+/// A StatefulWidget representing the exercise logging page of our app
+///
+/// State is based on entered values and change in count of rows
 class FitnessPage extends StatefulWidget {
   FitnessPage({Key? key}) : super(key: key);
 
@@ -13,64 +18,74 @@ class FitnessPage extends StatefulWidget {
   State<FitnessPage> createState() => _FitnessPage();
 }
 
+/// Underlying state class for FitnessPage
 class _FitnessPage extends State<FitnessPage> {
+  /// Text that should be shown beneath submit button in case of user error
   String errorText = '';
 
+  /// deletes the exercise log row at index [i]
   void deleteIndex(int i) {
     i -= 1;
-    if (rows.isEmpty || i < 0 || i >= rows.length) return;
+    if (_rows.isEmpty || i < 0 || i >= _rows.length) return;
     setState(() {
-      rows.removeAt(i);
-      for (; i < rows.length; i++) {
-        rows[i].child.decrementIndex();
+      _rows.removeAt(i);
+      for (; i < _rows.length; i++) {
+        _rows[i].child.decrementIndex();
       }
     });
   }
 
+  /// Adds new row to end of exercise log list
   void addRow() {
     setState(() {
-      rows.add(FitnessRow(deleteIndex, rows.length + 1));
+      _rows.add(FitnessRow(deleteIndex, _rows.length + 1));
     });
   }
 
+  /// Clears values in all exercise logging rows
   void clearRows() {
     setState(() {
-      for (int i = 0; i < rows.length; i++) {
-        rows[i].child.clear();
+      for (int i = 0; i < _rows.length; i++) {
+        _rows[i].child.clear();
       }
     });
   }
 
+  /// Whether all exercise row values are valid according to their regexp
   bool rowsValid() {
-    for (int i = 0; i < rows.length; i++) {
-      if (!rows[i].child.areValid()) {
+    for (int i = 0; i < _rows.length; i++) {
+      if (!_rows[i].child.areValid()) {
         return false;
       }
     }
     return true;
   }
 
+  /// Logs the values entered in all exercise logging rows
   void logRows() {
     setState(() {
       List<dynamic> data = [];
 
-      data.add(exerciseDropdown.child.getSelection().toString());
+      data.add(_exerciseDropdown.child.getSelection().toString());
       data.add('notes');
       List<dynamic> reps = [];
       List<dynamic> weight = [];
       data.add(reps);
       data.add(weight);
-      for (int i = 0; i < rows.length; i++) {
-        data[2].add(num.parse(rows[i].child.getFields()?[1]));
-        data[3].add(num.parse(rows[i].child.getFields()?[0]));
+      for (int i = 0; i < _rows.length; i++) {
+        data[2].add(num.parse(_rows[i].child.getFields()?[1]));
+        data[3].add(num.parse(_rows[i].child.getFields()?[0]));
       }
       FirebaseService().addWorkout(data);
       clearRows();
     });
   }
 
-  final CustDropdown exerciseDropdown = CustDropdown(exercisesList);
-  List<FitnessRow> rows = [];
+  /// Dropdown widget for searchable dropdown of exercise options
+  final CustDropdown _exerciseDropdown = CustDropdown(exercisesList);
+
+  /// List of exercise row widgets
+  List<FitnessRow> _rows = [];
 
   @override
   initState() {
@@ -89,9 +104,9 @@ class _FitnessPage extends State<FitnessPage> {
                     children: [
           Padding(
             padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
-            child: exerciseDropdown,
+            child: _exerciseDropdown,
           ),
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: rows),
+          Column(mainAxisAlignment: MainAxisAlignment.center, children: _rows),
           Padding(
               padding: EdgeInsets.zero,
               child: ElevatedButton(onPressed: addRow, child: Text('Add Set'))),
@@ -119,10 +134,17 @@ class _FitnessPage extends State<FitnessPage> {
   }
 }
 
+/// A Stateful Widget representing a row to log a single set of an exercise
+///
+/// State is dependent on changes to child fields
 class FitnessRow extends StatefulWidget {
+  /// Callback when this widget is deleted
   ValueSetter<int> deleteRow;
+  /// Accessor to be able to call member functions of the underlying State widget
   late _FitnessRow child;
+  /// Index of this row in the list
   int initIndex;
+
   FitnessRow(this.deleteRow, this.initIndex, {Key? key}) : super(key: key);
 
   @override
@@ -132,6 +154,7 @@ class FitnessRow extends StatefulWidget {
   }
 }
 
+/// Underlying state class for FitnessRow
 class _FitnessRow extends State<FitnessRow> {
   late final FieldOptions _weightOptions;
   late final FieldOptions _repOptions;
@@ -139,6 +162,9 @@ class _FitnessRow extends State<FitnessRow> {
   late CustTextInput _repInput;
   late int index;
 
+  /// Returns list of both values in the fields of this row
+  ///
+  /// Returns an empty list if they are not both valid
   List<dynamic>? getFields() {
     if (_weightInput.child.isValid() && _repInput.child.isValid()) {
       return [_weightInput.child.getVal(), _repInput.child.getVal()];
@@ -147,15 +173,18 @@ class _FitnessRow extends State<FitnessRow> {
     return (empty);
   }
 
+  /// Whether all fields in this row are valid
   bool areValid() {
     return _weightInput.child.isValid() && _repInput.child.isValid();
   }
 
+  /// Clears all fields in this row
   void clear() {
     _weightInput.child.clear();
     _repInput.child.clear();
   }
 
+  /// Moves this widget down the list of all rows
   void decrementIndex() {
     setState(() {
       index--;
