@@ -11,139 +11,153 @@ import 'package:rpi_beefcake/widget_library.dart';
 import 'firestore.dart';
 import 'dart:math';
 
-enum ColTypes { Nutrition, Hydration, Sleep }
-enum healthSubPages { home, sleep, nutrition, hydration, goals }
-
+/// Stateless widget representing the homepage of our app
 class HomePage extends StatelessWidget {
-  static const _actionTitles = ["LogSleep", "logHydration", "logCalories", "logGoals"]; //set goals to be added
-  healthSubPages curPage = healthSubPages.home;
+
+  HomePage({Key? key}) : super(key: key);
 
   void _showAction(BuildContext context, int index) {
     Navigator.of(context).push(CustomPopupRoute(
       builder: (context) {
+        // builds popups of different logging pages
         switch (index) {
           case 0:
             return AlertDialog(
-              backgroundColor: Theme.of(context).colorScheme.background,
-                content: SleepPage()
-            );
+                backgroundColor: Theme.of(context).colorScheme.background,
+                content: SleepPage());
           case 2:
             return AlertDialog(
                 backgroundColor: Theme.of(context).colorScheme.background,
-                content: NutritionPage()
-            );
+                content: NutritionPage());
           case 1:
             return AlertDialog(
                 backgroundColor: Theme.of(context).colorScheme.background,
-                content: HydrationPage()
-            );
+                content: HydrationPage());
           case 3:
             return AlertDialog(
                 backgroundColor: Theme.of(context).colorScheme.background,
-                content: MeasurementPage()
-            );
+                content: MeasurementPage());
           default: //should never be triggered
-            return AlertDialog(
-                content: Text("Hello world :)")
-            );
+            return AlertDialog(content: Text("Hello world :)"));
         }
       },
     ));
   }
 
-  HomePage({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Center(
-          child: DailyReport(),
-        ),
+      body: Center(
+        child: DailyReport(),
+      ),
       floatingActionButton: ExpandableFab(
-      distance: 112.0,
-      children: [
-        ActionButton(
-          onPressed: () => _showAction(context, 0),
-          icon: const Icon(Icons.hotel),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 1),
-          icon: const Icon(Icons.local_drink),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 2),
-          icon: const Icon(Icons.fastfood),
-        ),
-        ActionButton(
-          onPressed: () => _showAction(context, 3),
-          icon: const Icon(Icons.monitor_weight),
-        ),
-      ],
-    ),
+        distance: 112.0,
+        children: [
+          ActionButton(
+            onPressed: () => _showAction(context, 0),
+            icon: const Icon(Icons.hotel),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 1),
+            icon: const Icon(Icons.local_drink),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 2),
+            icon: const Icon(Icons.fastfood),
+          ),
+          ActionButton(
+            onPressed: () => _showAction(context, 3),
+            icon: const Icon(Icons.monitor_weight),
+          ),
+        ],
+      ),
     );
   }
 }
 
+/// StatelessWidget that represents the box in the middle of the page
 class DailyReport extends StatelessWidget {
   DailyReport({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 300,
-      height: 450,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.background,
-        border: Border.all(width: 5, color: Colors.black),
-        borderRadius: BorderRadius.circular(5),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            'Daily Report',
-            style: Theme.of(context).textTheme.headline3
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 10),
-            child: Text(
-              'Date: '+DateTime.now().month.toString()+'/'+DateTime.now().day.toString()+'/'+DateTime.now().year.toString(),
-              style: Theme.of(context).textTheme.headline4
-            )
-          ),
-          SizedBox(height: 25),
-          ProgressMeter('Hours Slept (hr): ', DBFields.durationS),
-          ProgressMeter('Calories Today: ', DBFields.caloriesN),
-          ProgressMeter('Water Drank (oz): ', DBFields.quantityH),
-          SingleValueUpdating(title: 'Today\'s Mean Weight:', field: DBFields.weightM),
-        ],
-      )
-    );
+        width: 300,
+        height: 450,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.background,
+          border: Border.all(width: 5, color: Colors.black),
+          borderRadius: BorderRadius.circular(5),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Daily Report', style: Theme.of(context).textTheme.headline3),
+            Padding(
+                padding: EdgeInsets.symmetric(horizontal: 10),
+                child: Text(
+                    'Date: ' +
+                        DateTime.now().month.toString() +
+                        '/' +
+                        DateTime.now().day.toString() +
+                        '/' +
+                        DateTime.now().year.toString(),
+                    style: Theme.of(context).textTheme.headline4)),
+            SizedBox(height: 25),
+            ProgressMeter('Hours Slept (hr): ', DBFields.durationS),
+            ProgressMeter('Calories Today: ', DBFields.caloriesN),
+            ProgressMeter('Water Drank (oz): ', DBFields.quantityH),
+            SingleValueUpdating(
+                title: 'Today\'s Mean Weight:', field: DBFields.weightM),
+          ],
+        ));
   }
 }
 
+/// StatefulWidget that represents the daily update row of a single field
+///
+/// Specifically shows a single value
+///
+/// State depends on changing log values
 class SingleValueUpdating extends StatefulWidget {
+  /// Title to be used for this row
   String title;
+  /// Field to be grabbed for this row
   DBFields field;
+  /// Optional icon to be shown
   IconData? icon;
 
-  SingleValueUpdating({Key? key, required this.title, required this.field, this.icon}) : super(key: key);
+  SingleValueUpdating(
+      {Key? key, required this.title, required this.field, this.icon})
+      : super(key: key);
 
   @override
   State<SingleValueUpdating> createState() => _SingleValueUpdating();
 }
 
+/// Underlying implementation of SingleValueUpdating
 class _SingleValueUpdating extends State<SingleValueUpdating> {
-
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
+      stream: FirebaseService()
+          .userDoc!
+          .collection('raw_graph_points')
+          .doc(FirebaseService.getDateDocName(DateTime.now()))
+          .snapshots(),
       builder: (context, snapshot) {
         String presentString = 'loading';
-        if(snapshot.hasData) {
+        if (snapshot.hasData) {
           presentString = widget.title + "  ";
-          if(snapshot.data != null && snapshot.data!.data() != null && snapshot.data!.data()!.keys.contains(FirebaseService().dbPlotYMap[widget.field]!)) {
-            presentString += snapshot.data!.get(FirebaseService().dbPlotYMap[widget.field]!).toStringAsFixed(1);
-            presentString += " " + FirebaseService().dbUnitMap[widget.field]!;
+          if (snapshot.data != null &&
+              snapshot.data!.data() != null &&
+              snapshot.data!
+                  .data()!
+                  .keys
+                  .contains(widget.field.getRawPlotStr)) {
+            presentString += snapshot.data!
+                .get(widget.field.getRawPlotStr)
+                .toStringAsFixed(1);
+            presentString += " " + widget.field.getUnits;
           } else {
             presentString += 'no data';
           }
@@ -151,14 +165,15 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
         return SizedBox(
           width: 280, //boxWidth = 300, 20 px padding preferred
           height: 60,
-          child: Row (
+          child: Row(
             children: [
               SizedBox(width: 20),
               Text(
                 presentString,
-                style: Theme.of(context).textTheme.headline2?.copyWith(
-                    fontWeight: FontWeight.bold
-                ),
+                style: Theme.of(context)
+                    .textTheme
+                    .headline2
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
             ],
           ),
@@ -168,8 +183,12 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
   }
 }
 
+/// StatefulWidget that represents the daily update row of a single field
+///
+/// Specifically shows a value compared with its goal, along with a progressbar
+///
+/// State depends on changing log values
 class ProgressMeter extends StatefulWidget {
-
   final String title;
   final DBFields field;
   const ProgressMeter(this.title, this.field, {Key? key}) : super(key: key);
@@ -179,7 +198,6 @@ class ProgressMeter extends StatefulWidget {
 }
 
 class _ProgressMeter extends State<ProgressMeter> {
-
   num barDec = 0;
   num progress = -1;
   num goal = 0;
@@ -187,52 +205,58 @@ class _ProgressMeter extends State<ProgressMeter> {
   void setGoal(num i) {
     setState(() {
       goal = i.toDouble();
-      if(progress != -1)
-        barDec= progress/goal;
+      if (progress != -1) barDec = progress / goal;
     });
   }
 
   @override
   initState() {
     FirebaseService().userDoc!.get().then((value) {
-      setGoal(value[FirebaseService().dbGoalMap[widget.field]!]);
+      setGoal(value[widget.field.getGoalStr]);
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder(
-      stream: FirebaseService().userDoc!.collection('raw_graph_points').doc(FirebaseService.getDateDocName(DateTime.now())).snapshots(),
-      builder: (context, snapshot) {
-        if(!snapshot.hasData || snapshot.data!.data() == null) {
-          progress = -1;
-          barDec = 0;
-        } else {
-          progress = snapshot.data!.data()![FirebaseService().dbPlotYMap[widget.field]!] as num;
-          if(goal != -1) {
-            barDec = progress/goal;
+        stream: FirebaseService()
+            .userDoc!
+            .collection('raw_graph_points')
+            .doc(FirebaseService.getDateDocName(DateTime.now()))
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData || snapshot.data!.data() == null) {
+            progress = -1;
+            barDec = 0;
+          } else {
+            progress = snapshot.data!
+                .data()![widget.field.getRawPlotStr] as num;
+            if (goal != -1) {
+              barDec = progress / goal;
+            }
           }
-        }
-        return SizedBox(
-          width: 280, //boxWidth = 300, 20 px padding preferred
-          height: 60,
-            child: Row (
+          return SizedBox(
+            width: 280, //boxWidth = 300, 20 px padding preferred
+            height: 60,
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
                   children: [
                     SizedBox(width: 20),
-                    Text(
-                      widget.title,
-                        style: Theme.of(context).textTheme.headline2?.copyWith(
-                          fontWeight: FontWeight.bold
-                        )
-                    ),
+                    Text(widget.title,
+                        style: Theme.of(context)
+                            .textTheme
+                            .headline2
+                            ?.copyWith(fontWeight: FontWeight.bold)),
                     SizedBox(width: 5),
                     Text(
-                        (goal == -1 || progress == -1) ? '--/--' : progress.floor().toString()+'/'+goal.toInt().toString(),
-                        style: Theme.of(context).textTheme.headline2
-                    ),
+                        (goal == -1 || progress == -1)
+                            ? '--/--'
+                            : progress.floor().toString() +
+                                '/' +
+                                goal.toInt().toString(),
+                        style: Theme.of(context).textTheme.headline2),
                   ],
                 ),
                 Row(
@@ -248,150 +272,7 @@ class _ProgressMeter extends State<ProgressMeter> {
                 ),
               ],
             ),
-        );
-      }
-    );
-  }
-}
-
-class HydrationPage extends StatelessWidget {
-  HydrationPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context){
-    List<FieldOptions> hydrationOptions = [
-      FieldOptions(
-        hint: 'oz of liquid',
-        invalidText: 'Enter a number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d+(\.\d+)?$',
-      ),
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Hydration Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: hydrationOptions, dataEntry: FirebaseService().addHydration),
-            ]
-        ),
-      ),
-    );
-  }
-}
-
-class NutritionPage extends StatelessWidget {
-  NutritionPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context){
-    List<FieldOptions> sleepOptions = [
-      FieldOptions(
-        hint: 'Food',
-        invalidText: 'Enter name of food',
-        keyboard: TextInputType.text,
-        regString: r'.+',
-      ),
-      FieldOptions(
-        hint: 'Total Calories',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Carbohydrates',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Fats',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-      FieldOptions(
-        hint: 'Total Protein',
-        invalidText: 'Enter a whole number',
-        keyboard: TextInputType.number,
-        regString: r'\d+',
-      ),
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top:20),
-                child: Text(
-                  'Nutrition Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions, dataEntry: FirebaseService().addNutrition),
-            ]
-        ),
-      ),
-    );
-  }
-}
-
-class SleepPage extends StatelessWidget {
-  SleepPage({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    List<FieldOptions> sleepOptions = [
-      FieldOptions(
-        hint: 'Hours Slept',
-        invalidText: 'Enter  number',
-        keyboard: TextInputType.number,
-        regString: r'^0*\d{1,2}(\.\d+)?$',
-      ),
-      FieldOptions(
-        hint: 'Sleep Quality (0-100)',
-        invalidText: 'Enter an integer from 0 to 100',
-        keyboard: TextInputType.number,
-        regString: r'^0*(\d{1,2}|100)$',
-      ),
-      FieldOptions(
-        hint: 'Notes',
-      )
-    ];
-    return Material(
-      color: Theme.of(context).colorScheme.background,
-      // Sleep Container
-      child: SingleChildScrollView(
-        child: Column(
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20),
-                child: Text(
-                  'Sleep Entry',
-                  style: TextStyle(
-                      fontSize: 35
-                  ),
-                ),
-              ),
-              FieldWithEnter(fieldOptions: sleepOptions,
-                  dataEntry: FirebaseService().addSleep),
-            ]
-        ),
-      ),
-    );
+          );
+        });
   }
 }

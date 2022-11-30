@@ -73,7 +73,8 @@ class DefaultFirebaseOptions {
     projectId: 'beefcake-f6164',
     databaseURL: 'https://beefcake-f6164-default-rtdb.firebaseio.com',
     storageBucket: 'beefcake-f6164.appspot.com',
-    iosClientId: '949902024414-f3iute8na60j02rrlf7nnvrn2snv1d45.apps.googleusercontent.com',
+    iosClientId:
+        '949902024414-f3iute8na60j02rrlf7nnvrn2snv1d45.apps.googleusercontent.com',
     iosBundleId: 'com.example.rpiBeefcake',
   );
 }
