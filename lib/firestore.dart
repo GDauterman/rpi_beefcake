@@ -128,12 +128,10 @@ extension DBFieldValues on DBFields {
     }
   }
   /// Returns the units of this field
-  ///
-  /// Throws an exception if the field has no such property
   String get getUnits {
     switch(this) {
       case DBFields.nameN:      return '';
-      case DBFields.caloriesN:  return '';
+      case DBFields.caloriesN:  return 'kcal';
       case DBFields.carbsN:     return 'grams';
       case DBFields.fatN:       return 'grams';
       case DBFields.proteinN:   return 'grams';

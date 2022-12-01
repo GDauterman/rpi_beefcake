@@ -172,6 +172,7 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
     super.initState();
     FieldOptions popupOptions = FieldOptions(
         hint: widget.field.getTitle,
+        suffixText: widget.field.getUnits,
         invalidText: 'Enter a number',
         regString: r'\d+',
         keyboard: TextInputType.number,

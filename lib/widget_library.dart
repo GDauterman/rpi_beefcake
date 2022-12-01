@@ -16,6 +16,8 @@ class FieldOptions {
   String? hint;
   /// the text to be shown when the field is invalid
   String? invalidText;
+  /// the text to be shown after the field (mostly units)
+  String? suffixText;
   /// whether the input should show the validity flag
   bool showValidSymbol;
   /// which keyboard should be shown when the user has this input selected
@@ -36,6 +38,7 @@ class FieldOptions {
       this.boxwidth,
       this.hint,
       this.invalidText,
+      this.suffixText,
       this.keyboard = TextInputType.text,
       String regString = '.*',
       IconData? icon,
@@ -191,6 +194,7 @@ class _CustTextInput extends State<CustTextInput> {
       obscureText: widget.options.obscureText,
       keyboardType: widget.options.keyboard,
       decoration: InputDecoration(
+        suffixText: widget.options.suffixText,
         label: Text.rich(
           TextSpan(children: <InlineSpan>[
             WidgetSpan(
