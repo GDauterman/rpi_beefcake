@@ -176,7 +176,10 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
         invalidText: 'Enter a number',
         regString: r'\d+',
         keyboard: TextInputType.number,
-        showValidSymbol: false);
+        showValidSymbol: false,
+        boxwidth: 275,
+        boxheight: 50,
+    );
     textInput = CustTextInput(options: popupOptions);
   }
 
