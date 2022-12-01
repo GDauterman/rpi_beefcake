@@ -39,7 +39,7 @@ extension DBFieldValues on DBFields {
       case DBFields.nameN:      return 'food_name';
       case DBFields.caloriesN:  return 'total_calories';
       case DBFields.carbsN:     return 'total_carbs';
-      case DBFields.fatN:       return 'total_fat';
+      case DBFields.fatN:       return 'total_fats';
       case DBFields.proteinN:   return 'total_protein';
       case DBFields.durationS:  return 'hours';
       case DBFields.qualityS:   return 'sleep_quality';
@@ -607,15 +607,23 @@ class FirebaseService {
             value.docs[i].data() as Map<String, dynamic>;
         if (docData.keys.contains(fieldStr)) {
           //checks if document has an entry (for newly tracked values)
-          double xval =
-              double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
+          RegExp dashreg = RegExp(r'-');
+          String xstring = value.docs[i].id;
+          int y_idx = xstring.indexOf(dashreg);
+          num xdty = num.parse(xstring.substring(0, y_idx));
+          int m_idx  = xstring.indexOf(dashreg, y_idx+1);
+          num xdtm = num.parse(xstring.substring(y_idx+1, m_idx));
+          num xdtd = num.parse(xstring.substring(m_idx+1));
+          num xval = DateTime(xdty.toInt(), xdtm.toInt(), xdtd.toInt()).millisecondsSinceEpoch;
+          // double xval =
+          //     double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
           double yval = docData[fieldStr].toDouble();
           if (yval > 0) {
             xmin = min(xval, xmin);
             xmax = max(xval, xmax);
             ymin = min(yval, ymin);
             ymax = max(yval, ymax);
-            points.add(FlSpot(xval, yval));
+            points.add(FlSpot(xval.toDouble(), yval));
           }
         }
       }
