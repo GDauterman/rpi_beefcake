@@ -153,7 +153,8 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
               snapshot.data!
                   .data()!
                   .keys
-                  .contains(widget.field.getRawPlotStr)) {
+                  .contains(widget.field.getRawPlotStr) &&
+              snapshot.data!.data()![widget.field.getRawPlotStr] > 0) {
             presentString += snapshot.data!
                 .get(widget.field.getRawPlotStr)
                 .toStringAsFixed(1);
