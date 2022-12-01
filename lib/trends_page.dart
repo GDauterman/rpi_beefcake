@@ -33,7 +33,24 @@ class _TrendsPage extends State<TrendsPage> {
     200,
     250,
     500,
-    1000
+    1000,
+    2000,
+    10000,
+    20000,
+    100000,
+    200000,
+    1000000,
+    2000000,
+    10000000,
+    20000000,
+    100000000,
+    200000000,
+    1000000000,
+    2000000000,
+    10000000000,
+    20000000000,
+    100000000000,
+    200000000000,
   ];
 
   final List<FlSpot> pointsTest = [
@@ -186,10 +203,11 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   static Widget getDateAxisTickVals(double value, TitleMeta meta) {
+    DateTime xdt = DateTime.fromMillisecondsSinceEpoch(value.toInt());
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Text(
-        "${value.toString().substring(4, 6)}/${value.toString().substring(6, 8)}",
+        "${xdt.month}/${xdt.day}",
         //style: COLOR: text style for individual axis ticks
       ),
     );
