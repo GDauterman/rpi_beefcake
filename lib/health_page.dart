@@ -135,6 +135,7 @@ class HydrationPage extends StatelessWidget {
     ];
     return Material(
       // Sleep Container
+      color: Theme.of(context).colorScheme.background,
       child: SingleChildScrollView(
         child: Column(children: [
           Padding(
@@ -197,6 +198,7 @@ class NutritionPage extends StatelessWidget {
     ];
     return Material(
       // Sleep Container
+      color: Theme.of(context).colorScheme.background,
       child: SingleChildScrollView(
         child: Column(children: [
           Padding(
@@ -241,6 +243,7 @@ class SleepPage extends StatelessWidget {
     ];
     return Material(
       // Sleep Container
+      color: Theme.of(context).colorScheme.background,
       child: SingleChildScrollView(
         child: Column(children: [
           Padding(

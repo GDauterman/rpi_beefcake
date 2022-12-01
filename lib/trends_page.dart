@@ -231,9 +231,7 @@ class _TrendsPage extends State<TrendsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Select your Metric', style: Theme.of(context).textTheme.headline4),
-            Container(
-              child: DropDownTextField(
-                
+            DropDownTextField(
               dropDownList: dbDropDownList,
               controller: ddController,
               enableSearch: true,
@@ -252,7 +250,6 @@ class _TrendsPage extends State<TrendsPage> {
                   queryForNewField();
                 });
               }),
-            ),
             ),
             exIdx == null
                 ? SizedBox.shrink()
