@@ -25,6 +25,9 @@ class SettingsPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Row(
+
+            ),
             Padding(
               padding: EdgeInsets.only(top:15),
               child: ElevatedButton.icon(
