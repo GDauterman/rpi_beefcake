@@ -18,6 +18,8 @@ class FieldOptions {
   String? invalidText;
   /// the text to be shown after the field (mostly units)
   String? suffixText;
+  /// max amount of characters to be shown
+  int? maxlines;
   /// whether the input should show the validity flag
   bool showValidSymbol;
   /// which keyboard should be shown when the user has this input selected
@@ -34,6 +36,7 @@ class FieldOptions {
   FieldOptions(
       {this.validator,
       this.boxheight,
+      this.maxlines,
       this.showValidSymbol = true,
       this.boxwidth,
       this.hint,
@@ -190,8 +193,8 @@ class _CustTextInput extends State<CustTextInput> {
     // double height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
-      maxLines: widget.options.boxheight == null ? null : 1,
-      maxLength: 256,
+      maxLines: widget.options.boxheight == null && !widget.options.obscureText ? null : 1,
+      maxLength: widget.options.maxlines,
       controller: controller,
       obscureText: widget.options.obscureText,
       keyboardType: widget.options.keyboard,

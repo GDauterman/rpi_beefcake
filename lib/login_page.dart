@@ -40,6 +40,7 @@ class _LoginPage extends State<LoginPage> {
         invalidText: "Enter a valid email",
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
+        keyboard: TextInputType.emailAddress,
         regString: emailRegexString,
         obscureText: false);
 
@@ -155,6 +156,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
         regString: emailRegexString,
+        keyboard: TextInputType.emailAddress,
         obscureText: false);
 
     _pw1Options = FieldOptions(
