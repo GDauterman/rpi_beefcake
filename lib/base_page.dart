@@ -147,6 +147,7 @@ class _FeedbackWindow extends State<FeedbackWindow> {
       hint: 'Enter feedback here',
       invalidText: 'Must not be empty',
       regString: r'.+',
+      maxlines: 256,
     ));
   }
 
