@@ -24,12 +24,11 @@ class _FitnessPage extends State<FitnessPage> {
   String errorText = '';
 
   /// deletes the exercise log row at index [i]
-  void deleteIndex(int i) {
-    i -= 1;
-    if (_rows.isEmpty || i < 0 || i >= _rows.length) return;
+  void deleteRow(UniqueKey uk) {
+    if (_rows.isEmpty) return;
     setState(() {
-      _rows.removeAt(i);
-      for (; i < _rows.length; i++) {
+      _rows.removeWhere((item) => item.key == uk);
+      for(int i = 0; i < _rows.length; i++) {
         _rows[i].child.decrementIndex();
       }
     });
@@ -38,7 +37,7 @@ class _FitnessPage extends State<FitnessPage> {
   /// Adds new row to end of exercise log list
   void addRow() {
     setState(() {
-      _rows.add(FitnessRow(deleteIndex, _rows.length + 1));
+      _rows.add(FitnessRow(getIndex, deleteRow, UniqueKey()));
     });
   }
 
@@ -51,8 +50,15 @@ class _FitnessPage extends State<FitnessPage> {
     });
   }
 
+  int getIndex(UniqueKey uk) {
+    return _rows.indexWhere((item) => item.key == uk) + 1;
+  }
+
   /// Whether all exercise row values are valid according to their regexp
   bool rowsValid() {
+    if(_rows.isEmpty) {
+      return false;
+    }
     for (int i = 0; i < _rows.length; i++) {
       if (!_rows[i].child.areValid()) {
         return false;
@@ -89,7 +95,7 @@ class _FitnessPage extends State<FitnessPage> {
 
   @override
   initState() {
-    for (int i = 1; i <= 3; i++) {
+    for (int i = 0; i < 3; i++) {
       addRow();
     }
   }
@@ -139,28 +145,39 @@ class _FitnessPage extends State<FitnessPage> {
 /// State is dependent on changes to child fields
 class FitnessRow extends StatefulWidget {
   /// Callback when this widget is deleted
-  ValueSetter<int> deleteRow;
-  /// Accessor to be able to call member functions of the underlying State widget
-  late _FitnessRow child;
-  /// Index of this row in the list
-  int initIndex;
+  ValueSetter<UniqueKey> deleteRow;
 
-  FitnessRow(this.deleteRow, this.initIndex, {Key? key}) : super(key: key);
+  /// Callback to get index of this widget in list
+  int Function(UniqueKey) getIndex;
+
+  /// Accessor to be able to call member functions of the underlying State widget
+  late FitnessRowState child;
+
+  /// Unique key of this specific row
+  @override
+  UniqueKey key;
+
+  FitnessRow(this.getIndex, this.deleteRow, this.key) : super(key: key);
 
   @override
   State<FitnessRow> createState() {
-    child = _FitnessRow();
+    child = FitnessRowState();
     return child;
   }
+
+  @override
+  State<FitnessRow> state() {
+    return child;
+  }
+
 }
 
 /// Underlying state class for FitnessRow
-class _FitnessRow extends State<FitnessRow> {
+class FitnessRowState extends State<FitnessRow> {
   late final FieldOptions _weightOptions;
   late final FieldOptions _repOptions;
   late CustTextInput _weightInput;
   late CustTextInput _repInput;
-  late int index;
 
   /// Returns list of both values in the fields of this row
   ///
@@ -178,17 +195,15 @@ class _FitnessRow extends State<FitnessRow> {
     return _weightInput.child.isValid() && _repInput.child.isValid();
   }
 
+  /// decrement the index of this row
+  void decrementIndex() {
+    setState((){});
+  }
+
   /// Clears all fields in this row
   void clear() {
     _weightInput.child.clear();
     _repInput.child.clear();
-  }
-
-  /// Moves this widget down the list of all rows
-  void decrementIndex() {
-    setState(() {
-      index--;
-    });
   }
 
   @override
@@ -211,20 +226,20 @@ class _FitnessRow extends State<FitnessRow> {
       showValidSymbol: false,
     );
 
-    index = widget.initIndex;
+    _weightInput = CustTextInput(options: _weightOptions);
+    _repInput = CustTextInput(options: _repOptions);
   }
 
   @override
   Widget build(BuildContext context) {
-    _weightInput = CustTextInput(options: _weightOptions);
-    _repInput = CustTextInput(options: _repOptions);
+
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           Padding(
             padding: EdgeInsets.only(right: 10),
             child: Text(
-              index.toString(),
+              widget.getIndex(widget.key).toString(),
             ),
           ),
           Padding(
@@ -242,9 +257,14 @@ class _FitnessRow extends State<FitnessRow> {
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 28,
                 onPressed: (() {
-                  widget.deleteRow(index);
+                  setState(() { widget.deleteRow(widget.key); });
                 }),
               ))
         ]));
+  }
+
+  @override
+  dispose() {
+    super.dispose();
   }
 }
