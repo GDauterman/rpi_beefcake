@@ -39,7 +39,7 @@ extension DBFieldValues on DBFields {
       case DBFields.nameN:      return 'food_name';
       case DBFields.caloriesN:  return 'total_calories';
       case DBFields.carbsN:     return 'total_carbs';
-      case DBFields.fatN:       return 'total_fat';
+      case DBFields.fatN:       return 'total_fats';
       case DBFields.proteinN:   return 'total_protein';
       case DBFields.durationS:  return 'hours';
       case DBFields.qualityS:   return 'sleep_quality';
