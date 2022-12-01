@@ -189,6 +189,7 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 300),
         child: Material(
             child: Container(
+              width: 300,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
