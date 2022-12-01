@@ -21,6 +21,15 @@ class TrendsPage extends StatefulWidget {
 /// Underlying representation of TrendsPage
 class _TrendsPage extends State<TrendsPage> {
 
+  late DropdownMenuItem<DBFields> curItem;
+  late DBFields curField;
+
+  late DropdownMenuItem<int> exItem;
+  int ?exIdx;
+
+  List<DropdownMenuItem<DBFields>> genList = [];
+  List<DropdownMenuItem<int>> exerciseList = [];
+
   static const List<int> possibleIntervals = [
     1,
     2,
@@ -62,6 +71,7 @@ class _TrendsPage extends State<TrendsPage> {
     FlSpot(6, 4),
     FlSpot(8, 0),
   ];
+
   List<FlSpot>? points;
   List<FlSpot>? trendpoints;
   num goal = -1;
@@ -74,16 +84,6 @@ class _TrendsPage extends State<TrendsPage> {
   num trendm = 0;
   num trendb = 0;
 
-  late final List<DropDownValueModel> dbDropDownList;
-  late List<DropDownValueModel> dbDropDownListExercise;
-  final SingleValueDropDownController ddController =
-      SingleValueDropDownController();
-  final SingleValueDropDownController ddexController =
-      SingleValueDropDownController();
-
-  DBFields curField = DBFields.caloriesN;
-  int? exIdx;
-
   List<DocumentSnapshot> historyDocs = [];
   List<Widget> historyRows = [];
 
@@ -94,6 +94,7 @@ class _TrendsPage extends State<TrendsPage> {
   }
 
   void queryForNewField() {
+    print('starting query');
     if(curField != DBFields.exercise || exIdx != null) {
       points = [];
       historyDocs = [];
@@ -104,12 +105,17 @@ class _TrendsPage extends State<TrendsPage> {
           .get()
           .then(updateHistory);
       FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
-      trendm = FirebaseService()
-          .trendsDoc!
-          .get(curField.getTrendsStr[0]);
-      trendb = FirebaseService()
-          .trendsDoc!
-          .get(curField.getTrendsStr[1]);
+      if(curField != DBFields.exercise) {
+        trendm = FirebaseService()
+            .trendsDoc!
+            .get(curField.getTrendsStr[0]);
+        trendb = FirebaseService()
+            .trendsDoc!
+            .get(curField.getTrendsStr[1]);
+      } else {
+        trendb = -999999;
+        trendm = 0;
+      }
       if (curField != DBFields.exercise) {
         FirebaseService().userDoc!.get().then((value) {
           setState(() {
@@ -118,6 +124,7 @@ class _TrendsPage extends State<TrendsPage> {
         });
       }
     }
+    print('ending query');
     // List<String> trendStr = curField == DBFields.exercise ? [FirebaseService().getExerciseFields()[exIdx!]+"_m", FirebaseService().getExerciseFields()[exIdx!]+"_m"] : FirebaseService().dbTrendMap[curField]!;
   }
 
@@ -216,31 +223,64 @@ class _TrendsPage extends State<TrendsPage> {
   @override
   initState() {
     super.initState();
-    dbDropDownList = [];
+
+    print("staritng to add to genlist");
     for (int i = 0; i < DBFields.values.length; i++) {
       if(DBFields.values[i].getTitle == '') {
         continue;
       }
-      DropDownValueModel ddvmVal = DropDownValueModel(
-          name: DBFields.values[i]!.getTitle,
+      print(DBFields.values[i].getTitle);
+      DropdownMenuItem<DBFields> ddmiVal = DropdownMenuItem<DBFields>(
+          child: Text(DBFields.values[i].getTitle),
           value: DBFields.values[i]);
-      dbDropDownList.add(ddvmVal);
-      if (ddvmVal.value == DBFields.caloriesN) {
-        ddController.dropDownValue = ddvmVal;
-        queryForNewField();
-      }
+      genList.add(ddmiVal);
     }
-    dbDropDownListExercise = [];
+
     for (int i = 0; i < exercisesList.length; i++) {
-      DropDownValueModel ddvmExercise = DropDownValueModel(
-          name: FirebaseService().getExerciseTitles()[i], value: i);
-      dbDropDownListExercise.add(ddvmExercise);
-      if (i == 0) ddexController.dropDownValue = ddvmExercise;
+      DropdownMenuItem<int> ddmiExercise = DropdownMenuItem<int>(
+          value: i,
+          child: Text(FirebaseService().getExerciseTitles()[i]));
+      exerciseList.add(ddmiExercise);
     }
+
+    curItem = genList[0];
+    curField = curItem.value!;
+
+    exItem = exerciseList[0];
+    exIdx = null;
+    queryForNewField();
+
+    print(genList.where((DropdownMenuItem<DBFields> item) {
+      return item.value == curItem;
+    }).length);
   }
 
   @override
   Widget build(BuildContext context) {
+    DropdownButton genDropdown = DropdownButton(
+      items: genList,
+      hint: Text('Type of Feedback'),
+      value: curField,
+      onChanged: ((val){
+        setState(() {
+          curField = val;
+          if(curField == DBFields.exercise)
+            exIdx = 0;
+          queryForNewField();
+        });
+      }),
+    );
+    DropdownButton exDropdown = DropdownButton(
+      items: exerciseList,
+      hint: Text('Type of Feedback'),
+      value: exIdx,
+      onChanged: ((val){
+        setState(() {
+          exIdx = val;
+          queryForNewField();
+        });
+      }),
+    );
     return Scaffold(
       body: Padding(
         padding: EdgeInsets.all(20),
@@ -249,41 +289,10 @@ class _TrendsPage extends State<TrendsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text('Select your Metric', style: Theme.of(context).textTheme.headline4),
-            DropDownTextField(
-              dropDownList: dbDropDownList,
-              controller: ddController,
-              enableSearch: true,
-              dropDownItemCount: 4,
-              onChanged: ((val) {
-                setState(() {
-                  if (val is! String) curField = val.value;
-                  if (curField == DBFields.exercise) {
-                    exIdx = 0;
-                    print(curField.toString());
-                    print(exIdx);
-                  } else {
-                    exIdx = null;
-                  }
-                  points = null;
-                  queryForNewField();
-                });
-              }),
-            ),
+            genDropdown,
             exIdx == null
                 ? SizedBox.shrink()
-                : DropDownTextField(
-                    dropDownList: dbDropDownListExercise,
-                    controller: ddexController,
-                    enableSearch: true,
-                    dropDownItemCount: 4,
-                    onChanged: ((val) {
-                      setState(() {
-                        exIdx = val.value;
-                        points = null;
-                        queryForNewField();
-                      });
-                    }),
-                  ),
+                : exDropdown,
             SizedBox(height: 30),
             SizedBox(
               width: 350,
