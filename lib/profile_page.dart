@@ -41,7 +41,7 @@ class ProfilePage extends StatelessWidget {
                   padding: EdgeInsets.only(top: 20),
                   child: Text(
                     'Set Goals',
-                    style: TextStyle(fontSize: 35),
+                      style: Theme.of(context).textTheme.headline3
                   ),
                 ),
                 Padding(
@@ -113,19 +113,15 @@ class _GoalRow extends State<GoalRow> {
               Navigator.push(
                   context,
                   CustomPopupRoute(
-                      builder: (context) =>
+                      builder: (context) => //bababooey
                           FieldModificationPopup(widget.field)));
             }),
             child: Container(
                 decoration: BoxDecoration(
                     border: Border(
-                        top: BorderSide(
-                          color: Colors.indigo,
-                          width: 2.5,
-                        ),
                         bottom: BorderSide(
-                          color: Colors.indigo,
-                          width: 2.5,
+                          color: Theme.of(context).colorScheme.surfaceVariant,
+                          width: 1,
                         ))),
                 child: SizedBox(
                   height: 80,
@@ -140,13 +136,19 @@ class _GoalRow extends State<GoalRow> {
                               children: [
                                 Text(
                                   title,
-                                  style: TextStyle(fontSize: 25),
+                                  style: Theme.of(context).textTheme.headline4
                                 ),
-                                Text(units, style: TextStyle(fontSize: 15))
+                                Text(units, style: Theme.of(context).textTheme.headline4?.copyWith(
+                                    fontSize: 15
+                                  )
+                                )
                               ]),
                           Text(
                             val,
-                            style: TextStyle(fontSize: 45),
+                            style: Theme.of(context).textTheme.headline3?.copyWith(
+                              fontWeight: FontWeight.normal,
+                              fontSize: 40,
+                            ),
                           )
                         ]),
                   ),

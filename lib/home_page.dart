@@ -85,7 +85,7 @@ class DailyReport extends StatelessWidget {
         height: 450,
         decoration: BoxDecoration(
           color: Theme.of(context).colorScheme.background,
-          border: Border.all(width: 5, color: Colors.black),
+          border: Border.all(width: 3, color: Colors.black),
           borderRadius: BorderRadius.circular(5),
         ),
         child: Column(
