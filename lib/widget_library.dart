@@ -249,6 +249,11 @@ class _CustTextInput extends State<CustTextInput> {
           )),
     );
   }
+
+  @override
+  dispose() {
+    super.dispose();
+  }
 }
 
 class CustDropdown extends StatefulWidget {
