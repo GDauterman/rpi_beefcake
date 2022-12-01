@@ -30,19 +30,22 @@ class _MeasurementPage extends State<MeasurementPage> {
   @override
   initState() {
     _weightOptions = FieldOptions(
-      hint: 'Current Weight (lbs)',
+      hint: 'Current Weight',
+      suffixText: 'lbs',
       invalidText: 'Enter a number',
       keyboard: TextInputType.number,
       regString: r'^0*\d*(\.\d+)?$',
     );
     _waistOptions = FieldOptions(
-      hint: 'Waist Circumference (in.)',
+      hint: 'Waist Circumference',
+      suffixText: 'inches',
       invalidText: 'Enter a number',
       keyboard: TextInputType.number,
       regString: r'^0*\d*(\.\d+)?$',
     );
     _bicepOptions = FieldOptions(
-      hint: 'Bicep Circumference (in.)',
+      hint: 'Bicep Circumference',
+      suffixText: 'inches',
       invalidText: 'Enter a number',
       keyboard: TextInputType.number,
       regString: r'^0*\d*(\.\d+)?$',
@@ -123,7 +126,8 @@ class HydrationPage extends StatelessWidget {
   Widget build(BuildContext context) {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
-        hint: 'oz of liquid',
+        hint: 'Liquid Drank',
+        suffixText: 'oz',
         invalidText: 'Enter a number',
         keyboard: TextInputType.number,
         regString: r'^0*\d+(\.\d+)?$',
@@ -164,24 +168,28 @@ class NutritionPage extends StatelessWidget {
       ),
       FieldOptions(
         hint: 'Total Calories',
+        suffixText: 'kcal',
         invalidText: 'Enter a whole number',
         keyboard: TextInputType.number,
         regString: r'\d+',
       ),
       FieldOptions(
         hint: 'Total Carbohydrates',
+        suffixText: 'grams',
         invalidText: 'Enter a whole number',
         keyboard: TextInputType.number,
         regString: r'\d+',
       ),
       FieldOptions(
         hint: 'Total Fats',
+        suffixText: 'grams',
         invalidText: 'Enter a whole number',
         keyboard: TextInputType.number,
         regString: r'\d+',
       ),
       FieldOptions(
         hint: 'Total Protein',
+        suffixText: 'grams',
         invalidText: 'Enter a whole number',
         keyboard: TextInputType.number,
         regString: r'\d+',
@@ -216,7 +224,8 @@ class SleepPage extends StatelessWidget {
     List<FieldOptions> sleepOptions = [
       FieldOptions(
         hint: 'Hours Slept',
-        invalidText: 'Enter  number',
+        suffixText: 'hours',
+        invalidText: 'Enter a number',
         keyboard: TextInputType.number,
         regString: r'^0*\d{1,2}(\.\d+)?$',
       ),

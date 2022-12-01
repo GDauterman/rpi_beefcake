@@ -172,10 +172,14 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
     super.initState();
     FieldOptions popupOptions = FieldOptions(
         hint: widget.field.getTitle,
+        suffixText: widget.field.getUnits,
         invalidText: 'Enter a number',
         regString: r'\d+',
         keyboard: TextInputType.number,
-        showValidSymbol: false);
+        showValidSymbol: false,
+        boxwidth: 275,
+        boxheight: 50,
+    );
     textInput = CustTextInput(options: popupOptions);
   }
 
@@ -185,6 +189,7 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 300),
         child: Material(
             child: Container(
+              width: 300,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(15),
