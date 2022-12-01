@@ -191,6 +191,7 @@ class _CustTextInput extends State<CustTextInput> {
     // return Text('baller');
     TextField tf = TextField(
       maxLines: widget.options.boxheight == null ? null : 1,
+      maxLength: 256,
       controller: controller,
       obscureText: widget.options.obscureText,
       keyboardType: widget.options.keyboard,
