@@ -185,11 +185,13 @@ class _CustTextInput extends State<CustTextInput> {
           size: 28,
           color: _showValid ? bc_style().correctcolor : bc_style().errorcolor);
     }
-    double _width =
-        widget.options.boxwidth ?? MediaQuery.of(context).size.width;
-    double _height = widget.options.boxheight ?? 35;
+    // double width =
+    //     widget.options.boxwidth ?? MediaQuery.of(context).size.width;
+    // double height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
+      maxLines: widget.options.boxheight == null ? null : 1,
+      maxLength: 256,
       controller: controller,
       obscureText: widget.options.obscureText,
       keyboardType: widget.options.keyboard,
@@ -246,10 +248,10 @@ class _CustTextInput extends State<CustTextInput> {
           ),
           padding:
               const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
-          child: SizedBox(
+          child: (widget.options.boxwidth == null || widget.options.boxheight == null) ? tf : SizedBox(
             child: tf,
-            width: _width,
-            height: _height,
+            width: widget.options.boxwidth,
+            height: widget.options.boxheight,
           )),
     );
   }

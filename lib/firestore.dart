@@ -146,8 +146,23 @@ extension DBFieldValues on DBFields {
       default:                  return '';
     }
   }
+}
 
+enum FeedbackTypes { error, suggestion }
 
+extension FeedbackTypeNames on FeedbackTypes {
+  String get getDBName {
+    switch(this) {
+      case FeedbackTypes.error:       return 'error';
+      case FeedbackTypes.suggestion:  return 'suggestion';
+    }
+  }
+  String get getTitle {
+    switch(this) {
+      case FeedbackTypes.error:       return 'Error';
+      case FeedbackTypes.suggestion:  return 'Suggestion';
+    }
+  }
 }
 
 class FirebaseService {
@@ -175,6 +190,8 @@ class FirebaseService {
       FirebaseFirestore.instance.collection('users');
   final CollectionReference foodReference =
       FirebaseFirestore.instance.collection('foods');
+  final CollectionReference feedbackReference =
+      FirebaseFirestore.instance.collection('feedback');
 
   /// Maps all DBField objects to a collectionreference object
   ///
@@ -499,6 +516,20 @@ class FirebaseService {
     };
     await measurementCol!.add(newEntry).then((documentSnapshot) =>
         print("Added Measurement Data with ID: ${documentSnapshot.id}"));
+  }
+
+  void addFeedback(List<dynamic> data) async {
+    if (!connected) {
+      throw Exception('Attempted to add to measurement while not connected');
+    }
+    final newEntry =  {
+      "feedback_type": data[0],
+      "note": data[1],
+      "uid": FirebaseAuth.instance.currentUser!.uid,
+      "time_logged": Timestamp.now(),
+    };
+    await feedbackReference!.add(newEntry).then((documentSnapshot) =>
+        print("Logged feedback with ID: ${documentSnapshot.id}"));
   }
 
   /// Returns the sum of all values in a list

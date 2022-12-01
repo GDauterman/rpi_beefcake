@@ -4,6 +4,7 @@ import 'package:rpi_beefcake/fitness_page.dart';
 import 'package:rpi_beefcake/home_page.dart';
 import 'package:rpi_beefcake/loading_page.dart';
 import 'package:rpi_beefcake/trends_page.dart';
+import 'package:rpi_beefcake/widget_library.dart';
 
 import 'firestore.dart';
 
@@ -63,6 +64,19 @@ class _BasePage extends State<BasePage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
+            onPressed: (() {
+              Navigator.push(
+                context,
+                CustomPopupRoute(
+                  builder: (context) =>
+                    FeedbackWindow()));
+              }),
+            icon: Icon(
+              Icons.rate_review_rounded,
+              size: 32,
+            )
+          ),
+          IconButton(
               onPressed: (() {
                 Navigator.of(context).pushNamed('/settings');
               }),
@@ -111,5 +125,77 @@ class _BasePage extends State<BasePage> {
         onTap: _onItemTapped,
       ),
     );
+  }
+}
+
+class FeedbackWindow extends StatefulWidget {
+  FeedbackWindow({Key? key}) : super(key: key);
+
+  @override
+  State<FeedbackWindow> createState() => _FeedbackWindow();
+
+}
+
+class _FeedbackWindow extends State<FeedbackWindow> {
+  String dropdownVal = 'error';
+  late CustTextInput noteInput;
+  late DropdownButton dropdownInput;
+
+  @override
+  initState() {
+    noteInput = CustTextInput(options: FieldOptions(
+      hint: 'Enter feedback here',
+      invalidText: 'Must not be empty',
+      regString: r'.+',
+    ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    dropdownInput = DropdownButton(
+      items: FeedbackTypes.values.map<DropdownMenuItem<String>>((FeedbackTypes value) {
+        return DropdownMenuItem<String>(
+          value: value.getDBName,
+          child: Text(value.getTitle),
+        );
+      }).toList(),
+      hint: Text('Type of Feedback'),
+      value: dropdownVal,
+      onChanged: ((val){
+        setState(() {dropdownVal = val;});
+      }),
+    );
+    return Padding(
+        padding: EdgeInsets.symmetric(horizontal: 50, vertical: 200),
+        child: Material(
+            color: Theme.of(context).colorScheme.background,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 7.5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    dropdownInput,
+                    noteInput,
+                    ButtonTheme(
+                        minWidth: 50,
+                        child: ElevatedButton(
+                          onPressed: (() {
+                            if(noteInput.child.isValid()) {
+                              FirebaseService().addFeedback([
+                                dropdownVal,
+                                noteInput.child.getVal()
+                              ]);
+                              Navigator.pop(context);
+                            }
+                          }),
+                          child: SizedBox(
+                            child: Text('Submit'),
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+            ));
   }
 }
