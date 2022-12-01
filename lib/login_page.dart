@@ -3,15 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:rpi_beefcake/style_lib.dart';
 import 'package:rpi_beefcake/widget_library.dart';
 
+// Regex strings and objects for matching emails and passwords
 const emailRegexString = r'(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)';
 final emailRegex = RegExp(emailRegexString);
 const existsRegexString = r'.+';
 final existsRegex = RegExp(existsRegexString);
 const properPasswordRegexString = r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$';
-final properPasswordRegex = RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$');
+final properPasswordRegex = RegExp(properPasswordRegexString);
 const nameRegexString = r'[A-Z]\w* [A-Z]\w*';
-final nameRegex = RegExp(r'[A-Z]\w* [A-Z]\w*');
+final nameRegex = RegExp(nameRegexString);
 
+/// StatefulWidget representing the login page of this app
+///
+/// State depends on fields of app and login state
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -19,14 +23,15 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPage();
 }
 
+/// Underlying implementation of LoginPage
 class _LoginPage extends State<LoginPage> {
+  // options and options for the email and password fields
   late CustTextInput _emailInput;
   late CustTextInput _pwInput;
   late final FieldOptions _emailOptions;
   late final FieldOptions _pwOptions;
-  bool usernameCorrect = false;
-  bool passwordCorrect = false;
-  String errorText = '';
+  // error string to be shown in case of user error
+  String _errorText = '';
 
   @override
   initState() {
@@ -35,9 +40,9 @@ class _LoginPage extends State<LoginPage> {
         invalidText: "Enter a valid email",
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
+        keyboard: TextInputType.emailAddress,
         regString: emailRegexString,
-        obscureText: false
-    );
+        obscureText: false);
 
     _pwOptions = FieldOptions(
         hint: "Password",
@@ -45,8 +50,7 @@ class _LoginPage extends State<LoginPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         regString: properPasswordRegexString,
-        obscureText: true
-    );
+        obscureText: true);
   }
 
   @override
@@ -59,18 +63,19 @@ class _LoginPage extends State<LoginPage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-              child: Image.asset('images/beefcake_icon.jpg', height:125, width:125),
+              child: Image.asset('images/beefcake_icon.jpg',
+                  height: 125, width: 125),
             ),
             const Padding(
-              padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
-              child: Text('Welcome Back',
-                textDirection: TextDirection.ltr,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Proxima Nova',
-                  fontFamilyFallback: <String>['Comic Sans'],
-                  fontSize: 38,
-                ))),
+                padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
+                child: Text('Welcome Back',
+                    textDirection: TextDirection.ltr,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Proxima Nova',
+                      fontFamilyFallback: <String>['Comic Sans'],
+                      fontSize: 38,
+                    ))),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 15),
               child: _emailInput,
@@ -80,39 +85,37 @@ class _LoginPage extends State<LoginPage> {
               child: _pwInput,
             ),
             ElevatedButton(
-              onPressed: ((){
-                if(!_emailInput.child.isValid()) {
-                  setState(() {
-                    errorText = 'Invalid Email';
-                  });
-                } else if(!_pwInput.child.isValid()) {
-                  setState(() {
-                    errorText = 'Enter a Password';
-                  });
-                } else {
-                  FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: _emailInput.child.getVal(),
-                      password: _pwInput.child.getVal()
-                  ).then((userCredential) =>
-
-                  {
-                  }).catchError((error) {
+                onPressed: (() {
+                  if (!_emailInput.child.isValid()) {
                     setState(() {
-                      errorText = error.message;
-                      _pwInput.child.clear();
+                      _errorText = 'Invalid Email';
                     });
-                  });
-                }
-              }),
-              child: const Text('Log In')
-            ),
-            Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
+                  } else if (!_pwInput.child.isValid()) {
+                    setState(() {
+                      _errorText = 'Enter a Password';
+                    });
+                  } else {
+                    FirebaseAuth.instance
+                        .signInWithEmailAndPassword(
+                            email: _emailInput.child.getVal(),
+                            password: _pwInput.child.getVal())
+                        .then((userCredential) => {})
+                        .catchError((error) {
+                      setState(() {
+                        _errorText = error.message;
+                        _pwInput.child.clear();
+                      });
+                    });
+                  }
+                }),
+                child: const Text('Log In')),
+            Text(_errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
-              onPressed: (() {Navigator.of(context).popAndPushNamed('/register');}),
-              child: const Text(
-                'New User?',
-                textDirection: TextDirection.ltr
-            ))
+                onPressed: (() {
+                  Navigator.of(context).popAndPushNamed('/register');
+                }),
+                child:
+                    const Text('New User?', textDirection: TextDirection.ltr))
           ],
         ),
       ),
@@ -120,6 +123,9 @@ class _LoginPage extends State<LoginPage> {
   }
 }
 
+/// StatefulWidget representing the register page of this app
+///
+/// State depends on fields of app and register state
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
 
@@ -127,16 +133,15 @@ class RegisterPage extends StatefulWidget {
   State<RegisterPage> createState() => _RegisterPage();
 }
 
+/// Underlying State implementation of RegisterPage
 class _RegisterPage extends State<RegisterPage> {
+  // inputs for all fields on this page
   late CustTextInput _emailInput;
   late CustTextInput _pw1Input;
   late CustTextInput _pw2Input;
   late final FieldOptions _emailOptions;
   late final FieldOptions _pw1Options;
   late final FieldOptions _pw2Options;
-  bool usernameCorrect = false;
-  bool passwordCorrect = false;
-  bool passwordConfirmCorrect = false;
   String errorText = '';
 
   bool confirmationValidator(String str) {
@@ -151,8 +156,8 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.mail_outline_rounded,
         regString: emailRegexString,
-        obscureText: false
-    );
+        keyboard: TextInputType.emailAddress,
+        obscureText: false);
 
     _pw1Options = FieldOptions(
         hint: "Password",
@@ -160,8 +165,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         regString: properPasswordRegexString,
-        obscureText: true
-    );
+        obscureText: true);
 
     _pw2Options = FieldOptions(
         hint: "Password Confirmation",
@@ -169,9 +173,7 @@ class _RegisterPage extends State<RegisterPage> {
         showValidSymbol: true,
         icon: Icons.lock_outline_rounded,
         validator: confirmationValidator,
-        obscureText: true
-    );
-
+        obscureText: true);
   }
 
   @override
@@ -185,7 +187,8 @@ class _RegisterPage extends State<RegisterPage> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(0, 40, 0, 0),
-              child: Image.asset('images/beefcake_icon.jpg', height:125, width:125),
+              child: Image.asset('images/beefcake_icon.jpg',
+                  height: 125, width: 125),
             ),
             const Padding(
                 padding: EdgeInsets.fromLTRB(20, 30, 20, 30),
@@ -210,26 +213,28 @@ class _RegisterPage extends State<RegisterPage> {
               child: _pw2Input,
             ),
             ElevatedButton(
-                onPressed: ((){
-                  if(!_emailInput.child.isValid()) {
+                onPressed: (() {
+                  if (!_emailInput.child.isValid()) {
                     setState(() {
                       errorText = 'Invalid Email';
                     });
-                  } else if(!_pw1Input.child.isValid()) {
+                  } else if (!_pw1Input.child.isValid()) {
                     setState(() {
-                      errorText = 'Password must be 8 characters, including 1 number and 1 letter';
+                      errorText =
+                          'Password must be 8 characters, including 1 number and 1 letter';
                     });
-                  } else if(!_pw2Input.child.isValid()) {
+                  } else if (!_pw2Input.child.isValid()) {
                     setState(() {
                       errorText = 'Passwords do not match';
                     });
                   } else {
-                    FirebaseAuth.instance.createUserWithEmailAndPassword(
-                        email: _emailInput.child.getVal(),
-                        password: _pw1Input.child.getVal(),
-                    ).then((userCredential) =>
-                    {
-                    }).catchError((error) {
+                    FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(
+                          email: _emailInput.child.getVal(),
+                          password: _pw1Input.child.getVal(),
+                        )
+                        .then((userCredential) => {})
+                        .catchError((error) {
                       setState(() {
                         errorText = error.message;
                         _pw1Input.child.clear();
@@ -238,19 +243,17 @@ class _RegisterPage extends State<RegisterPage> {
                     });
                   }
                 }),
-                child: const Text('Register')
-            ),
+                child: const Text('Register')),
             Text(errorText, style: TextStyle(color: bc_style().errorcolor)),
             ElevatedButton(
-              onPressed: (() {Navigator.of(context).popAndPushNamed('/login');}),
-              child: const Text(
-                  'Returning User?',
-                  textDirection: TextDirection.ltr
-              ))
+                onPressed: (() {
+                  Navigator.of(context).popAndPushNamed('/login');
+                }),
+                child: const Text('Returning User?',
+                    textDirection: TextDirection.ltr))
           ],
         ),
       ),
     );
   }
 }
-
