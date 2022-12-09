@@ -24,6 +24,11 @@ We are happy to say that we have no dependency on other software for functionali
 - **Webapp Version**: https://beefcake-f6164.web.app/#/
 - **Internal Test (Android Device)**: email us at team-beefcake@googlegroups.com to be added to the Internal Test List
 
+### Building the App
+
+- **Flutter**: https://docs.flutter.dev/get-started/install/windows
+- **FireBase**: https://firebase.google.com/docs/cli#setup_update_cli
+
 ## Known issues
 
 Currently we have known outstanding bugs, if you are to find more please submit an issue on our GitHub. We will get back to you quickly
