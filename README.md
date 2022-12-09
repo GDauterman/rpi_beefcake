@@ -1,4 +1,4 @@
-# BeefCake
+# BeefCake :cake:
 
 **Description**: We are a fitness/wellness app used to track your workouts, sleep, hydration, meals, and more.
 Not only do we give you a place to go back and see how you have been doing overtime, but also how your metrics correlate to one another.
