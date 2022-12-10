@@ -230,7 +230,7 @@ class _TrendsPage extends State<TrendsPage> {
       genList.add(ddmiVal);
     }
 
-    for (int i = 0; i < exercisesList.length; i++) {
+    for (int i = 0; i < FirebaseService().getExerciseTitles().length; i++) {
       DropdownMenuItem<int> ddmiExercise = DropdownMenuItem<int>(
           value: i, child: Text(FirebaseService().getExerciseTitles()[i]));
       exerciseList.add(ddmiExercise);

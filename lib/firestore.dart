@@ -324,6 +324,7 @@ class FirebaseService {
     _exerciseFields.add(field);
     _exerciseTitles.add(title);
     _exercisePlotPoints.add("max1rm_${field}_y");
+    userDoc!.update({'exercises': _exerciseTitles});
   }
 
   /// Returns a field name based on an exercise's title

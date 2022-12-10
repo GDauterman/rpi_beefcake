@@ -155,6 +155,10 @@ class _CustTextInput extends State<CustTextInput> {
 
   /// Whether this field is valid
   late bool _isValid;
+
+  /// Whether to show hint or not
+  bool showHint = true;
+
   // Used to not have to show invalid when a user hasn't yet entered anything
   /// Whether or not to show that this field is valid
   bool _showValid = true;
@@ -184,6 +188,7 @@ class _CustTextInput extends State<CustTextInput> {
     setState(() {
       _showValid = true;
       controller.clear();
+      showHint = true;
     });
   }
 
@@ -220,7 +225,7 @@ class _CustTextInput extends State<CustTextInput> {
           TextSpan(children: <InlineSpan>[
             WidgetSpan(
               child: Text(
-                getVal().isEmpty ? widget.options.hint! : '',
+                showHint ? widget.options.hint! : '',
               ),
             ),
           ]),
@@ -284,18 +289,6 @@ class _CustTextInput extends State<CustTextInput> {
   }
 }
 
-class CustDropdown extends StatefulWidget {
-  late _CustDropdown child;
-  List<String> optionList;
-  CustDropdown(this.optionList, {super.key});
-
-  @override
-  State<CustDropdown> createState() {
-    child = _CustDropdown();
-    return child;
-  }
-}
-
 class CustomPopupRoute extends PopupRoute {
   CustomPopupRoute({
     required this.builder,
@@ -336,16 +329,27 @@ class CustomPopupRoute extends PopupRoute {
   }
 }
 
+class CustDropdown extends StatefulWidget {
+  _CustDropdown? child;
+  ValueSetter<String> updateVal;
+  List<String> optionList;
+  String initVal;
+
+  CustDropdown(this.optionList, this.updateVal, this.initVal, {super.key});
+
+  @override
+  State<CustDropdown> createState() {
+    child = _CustDropdown();
+    return child!;
+  }
+}
+
 class _CustDropdown extends State<CustDropdown> {
   late String _curVal;
 
-  String getSelection() {
-    return _curVal;
-  }
-
   @override
   initState() {
-    _curVal = widget.optionList[0];
+    _curVal = widget.initVal;
   }
 
   @override
@@ -354,8 +358,6 @@ class _CustDropdown extends State<CustDropdown> {
       padding: EdgeInsets.only(top: 30),
       child: Container(
         decoration: BoxDecoration(
-          //color: bc_style().backgroundcolor,
-          //border: Border.all(width: 5, color: bc_style().accent1color),
           borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.fromLTRB(7, 7, 7, 7),
@@ -363,11 +365,11 @@ class _CustDropdown extends State<CustDropdown> {
           value: _curVal,
           icon: const Icon(Icons.arrow_drop_down),
           elevation: 16,
-          //style: TextStyle(color: bc_style().textcolor, fontSize: 24),
           onChanged: (String? value) {
             // This is called when the user selects an item.
             setState(() {
               _curVal = value!;
+              widget.updateVal(_curVal);
             });
           },
           items:
