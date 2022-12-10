@@ -108,7 +108,9 @@ class DailyReport extends StatelessWidget {
             SingleValueUpdating(
                 title: 'Today\'s Mean Weight:', field: DBFields.weightM),
             SingleValueUpdating(
-                title: 'Most Correlated Values:', field: DBFields.weightM, getCorrelation: true),
+                title: 'Most Correlated Values:',
+                field: DBFields.weightM,
+                getCorrelation: true),
           ],
         ));
   }
@@ -132,7 +134,11 @@ class SingleValueUpdating extends StatefulWidget {
   IconData? icon;
 
   SingleValueUpdating(
-      {Key? key, required this.title, required this.field, this.getCorrelation=false, this.icon})
+      {Key? key,
+      required this.title,
+      required this.field,
+      this.getCorrelation = false,
+      this.icon})
       : super(key: key);
 
   @override
@@ -145,7 +151,7 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
 
   @override
   initState() {
-    if(widget.getCorrelation) {
+    if (widget.getCorrelation) {
       stream = FirebaseService()
           .userDoc!
           .collection('graph_data')
@@ -171,21 +177,17 @@ class _SingleValueUpdating extends State<SingleValueUpdating> {
           if (snapshot.data != null &&
               snapshot.data!.data() != null &&
               (snapshot.data!
-                  .data()!
-                  .keys
-                  .contains(widget.field.getRawPlotStr) ||
-              snapshot.data!
-                  .data()!
-                  .keys
-                  .contains('pos1')) &&
-              (widget.getCorrelation || snapshot.data!.data()![widget.field.getRawPlotStr] > 0)) {
-            if(widget.getCorrelation) {
+                      .data()!
+                      .keys
+                      .contains(widget.field.getRawPlotStr) ||
+                  snapshot.data!.data()!.keys.contains('pos1')) &&
+              (widget.getCorrelation ||
+                  snapshot.data!.data()![widget.field.getRawPlotStr] > 0)) {
+            if (widget.getCorrelation) {
               presentString += '\n';
-              presentString += snapshot.data!
-                  .get('pos1').toString();
+              presentString += snapshot.data!.get('pos1').toString();
               presentString += ' and ';
-              presentString += snapshot.data!
-                  .get('pos2').toString();
+              presentString += snapshot.data!.get('pos2').toString();
             } else {
               presentString += snapshot.data!
                   .get(widget.field.getRawPlotStr)
