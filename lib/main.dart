@@ -99,6 +99,7 @@ class _NavPage extends State<NavPage> {
   @override
   Widget build(BuildContext context) {
     Widget app = MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Main App',
       theme: isDark ? customDarkTheme() : customLightTheme(),
       navigatorKey: mainNavKey,

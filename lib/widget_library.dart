@@ -330,7 +330,6 @@ class CustomPopupRoute extends PopupRoute {
 }
 
 class CustDropdown extends StatefulWidget {
-  _CustDropdown? child;
   ValueSetter<String> updateVal;
   List<String> optionList;
   String initVal;
@@ -339,8 +338,7 @@ class CustDropdown extends StatefulWidget {
 
   @override
   State<CustDropdown> createState() {
-    child = _CustDropdown();
-    return child!;
+    return _CustDropdown();
   }
 }
 

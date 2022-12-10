@@ -121,6 +121,7 @@ class _FitnessPage extends State<FitnessPage> {
     List<String> dropdownList =
         List.from(FirebaseService().getExerciseTitles());
     dropdownList.add('Create Exercise');
+    dropdownList = dropdownList.toSet().toList();
     _exerciseDropdown = CustDropdown(dropdownList, setVal, curVal);
     return Scaffold(
         body: SingleChildScrollView(

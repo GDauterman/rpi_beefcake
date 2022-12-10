@@ -321,6 +321,7 @@ class FirebaseService {
     if (_exerciseFields.contains(field)) {
       return;
     }
+    print('Adding new exercise ${title}');
     _exerciseFields.add(field);
     _exerciseTitles.add(title);
     _exercisePlotPoints.add("max1rm_${field}_y");
