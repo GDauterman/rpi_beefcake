@@ -1,4 +1,4 @@
-package com.example.rpi_beefcake
+package com.beefcake.rpi_beefcake
 
 import io.flutter.embedding.android.FlutterActivity
 

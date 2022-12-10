@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.rpi_beefcake">
+    package="com.beefcake.rpi_beefcake">
    <application
         android:label="rpi_beefcake"
         android:name="${applicationName}"

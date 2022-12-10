@@ -6,7 +6,6 @@ import 'firestore.dart';
 
 // ToDo: replace with database call
 /// Represents all possible exercise fields
-List<String> exercisesList = <String>['Bench Press', 'Squat', 'Deadlift'];
 
 /// A StatefulWidget representing the exercise logging page of our app
 ///
@@ -28,7 +27,7 @@ class _FitnessPage extends State<FitnessPage> {
     if (_rows.isEmpty) return;
     setState(() {
       _rows.removeWhere((item) => item.key == uk);
-      for(int i = 0; i < _rows.length; i++) {
+      for (int i = 0; i < _rows.length; i++) {
         _rows[i].child.decrementIndex();
       }
     });
@@ -56,7 +55,7 @@ class _FitnessPage extends State<FitnessPage> {
 
   /// Whether all exercise row values are valid according to their regexp
   bool rowsValid() {
-    if(_rows.isEmpty) {
+    if (_rows.isEmpty) {
       return false;
     }
     for (int i = 0; i < _rows.length; i++) {
@@ -72,7 +71,7 @@ class _FitnessPage extends State<FitnessPage> {
     setState(() {
       List<dynamic> data = [];
 
-      data.add(_exerciseDropdown.child.getSelection().toString());
+      data.add(curVal.toString());
       data.add('notes');
       List<dynamic> reps = [];
       List<dynamic> weight = [];
@@ -88,20 +87,42 @@ class _FitnessPage extends State<FitnessPage> {
   }
 
   /// Dropdown widget for searchable dropdown of exercise options
-  final CustDropdown _exerciseDropdown = CustDropdown(exercisesList);
+  late CustDropdown _exerciseDropdown;
+  late String curVal;
+
+  late FieldOptions _createOptions;
+
+  void setVal(String newVal) {
+    setState(() {
+      curVal = newVal;
+    });
+  }
 
   /// List of exercise row widgets
   List<FitnessRow> _rows = [];
 
   @override
   initState() {
+    curVal = FirebaseService().getExerciseTitles()[0];
     for (int i = 0; i < 3; i++) {
       addRow();
     }
+
+    _createOptions = FieldOptions(
+      hint: 'Exercise Name',
+      boxheight: 75,
+      boxwidth: 200,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    CustTextInput newExerciseInput = CustTextInput(options: _createOptions);
+    List<String> dropdownList =
+        List.from(FirebaseService().getExerciseTitles());
+    dropdownList.add('Create Exercise');
+    dropdownList = dropdownList.toSet().toList();
+    _exerciseDropdown = CustDropdown(dropdownList, setVal, curVal);
     return Scaffold(
         body: SingleChildScrollView(
             child: Center(
@@ -112,6 +133,28 @@ class _FitnessPage extends State<FitnessPage> {
             padding: EdgeInsets.fromLTRB(0, 25, 0, 10),
             child: _exerciseDropdown,
           ),
+          curVal == 'Create Exercise'
+              ? Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                      newExerciseInput,
+                      ElevatedButton(
+                        onPressed: (() {
+                          FirebaseService()
+                              .addExerciseName(newExerciseInput.child.getVal());
+                          setState(() {
+                            curVal = FirebaseService().getExerciseTitles()[0];
+                          });
+                        }),
+                        child: Icon(Icons.add),
+                        style: ElevatedButton.styleFrom(
+                          fixedSize: const Size(40, 40),
+                          shape: const CircleBorder(),
+                        ),
+                      ),
+                    ])
+              : SizedBox.shrink(),
           Column(mainAxisAlignment: MainAxisAlignment.center, children: _rows),
           Padding(
               padding: EdgeInsets.zero,
@@ -119,16 +162,23 @@ class _FitnessPage extends State<FitnessPage> {
           Padding(
               padding: EdgeInsets.only(top: 10),
               child: ElevatedButton(
-                  onPressed: (() {
-                    if (rowsValid()) {
-                      errorText = '';
-                      logRows();
-                    } else {
-                      setState(() {
-                        errorText = 'Please enter something for all fields';
-                      });
-                    }
-                  }),
+                  onPressed: curVal == 'Create Exercise'
+                      ? null
+                      : (() {
+                          if (rowsValid()) {
+                            errorText = '';
+                            logRows();
+                          } else if (curVal == 'Create Exercise') {
+                            setState(() {
+                              errorText = 'You cannot log this exercise';
+                            });
+                          } else {
+                            setState(() {
+                              errorText =
+                                  'Please enter something for all fields';
+                            });
+                          }
+                        }),
                   child: Text('Log Set'))),
           Padding(
               padding: EdgeInsets.only(top: 8),
@@ -169,7 +219,6 @@ class FitnessRow extends StatefulWidget {
   State<FitnessRow> state() {
     return child;
   }
-
 }
 
 /// Underlying state class for FitnessRow
@@ -197,7 +246,7 @@ class FitnessRowState extends State<FitnessRow> {
 
   /// decrement the index of this row
   void decrementIndex() {
-    setState((){});
+    setState(() {});
   }
 
   /// Clears all fields in this row
@@ -232,7 +281,6 @@ class FitnessRowState extends State<FitnessRow> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -257,7 +305,9 @@ class FitnessRowState extends State<FitnessRow> {
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 28,
                 onPressed: (() {
-                  setState(() { widget.deleteRow(widget.key); });
+                  setState(() {
+                    widget.deleteRow(widget.key);
+                  });
                 }),
               ))
         ]));

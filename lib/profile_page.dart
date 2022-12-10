@@ -39,10 +39,8 @@ class ProfilePage extends StatelessWidget {
               child: Column(children: [
                 Padding(
                   padding: EdgeInsets.only(top: 20),
-                  child: Text(
-                    'Set Goals',
-                      style: Theme.of(context).textTheme.headline3
-                  ),
+                  child: Text('Set Goals',
+                      style: Theme.of(context).textTheme.headline3),
                 ),
                 Padding(
                     padding: EdgeInsets.only(top: 8),
@@ -104,9 +102,7 @@ class _GoalRow extends State<GoalRow> {
         builder: (context, snapshot) {
           String val = '--';
           if (snapshot.hasData) {
-            val = snapshot.data!
-                .get(widget.field.getGoalStr)
-                .toString();
+            val = snapshot.data!.get(widget.field.getGoalStr).toString();
           }
           return GestureDetector(
             onTap: (() {
@@ -120,9 +116,9 @@ class _GoalRow extends State<GoalRow> {
                 decoration: BoxDecoration(
                     border: Border(
                         bottom: BorderSide(
-                          color: Theme.of(context).colorScheme.surfaceVariant,
-                          width: 1,
-                        ))),
+                  color: Theme.of(context).colorScheme.surfaceVariant,
+                  width: 1,
+                ))),
                 child: SizedBox(
                   height: 80,
                   child: Padding(
@@ -134,21 +130,22 @@ class _GoalRow extends State<GoalRow> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  title,
-                                  style: Theme.of(context).textTheme.headline4
-                                ),
-                                Text(units, style: Theme.of(context).textTheme.headline4?.copyWith(
-                                    fontSize: 15
-                                  )
-                                )
+                                Text(title,
+                                    style:
+                                        Theme.of(context).textTheme.headline4),
+                                Text(units,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .headline4
+                                        ?.copyWith(fontSize: 15))
                               ]),
                           Text(
                             val,
-                            style: Theme.of(context).textTheme.headline3?.copyWith(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 40,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.headline3?.copyWith(
+                                      fontWeight: FontWeight.normal,
+                                      fontSize: 40,
+                                    ),
                           )
                         ]),
                   ),
@@ -173,14 +170,14 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
   initState() {
     super.initState();
     FieldOptions popupOptions = FieldOptions(
-        hint: widget.field.getTitle,
-        suffixText: widget.field.getUnits,
-        invalidText: 'Enter a number',
-        regString: r'\d+',
-        keyboard: TextInputType.number,
-        showValidSymbol: false,
-        boxwidth: 275,
-        boxheight: 50,
+      hint: widget.field.getTitle,
+      suffixText: widget.field.getUnits,
+      invalidText: 'Enter a number',
+      regString: r'\d+',
+      keyboard: TextInputType.number,
+      showValidSymbol: false,
+      boxwidth: 275,
+      boxheight: 50,
     );
     textInput = CustTextInput(options: popupOptions);
   }
@@ -190,30 +187,30 @@ class _FieldModificationPopup extends State<FieldModificationPopup> {
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 300),
         child: Material(
-          color: Theme.of(context).colorScheme.background,
+            color: Theme.of(context).colorScheme.background,
             child: Container(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 7.5),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                textInput,
-                ButtonTheme(
-                    minWidth: 50,
-                    child: ElevatedButton(
-                      onPressed: (() {
-                        FirebaseService().updateGoal(
-                            widget.field, num.parse(textInput.child.getVal()));
-                        Navigator.pop(context);
-                      }),
-                      child: SizedBox(
-                        child: Text('Submit'),
-                      ),
-                    ))
-              ],
-            ),
-          ),
-        )));
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 7.5),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    textInput,
+                    ButtonTheme(
+                        minWidth: 50,
+                        child: ElevatedButton(
+                          onPressed: (() {
+                            FirebaseService().updateGoal(widget.field,
+                                num.parse(textInput.child.getVal()));
+                            Navigator.pop(context);
+                          }),
+                          child: SizedBox(
+                            child: Text('Submit'),
+                          ),
+                        ))
+                  ],
+                ),
+              ),
+            )));
   }
 }

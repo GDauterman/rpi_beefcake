@@ -40,15 +40,13 @@ class BasePage extends StatefulWidget {
 
 /// Underlying state class for BasePage
 class _BasePage extends State<BasePage> {
-
   /// Current page to be shown based on bottom navbar
   PageItems pageItem = PageItems.home;
 
   /// Callback func to change current page
   void _onItemTapped(int index) {
     pageItem = PageItems.values[index];
-    setState(() {
-    });
+    setState(() {});
   }
 
   @override
@@ -64,18 +62,14 @@ class _BasePage extends State<BasePage> {
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(
-            onPressed: (() {
-              Navigator.push(
-                context,
-                CustomPopupRoute(
-                  builder: (context) =>
-                    FeedbackWindow()));
+              onPressed: (() {
+                Navigator.push(context,
+                    CustomPopupRoute(builder: (context) => FeedbackWindow()));
               }),
-            icon: Icon(
-              Icons.rate_review_rounded,
-              size: 32,
-            )
-          ),
+              icon: Icon(
+                Icons.rate_review_rounded,
+                size: 32,
+              )),
           IconButton(
               onPressed: (() {
                 Navigator.of(context).pushNamed('/settings');
@@ -133,7 +127,6 @@ class FeedbackWindow extends StatefulWidget {
 
   @override
   State<FeedbackWindow> createState() => _FeedbackWindow();
-
 }
 
 class _FeedbackWindow extends State<FeedbackWindow> {
@@ -143,7 +136,8 @@ class _FeedbackWindow extends State<FeedbackWindow> {
 
   @override
   initState() {
-    noteInput = CustTextInput(options: FieldOptions(
+    noteInput = CustTextInput(
+        options: FieldOptions(
       hint: 'Enter feedback here',
       invalidText: 'Must not be empty',
       regString: r'.+',
@@ -154,7 +148,8 @@ class _FeedbackWindow extends State<FeedbackWindow> {
   @override
   Widget build(BuildContext context) {
     dropdownInput = DropdownButton(
-      items: FeedbackTypes.values.map<DropdownMenuItem<String>>((FeedbackTypes value) {
+      items: FeedbackTypes.values
+          .map<DropdownMenuItem<String>>((FeedbackTypes value) {
         return DropdownMenuItem<String>(
           value: value.getDBName,
           child: Text(value.getTitle),
@@ -162,41 +157,41 @@ class _FeedbackWindow extends State<FeedbackWindow> {
       }).toList(),
       hint: Text('Type of Feedback'),
       value: dropdownVal,
-      onChanged: ((val){
-        setState(() {dropdownVal = val;});
+      onChanged: ((val) {
+        setState(() {
+          dropdownVal = val;
+        });
       }),
     );
     return Padding(
         padding: EdgeInsets.symmetric(horizontal: 50, vertical: 200),
         child: Material(
-            color: Theme.of(context).colorScheme.background,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 7.5),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    dropdownInput,
-                    noteInput,
-                    ButtonTheme(
-                        minWidth: 50,
-                        child: ElevatedButton(
-                          onPressed: (() {
-                            if(noteInput.child.isValid()) {
-                              FirebaseService().addFeedback([
-                                dropdownVal,
-                                noteInput.child.getVal()
-                              ]);
-                              Navigator.pop(context);
-                            }
-                          }),
-                          child: SizedBox(
-                            child: Text('Submit'),
-                          ),
-                        ))
-                  ],
-                ),
-              ),
-            ));
+          color: Theme.of(context).colorScheme.background,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 7.5),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                dropdownInput,
+                noteInput,
+                ButtonTheme(
+                    minWidth: 50,
+                    child: ElevatedButton(
+                      onPressed: (() {
+                        if (noteInput.child.isValid()) {
+                          FirebaseService().addFeedback(
+                              [dropdownVal, noteInput.child.getVal()]);
+                          Navigator.pop(context);
+                        }
+                      }),
+                      child: SizedBox(
+                        child: Text('Submit'),
+                      ),
+                    ))
+              ],
+            ),
+          ),
+        ));
   }
 }

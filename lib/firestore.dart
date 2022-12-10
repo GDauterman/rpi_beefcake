@@ -35,56 +35,92 @@ extension DBFieldValues on DBFields {
   ///
   /// Throws an exception if the field has no such property
   String get getFieldStr {
-    switch(this) {
-      case DBFields.nameN:      return 'food_name';
-      case DBFields.caloriesN:  return 'total_calories';
-      case DBFields.carbsN:     return 'total_carbs';
-      case DBFields.fatN:       return 'total_fats';
-      case DBFields.proteinN:   return 'total_protein';
-      case DBFields.durationS:  return 'hours';
-      case DBFields.qualityS:   return 'sleep_quality';
-      case DBFields.noteS:      return 'notes';
-      case DBFields.quantityH:  return 'amount';
-      case DBFields.weightM:    return 'weight';
-      case DBFields.waistM:     return 'waist';
-      case DBFields.bicepM:     return 'bicep';
-      default:                  throw Exception('There is no field for the enum ${toString()}');
+    switch (this) {
+      case DBFields.nameN:
+        return 'food_name';
+      case DBFields.caloriesN:
+        return 'total_calories';
+      case DBFields.carbsN:
+        return 'total_carbs';
+      case DBFields.fatN:
+        return 'total_fats';
+      case DBFields.proteinN:
+        return 'total_protein';
+      case DBFields.durationS:
+        return 'hours';
+      case DBFields.qualityS:
+        return 'sleep_quality';
+      case DBFields.noteS:
+        return 'notes';
+      case DBFields.quantityH:
+        return 'amount';
+      case DBFields.weightM:
+        return 'weight';
+      case DBFields.waistM:
+        return 'waist';
+      case DBFields.bicepM:
+        return 'bicep';
+      default:
+        throw Exception('There is no field for the enum ${toString()}');
     }
   }
+
   /// Returns the field name of the user's goal in this category
   ///
   /// Throws an exception if the field has no such property
   String get getGoalStr {
-    switch(this) {
-      case DBFields.caloriesN:  return 'calorie_goal';
-      case DBFields.carbsN:     return 'carb_goal';
-      case DBFields.fatN:       return 'fat_goal';
-      case DBFields.proteinN:   return 'protein_goal';
-      case DBFields.durationS:  return 'sleep_goal';
-      case DBFields.quantityH:  return 'hydration_goal';
-      case DBFields.weightM:    return 'weight_goal';
-      case DBFields.waistM:     return 'waist_goal';
-      case DBFields.bicepM:     return 'bicep_goal';
-      default:                  throw Exception('There is no goal for the field ${toString()}');
+    switch (this) {
+      case DBFields.caloriesN:
+        return 'calorie_goal';
+      case DBFields.carbsN:
+        return 'carb_goal';
+      case DBFields.fatN:
+        return 'fat_goal';
+      case DBFields.proteinN:
+        return 'protein_goal';
+      case DBFields.durationS:
+        return 'sleep_goal';
+      case DBFields.quantityH:
+        return 'hydration_goal';
+      case DBFields.weightM:
+        return 'weight_goal';
+      case DBFields.waistM:
+        return 'waist_goal';
+      case DBFields.bicepM:
+        return 'bicep_goal';
+      default:
+        throw Exception('There is no goal for the field ${toString()}');
     }
   }
+
   /// Returns the field name of the user's aggregate plot points in this category
   ///
   /// Throws an exception if the field has no such property
   String get getRawPlotStr {
-    switch(this) {
-      case DBFields.caloriesN:  return 'sum_calories_y';
-      case DBFields.carbsN:     return 'sum_carbs_y';
-      case DBFields.fatN:       return 'sum_fats_y';
-      case DBFields.proteinN:   return 'sum_protein_y';
-      case DBFields.durationS:  return 'sum_sleep_hours_y';
-      case DBFields.quantityH:  return 'sum_hydration_y';
-      case DBFields.weightM:    return 'avg_weight_y';
-      case DBFields.waistM:     return 'avg_waist_y';
-      case DBFields.bicepM:     return 'avg_bicep_y';
-      default:                  throw Exception('There is no plot points for the field ${toString()}');
+    switch (this) {
+      case DBFields.caloriesN:
+        return 'sum_calories_y';
+      case DBFields.carbsN:
+        return 'sum_carbs_y';
+      case DBFields.fatN:
+        return 'sum_fats_y';
+      case DBFields.proteinN:
+        return 'sum_protein_y';
+      case DBFields.durationS:
+        return 'sum_sleep_hours_y';
+      case DBFields.quantityH:
+        return 'sum_hydration_y';
+      case DBFields.weightM:
+        return 'avg_weight_y';
+      case DBFields.waistM:
+        return 'avg_waist_y';
+      case DBFields.bicepM:
+        return 'avg_bicep_y';
+      default:
+        throw Exception('There is no plot points for the field ${toString()}');
     }
   }
+
   /// Returns the field names of the user's trendline in this category
   /// (based on raw plot points)
   ///
@@ -96,54 +132,91 @@ extension DBFieldValues on DBFields {
   ///
   /// Throws an exception if the field has no such property
   List<String> get getTrendsStr {
-    switch(this) {
-      case DBFields.caloriesN:  return ['calories_m', 'calories_b'];
-      case DBFields.carbsN:     return ['carbs_m', 'carbs_b'];
-      case DBFields.fatN:       return ['fats_m', 'fats_b'];
-      case DBFields.proteinN:   return ['protein_m', 'protein_b'];
-      case DBFields.durationS:  return ['sleep_hours_m', 'sleep_hours_b'];
-      case DBFields.quantityH:  return ['hydration_m', 'hydration_b'];
-      case DBFields.weightM:    return ['weight_m', 'weight_b'];
-      case DBFields.waistM:     return ['waist_m', 'waist_b'];
-      case DBFields.bicepM:     return ['bicep_m', 'bicep_b'];
-      default:                  throw Exception('There are no trends for the field ${toString()}');
+    switch (this) {
+      case DBFields.caloriesN:
+        return ['calories_m', 'calories_b'];
+      case DBFields.carbsN:
+        return ['carbs_m', 'carbs_b'];
+      case DBFields.fatN:
+        return ['fats_m', 'fats_b'];
+      case DBFields.proteinN:
+        return ['protein_m', 'protein_b'];
+      case DBFields.durationS:
+        return ['sleep_hours_m', 'sleep_hours_b'];
+      case DBFields.quantityH:
+        return ['hydration_m', 'hydration_b'];
+      case DBFields.weightM:
+        return ['weight_m', 'weight_b'];
+      case DBFields.waistM:
+        return ['waist_m', 'waist_b'];
+      case DBFields.bicepM:
+        return ['bicep_m', 'bicep_b'];
+      default:
+        throw Exception('There are no trends for the field ${toString()}');
     }
   }
+
   /// Returns the title name of this field
   ///
   /// Throws an exception if the field has no such property
   String get getTitle {
-    switch(this) {
-      case DBFields.exercise:   return 'Exercises';
-      case DBFields.caloriesN:  return 'Calories';
-      case DBFields.durationS:  return 'Hours Slept';
-      case DBFields.quantityH:  return 'Water Drank';
-      case DBFields.weightM:    return 'Weight';
-      case DBFields.carbsN:     return 'Carb';
-      case DBFields.fatN:       return 'Fats';
-      case DBFields.proteinN:   return 'Protein';
-      case DBFields.waistM:     return 'Waist Circ.';
-      case DBFields.bicepM:     return 'Bicep Circ.';
-      default:                  return '';
+    switch (this) {
+      case DBFields.exercise:
+        return 'Exercises';
+      case DBFields.caloriesN:
+        return 'Calories';
+      case DBFields.durationS:
+        return 'Hours Slept';
+      case DBFields.quantityH:
+        return 'Water Drank';
+      case DBFields.weightM:
+        return 'Weight';
+      case DBFields.carbsN:
+        return 'Carb';
+      case DBFields.fatN:
+        return 'Fats';
+      case DBFields.proteinN:
+        return 'Protein';
+      case DBFields.waistM:
+        return 'Waist Circ.';
+      case DBFields.bicepM:
+        return 'Bicep Circ.';
+      default:
+        return '';
     }
   }
+
   /// Returns the units of this field
   String get getUnits {
-    switch(this) {
-      case DBFields.nameN:      return '';
-      case DBFields.caloriesN:  return 'kcal';
-      case DBFields.carbsN:     return 'grams';
-      case DBFields.fatN:       return 'grams';
-      case DBFields.proteinN:   return 'grams';
-      case DBFields.durationS:  return 'hours';
-      case DBFields.qualityS:   return '0-100';
-      case DBFields.noteS:      return '';
-      case DBFields.quantityH:  return 'oz';
-      case DBFields.weightM:    return 'lbs';
-      case DBFields.waistM:     return 'inches';
-      case DBFields.bicepM:     return 'inches';
-      case DBFields.exercise:   return '1RM';
-      default:                  return '';
+    switch (this) {
+      case DBFields.nameN:
+        return '';
+      case DBFields.caloriesN:
+        return 'kcal';
+      case DBFields.carbsN:
+        return 'grams';
+      case DBFields.fatN:
+        return 'grams';
+      case DBFields.proteinN:
+        return 'grams';
+      case DBFields.durationS:
+        return 'hours';
+      case DBFields.qualityS:
+        return '0-100';
+      case DBFields.noteS:
+        return '';
+      case DBFields.quantityH:
+        return 'oz';
+      case DBFields.weightM:
+        return 'lbs';
+      case DBFields.waistM:
+        return 'inches';
+      case DBFields.bicepM:
+        return 'inches';
+      case DBFields.exercise:
+        return '1RM';
+      default:
+        return '';
     }
   }
 }
@@ -152,21 +225,25 @@ enum FeedbackTypes { error, suggestion }
 
 extension FeedbackTypeNames on FeedbackTypes {
   String get getDBName {
-    switch(this) {
-      case FeedbackTypes.error:       return 'error';
-      case FeedbackTypes.suggestion:  return 'suggestion';
+    switch (this) {
+      case FeedbackTypes.error:
+        return 'error';
+      case FeedbackTypes.suggestion:
+        return 'suggestion';
     }
   }
+
   String get getTitle {
-    switch(this) {
-      case FeedbackTypes.error:       return 'Error';
-      case FeedbackTypes.suggestion:  return 'Suggestion';
+    switch (this) {
+      case FeedbackTypes.error:
+        return 'Error';
+      case FeedbackTypes.suggestion:
+        return 'Suggestion';
     }
   }
 }
 
 class FirebaseService {
-
   // makes firebase service a global singleton
   static final FirebaseService _db = FirebaseService._internal();
   factory FirebaseService() {
@@ -214,8 +291,10 @@ class FirebaseService {
 
   /// Represents all of this user's logged exercises
   List<String> _exerciseFields = [];
+
   /// Represents the titles of all exerciseFields
   List<String> _exerciseTitles = [];
+
   /// Represents the plotpoint fields of all exerciseFields
   List<String> _exercisePlotPoints = [];
 
@@ -242,9 +321,11 @@ class FirebaseService {
     if (_exerciseFields.contains(field)) {
       return;
     }
+    print('Adding new exercise ${title}');
     _exerciseFields.add(field);
     _exerciseTitles.add(title);
     _exercisePlotPoints.add("max1rm_${field}_y");
+    userDoc!.update({'exercises': _exerciseTitles});
   }
 
   /// Returns a field name based on an exercise's title
@@ -269,7 +350,6 @@ class FirebaseService {
   void clearConnectedCallback() {
     _connectionCallbacks.clear();
   }
-
 
   void initService() {
     if (FirebaseAuth.instance.currentUser == null) {
@@ -522,13 +602,13 @@ class FirebaseService {
     if (!connected) {
       throw Exception('Attempted to add to measurement while not connected');
     }
-    final newEntry =  {
+    final newEntry = {
       "feedback_type": data[0],
       "note": data[1],
       "uid": FirebaseAuth.instance.currentUser!.uid,
       "time_logged": Timestamp.now(),
     };
-    await feedbackReference!.add(newEntry).then((documentSnapshot) =>
+    await feedbackReference.add(newEntry).then((documentSnapshot) =>
         print("Logged feedback with ID: ${documentSnapshot.id}"));
   }
 
@@ -611,10 +691,11 @@ class FirebaseService {
           String xstring = value.docs[i].id;
           int y_idx = xstring.indexOf(dashreg);
           num xdty = num.parse(xstring.substring(0, y_idx));
-          int m_idx  = xstring.indexOf(dashreg, y_idx+1);
-          num xdtm = num.parse(xstring.substring(y_idx+1, m_idx));
-          num xdtd = num.parse(xstring.substring(m_idx+1));
-          num xval = DateTime(xdty.toInt(), xdtm.toInt(), xdtd.toInt()).millisecondsSinceEpoch;
+          int m_idx = xstring.indexOf(dashreg, y_idx + 1);
+          num xdtm = num.parse(xstring.substring(y_idx + 1, m_idx));
+          num xdtd = num.parse(xstring.substring(m_idx + 1));
+          num xval = DateTime(xdty.toInt(), xdtm.toInt(), xdtd.toInt())
+              .millisecondsSinceEpoch;
           // double xval =
           //     double.parse(value.docs[i].id.replaceAll(RegExp(r'-'), ''));
           double yval = docData[fieldStr].toDouble();

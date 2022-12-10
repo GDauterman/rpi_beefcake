@@ -20,12 +20,11 @@ class TrendsPage extends StatefulWidget {
 
 /// Underlying representation of TrendsPage
 class _TrendsPage extends State<TrendsPage> {
-
   late DropdownMenuItem<DBFields> curItem;
   late DBFields curField;
 
   late DropdownMenuItem<int> exItem;
-  int ?exIdx;
+  int? exIdx;
 
   List<DropdownMenuItem<DBFields>> genList = [];
   List<DropdownMenuItem<int>> exerciseList = [];
@@ -95,7 +94,7 @@ class _TrendsPage extends State<TrendsPage> {
 
   void queryForNewField() {
     print('starting query');
-    if(curField != DBFields.exercise || exIdx != null) {
+    if (curField != DBFields.exercise || exIdx != null) {
       points = [];
       historyDocs = [];
       historyRows = [];
@@ -105,13 +104,9 @@ class _TrendsPage extends State<TrendsPage> {
           .get()
           .then(updateHistory);
       FirebaseService().getRawPlotPoints(curField, getPoints, 10, exIdx);
-      if(curField != DBFields.exercise) {
-        trendm = FirebaseService()
-            .trendsDoc!
-            .get(curField.getTrendsStr[0]);
-        trendb = FirebaseService()
-            .trendsDoc!
-            .get(curField.getTrendsStr[1]);
+      if (curField != DBFields.exercise) {
+        trendm = FirebaseService().trendsDoc!.get(curField.getTrendsStr[0]);
+        trendb = FirebaseService().trendsDoc!.get(curField.getTrendsStr[1]);
       } else {
         trendb = -999999;
         trendm = 0;
@@ -226,20 +221,18 @@ class _TrendsPage extends State<TrendsPage> {
 
     print("staritng to add to genlist");
     for (int i = 0; i < DBFields.values.length; i++) {
-      if(DBFields.values[i].getTitle == '') {
+      if (DBFields.values[i].getTitle == '') {
         continue;
       }
       print(DBFields.values[i].getTitle);
       DropdownMenuItem<DBFields> ddmiVal = DropdownMenuItem<DBFields>(
-          child: Text(DBFields.values[i].getTitle),
-          value: DBFields.values[i]);
+          child: Text(DBFields.values[i].getTitle), value: DBFields.values[i]);
       genList.add(ddmiVal);
     }
 
-    for (int i = 0; i < exercisesList.length; i++) {
+    for (int i = 0; i < FirebaseService().getExerciseTitles().length; i++) {
       DropdownMenuItem<int> ddmiExercise = DropdownMenuItem<int>(
-          value: i,
-          child: Text(FirebaseService().getExerciseTitles()[i]));
+          value: i, child: Text(FirebaseService().getExerciseTitles()[i]));
       exerciseList.add(ddmiExercise);
     }
 
@@ -261,11 +254,10 @@ class _TrendsPage extends State<TrendsPage> {
       items: genList,
       hint: Text('Type of Feedback'),
       value: curField,
-      onChanged: ((val){
+      onChanged: ((val) {
         setState(() {
           curField = val;
-          if(curField == DBFields.exercise)
-            exIdx = 0;
+          if (curField == DBFields.exercise) exIdx = 0;
           queryForNewField();
         });
       }),
@@ -274,7 +266,7 @@ class _TrendsPage extends State<TrendsPage> {
       items: exerciseList,
       hint: Text('Type of Feedback'),
       value: exIdx,
-      onChanged: ((val){
+      onChanged: ((val) {
         setState(() {
           exIdx = val;
           queryForNewField();
@@ -288,11 +280,10 @@ class _TrendsPage extends State<TrendsPage> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text('Select your Metric', style: Theme.of(context).textTheme.headline4),
+            Text('Select your Metric',
+                style: Theme.of(context).textTheme.headline4),
             genDropdown,
-            exIdx == null
-                ? SizedBox.shrink()
-                : exDropdown,
+            exIdx == null ? SizedBox.shrink() : exDropdown,
             SizedBox(height: 30),
             SizedBox(
               width: 350,
@@ -345,7 +336,8 @@ class _TrendsPage extends State<TrendsPage> {
                               ),
                             ),
                             leftTitles: AxisTitles(
-                              axisNameWidget: Text(curField.getTitle), // COLORS: Text widget for x axis title
+                              axisNameWidget: Text(curField
+                                  .getTitle), // COLORS: Text widget for x axis title
                               axisNameSize: 22,
                               sideTitles: SideTitles(
                                 showTitles: true,
@@ -414,9 +406,7 @@ class HistoryRow extends StatelessWidget {
           field == DBFields.fatN ||
           field == DBFields.proteinN);
       String fieldName = field.getFieldStr;
-      title = (isFood
-          ? docData['food_name'].toString()
-          : field.getTitle);
+      title = (isFood ? docData['food_name'].toString() : field.getTitle);
       val = (docData[fieldName]).toStringAsFixed(1);
     }
     if (field == DBFields.exercise) {
