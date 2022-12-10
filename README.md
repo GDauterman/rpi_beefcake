@@ -13,21 +13,22 @@ Not only do we give you a place to go back and see how you have been doing overt
   - **Status**:  We recently completed our beta testing, and are looking to push to app stores for use on phones
 
 
-## Dependencies
-
-We are happy to say that we have no dependency on other software for functionality
-
 ## Installation
 
 ### Using the App
 
 - **Webapp Version**: https://beefcake-f6164.web.app/#/
-- **Internal Test (Android Device)**: email us at team-beefcake@googlegroups.com to be added to the Internal Test List
+- **Internal Test (Android Device)**: https://play.google.com/apps/internaltest/4701367828864034514 (access on android device)
 
 ### Building the App
 
 - **Flutter**: https://docs.flutter.dev/get-started/install/windows
 - **FireBase**: https://firebase.google.com/docs/cli#setup_update_cli
+
+```
+flutter pub get
+flutter run
+```
 
 ## Known issues
 
