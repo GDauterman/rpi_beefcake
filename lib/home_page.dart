@@ -13,7 +13,6 @@ import 'dart:math';
 
 /// Stateless widget representing the homepage of our app
 class HomePage extends StatelessWidget {
-
   HomePage({Key? key}) : super(key: key);
 
   void _showAction(BuildContext context, int index) {
@@ -108,6 +107,8 @@ class DailyReport extends StatelessWidget {
             ProgressMeter('Water Drank (oz): ', DBFields.quantityH),
             SingleValueUpdating(
                 title: 'Today\'s Mean Weight:', field: DBFields.weightM),
+            SingleValueUpdating(
+                title: 'Most Correlated Values:', field: DBFields.weightM, getCorrelation: true),
           ],
         ));
   }
@@ -121,13 +122,17 @@ class DailyReport extends StatelessWidget {
 class SingleValueUpdating extends StatefulWidget {
   /// Title to be used for this row
   String title;
+
   /// Field to be grabbed for this row
   DBFields field;
+
+  bool getCorrelation;
+
   /// Optional icon to be shown
   IconData? icon;
 
   SingleValueUpdating(
-      {Key? key, required this.title, required this.field, this.icon})
+      {Key? key, required this.title, required this.field, this.getCorrelation=false, this.icon})
       : super(key: key);
 
   @override
@@ -136,29 +141,57 @@ class SingleValueUpdating extends StatefulWidget {
 
 /// Underlying implementation of SingleValueUpdating
 class _SingleValueUpdating extends State<SingleValueUpdating> {
+  late Stream<DocumentSnapshot<Map<String, dynamic>>> stream;
+
   @override
-  Widget build(BuildContext context) {
-    return StreamBuilder(
-      stream: FirebaseService()
+  initState() {
+    if(widget.getCorrelation) {
+      stream = FirebaseService()
+          .userDoc!
+          .collection('graph_data')
+          .doc('correlation_data')
+          .snapshots();
+    } else {
+      stream = FirebaseService()
           .userDoc!
           .collection('raw_graph_points')
           .doc(FirebaseService.getDateDocName(DateTime.now()))
-          .snapshots(),
+          .snapshots();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: stream,
       builder: (context, snapshot) {
         String presentString = 'loading';
         if (snapshot.hasData) {
           presentString = widget.title + "  ";
           if (snapshot.data != null &&
               snapshot.data!.data() != null &&
+              (snapshot.data!
+                  .data()!
+                  .keys
+                  .contains(widget.field.getRawPlotStr) ||
               snapshot.data!
                   .data()!
                   .keys
-                  .contains(widget.field.getRawPlotStr) &&
-              snapshot.data!.data()![widget.field.getRawPlotStr] > 0) {
-            presentString += snapshot.data!
-                .get(widget.field.getRawPlotStr)
-                .toStringAsFixed(1);
-            presentString += " " + widget.field.getUnits;
+                  .contains('pos1')) &&
+              (widget.getCorrelation || snapshot.data!.data()![widget.field.getRawPlotStr] > 0)) {
+            if(widget.getCorrelation) {
+              presentString += '\n';
+              presentString += snapshot.data!
+                  .get('pos1').toString();
+              presentString += ' and ';
+              presentString += snapshot.data!
+                  .get('pos2').toString();
+            } else {
+              presentString += snapshot.data!
+                  .get(widget.field.getRawPlotStr)
+                  .toStringAsFixed(1);
+              presentString += " " + widget.field.getUnits;
+            }
           } else {
             presentString += 'no data';
           }
@@ -230,8 +263,8 @@ class _ProgressMeter extends State<ProgressMeter> {
             progress = -1;
             barDec = 0;
           } else {
-            progress = snapshot.data!
-                .data()![widget.field.getRawPlotStr] as num;
+            progress =
+                snapshot.data!.data()![widget.field.getRawPlotStr] as num;
             if (goal != -1) {
               barDec = progress / goal;
             }
@@ -277,4 +310,3 @@ class _ProgressMeter extends State<ProgressMeter> {
         });
   }
 }
-

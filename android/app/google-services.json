@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:949902024414:android:264fac4664a6439a04ec4f",
         "android_client_info": {
-          "package_name": "com.example.rpi_beefcake"
+          "package_name": "com.beefcake.rpi_beefcake"
         }
       },
       "oauth_client": [
@@ -35,7 +35,7 @@
               "client_id": "949902024414-f3iute8na60j02rrlf7nnvrn2snv1d45.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.example.rpiBeefcake"
+                "bundle_id": "com.beefcake.rpiBeefcake"
               }
             }
           ]

@@ -28,7 +28,7 @@ class _FitnessPage extends State<FitnessPage> {
     if (_rows.isEmpty) return;
     setState(() {
       _rows.removeWhere((item) => item.key == uk);
-      for(int i = 0; i < _rows.length; i++) {
+      for (int i = 0; i < _rows.length; i++) {
         _rows[i].child.decrementIndex();
       }
     });
@@ -56,7 +56,7 @@ class _FitnessPage extends State<FitnessPage> {
 
   /// Whether all exercise row values are valid according to their regexp
   bool rowsValid() {
-    if(_rows.isEmpty) {
+    if (_rows.isEmpty) {
       return false;
     }
     for (int i = 0; i < _rows.length; i++) {
@@ -169,7 +169,6 @@ class FitnessRow extends StatefulWidget {
   State<FitnessRow> state() {
     return child;
   }
-
 }
 
 /// Underlying state class for FitnessRow
@@ -197,7 +196,7 @@ class FitnessRowState extends State<FitnessRow> {
 
   /// decrement the index of this row
   void decrementIndex() {
-    setState((){});
+    setState(() {});
   }
 
   /// Clears all fields in this row
@@ -232,7 +231,6 @@ class FitnessRowState extends State<FitnessRow> {
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
         padding: EdgeInsets.symmetric(vertical: 5),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -257,7 +255,9 @@ class FitnessRowState extends State<FitnessRow> {
                 color: Theme.of(context).colorScheme.primary,
                 iconSize: 28,
                 onPressed: (() {
-                  setState(() { widget.deleteRow(widget.key); });
+                  setState(() {
+                    widget.deleteRow(widget.key);
+                  });
                 }),
               ))
         ]));

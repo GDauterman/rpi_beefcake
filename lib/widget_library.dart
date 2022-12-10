@@ -10,24 +10,34 @@ typedef bool ValidatorFunction(String str);
 class FieldOptions {
   /// regexp object to test validity of input
   late RegExp validationRegex;
+
   /// The validator function that can be used instead of regexp
   ValidatorFunction? validator;
+
   /// the hint to be shown on the field
   String? hint;
+
   /// the text to be shown when the field is invalid
   String? invalidText;
+
   /// the text to be shown after the field (mostly units)
   String? suffixText;
+
   /// max amount of characters to be shown
   int? maxlines;
+
   /// whether the input should show the validity flag
   bool showValidSymbol;
+
   /// which keyboard should be shown when the user has this input selected
   TextInputType keyboard;
+
   /// whether to obscure text in input
   bool obscureText;
+
   /// option to show an icon before the field
   Icon? prefixIcon;
+
   /// option for the size of the field
   ///
   /// This value not being set means the field will expand to whatever size it needs
@@ -59,8 +69,10 @@ class FieldOptions {
 class FieldWithEnter extends StatefulWidget {
   /// All fieldoptions to be used
   final List<FieldOptions> fieldOptions;
+
   /// A callback to be used to send data when submitting
   final ServiceCallback dataEntry;
+
   /// The string to be shown in the submit button
   final String submitText;
 
@@ -123,6 +135,7 @@ class _FieldWithEnter extends State<FieldWithEnter> {
 class CustTextInput extends StatefulWidget {
   /// Options of this textinput
   final FieldOptions options;
+
   /// accessor to be able to access getters of this input
   late _CustTextInput child;
 
@@ -139,6 +152,7 @@ class CustTextInput extends StatefulWidget {
 class _CustTextInput extends State<CustTextInput> {
   /// Controller of this object's input
   TextEditingController controller = TextEditingController();
+
   /// Whether this field is valid
   late bool _isValid;
   // Used to not have to show invalid when a user hasn't yet entered anything
@@ -193,7 +207,9 @@ class _CustTextInput extends State<CustTextInput> {
     // double height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
-      maxLines: widget.options.boxheight == null && !widget.options.obscureText ? null : 1,
+      maxLines: widget.options.boxheight == null && !widget.options.obscureText
+          ? null
+          : 1,
       maxLength: widget.options.maxlines,
       controller: controller,
       obscureText: widget.options.obscureText,
@@ -251,11 +267,14 @@ class _CustTextInput extends State<CustTextInput> {
           ),
           padding:
               const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
-          child: (widget.options.boxwidth == null || widget.options.boxheight == null) ? tf : SizedBox(
-            child: tf,
-            width: widget.options.boxwidth,
-            height: widget.options.boxheight,
-          )),
+          child: (widget.options.boxwidth == null ||
+                  widget.options.boxheight == null)
+              ? tf
+              : SizedBox(
+                  child: tf,
+                  width: widget.options.boxwidth,
+                  height: widget.options.boxheight,
+                )),
     );
   }
 
@@ -365,6 +384,7 @@ class _CustDropdown extends State<CustDropdown> {
 }
 
 @immutable
+
 /// Represents the expandable log button on the home page
 class ExpandableFab extends StatefulWidget {
   const ExpandableFab({

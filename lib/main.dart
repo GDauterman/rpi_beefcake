@@ -49,7 +49,6 @@ class _MainApp extends State<MainApp> {
   }
 }
 
-
 /// A StatefulWidget class that starts our MaterialApp widget
 ///
 /// Assumes connection to Firebase
