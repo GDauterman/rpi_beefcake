@@ -10,24 +10,34 @@ typedef bool ValidatorFunction(String str);
 class FieldOptions {
   /// regexp object to test validity of input
   late RegExp validationRegex;
+
   /// The validator function that can be used instead of regexp
   ValidatorFunction? validator;
+
   /// the hint to be shown on the field
   String? hint;
+
   /// the text to be shown when the field is invalid
   String? invalidText;
+
   /// the text to be shown after the field (mostly units)
   String? suffixText;
+
   /// max amount of characters to be shown
   int? maxlines;
+
   /// whether the input should show the validity flag
   bool showValidSymbol;
+
   /// which keyboard should be shown when the user has this input selected
   TextInputType keyboard;
+
   /// whether to obscure text in input
   bool obscureText;
+
   /// option to show an icon before the field
   Icon? prefixIcon;
+
   /// option for the size of the field
   ///
   /// This value not being set means the field will expand to whatever size it needs
@@ -59,8 +69,10 @@ class FieldOptions {
 class FieldWithEnter extends StatefulWidget {
   /// All fieldoptions to be used
   final List<FieldOptions> fieldOptions;
+
   /// A callback to be used to send data when submitting
   final ServiceCallback dataEntry;
+
   /// The string to be shown in the submit button
   final String submitText;
 
@@ -123,6 +135,7 @@ class _FieldWithEnter extends State<FieldWithEnter> {
 class CustTextInput extends StatefulWidget {
   /// Options of this textinput
   final FieldOptions options;
+
   /// accessor to be able to access getters of this input
   late _CustTextInput child;
 
@@ -139,8 +152,13 @@ class CustTextInput extends StatefulWidget {
 class _CustTextInput extends State<CustTextInput> {
   /// Controller of this object's input
   TextEditingController controller = TextEditingController();
+
   /// Whether this field is valid
   late bool _isValid;
+
+  /// Whether to show hint or not
+  bool showHint = true;
+
   // Used to not have to show invalid when a user hasn't yet entered anything
   /// Whether or not to show that this field is valid
   bool _showValid = true;
@@ -170,6 +188,7 @@ class _CustTextInput extends State<CustTextInput> {
     setState(() {
       _showValid = true;
       controller.clear();
+      showHint = true;
     });
   }
 
@@ -193,7 +212,9 @@ class _CustTextInput extends State<CustTextInput> {
     // double height = widget.options.boxheight ?? 35;
     // return Text('baller');
     TextField tf = TextField(
-      maxLines: widget.options.boxheight == null && !widget.options.obscureText ? null : 1,
+      maxLines: widget.options.boxheight == null && !widget.options.obscureText
+          ? null
+          : 1,
       maxLength: widget.options.maxlines,
       controller: controller,
       obscureText: widget.options.obscureText,
@@ -204,7 +225,7 @@ class _CustTextInput extends State<CustTextInput> {
           TextSpan(children: <InlineSpan>[
             WidgetSpan(
               child: Text(
-                getVal().isEmpty ? widget.options.hint! : '',
+                showHint ? widget.options.hint! : '',
               ),
             ),
           ]),
@@ -251,29 +272,20 @@ class _CustTextInput extends State<CustTextInput> {
           ),
           padding:
               const EdgeInsets.only(bottom: 6, left: 5.0, right: 5.0, top: 6),
-          child: (widget.options.boxwidth == null || widget.options.boxheight == null) ? tf : SizedBox(
-            child: tf,
-            width: widget.options.boxwidth,
-            height: widget.options.boxheight,
-          )),
+          child: (widget.options.boxwidth == null ||
+                  widget.options.boxheight == null)
+              ? tf
+              : SizedBox(
+                  child: tf,
+                  width: widget.options.boxwidth,
+                  height: widget.options.boxheight,
+                )),
     );
   }
 
   @override
   dispose() {
     super.dispose();
-  }
-}
-
-class CustDropdown extends StatefulWidget {
-  late _CustDropdown child;
-  List<String> optionList;
-  CustDropdown(this.optionList, {super.key});
-
-  @override
-  State<CustDropdown> createState() {
-    child = _CustDropdown();
-    return child;
   }
 }
 
@@ -317,16 +329,25 @@ class CustomPopupRoute extends PopupRoute {
   }
 }
 
+class CustDropdown extends StatefulWidget {
+  ValueSetter<String> updateVal;
+  List<String> optionList;
+  String initVal;
+
+  CustDropdown(this.optionList, this.updateVal, this.initVal, {super.key});
+
+  @override
+  State<CustDropdown> createState() {
+    return _CustDropdown();
+  }
+}
+
 class _CustDropdown extends State<CustDropdown> {
   late String _curVal;
 
-  String getSelection() {
-    return _curVal;
-  }
-
   @override
   initState() {
-    _curVal = widget.optionList[0];
+    _curVal = widget.initVal;
   }
 
   @override
@@ -335,8 +356,6 @@ class _CustDropdown extends State<CustDropdown> {
       padding: EdgeInsets.only(top: 30),
       child: Container(
         decoration: BoxDecoration(
-          //color: bc_style().backgroundcolor,
-          //border: Border.all(width: 5, color: bc_style().accent1color),
           borderRadius: BorderRadius.circular(5),
         ),
         padding: EdgeInsets.fromLTRB(7, 7, 7, 7),
@@ -344,11 +363,11 @@ class _CustDropdown extends State<CustDropdown> {
           value: _curVal,
           icon: const Icon(Icons.arrow_drop_down),
           elevation: 16,
-          //style: TextStyle(color: bc_style().textcolor, fontSize: 24),
           onChanged: (String? value) {
             // This is called when the user selects an item.
             setState(() {
               _curVal = value!;
+              widget.updateVal(_curVal);
             });
           },
           items:
@@ -365,6 +384,7 @@ class _CustDropdown extends State<CustDropdown> {
 }
 
 @immutable
+
 /// Represents the expandable log button on the home page
 class ExpandableFab extends StatefulWidget {
   const ExpandableFab({
